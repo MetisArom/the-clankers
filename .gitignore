@@ -1,0 +1,75 @@
+# ======================
+# Python / Flask Project
+# ======================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# macOS system files
+.DS_Store
+
+# Environment variables
+.env
+
+# Logs & debug files
+*.log
+*.pid
+*.seed
+*.out
+*.err
+instance/
+*.sqlite3
+
+# Pytest / coverage / test cache
+.pytest_cache/
+htmlcov/
+.coverage
+.tox/
+.nox/
+.cache/
+coverage.xml
+*.cover
+*.py,cover
+
+# Jupyter / IPython
+.ipynb_checkpoints
+*.ipynb
+
+# IDE files (VSCode, PyCharm, etc.)
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Build and distribution artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Compiled C extensions
+*.so
+
+# Database artifacts (if you dump SQL manually)
+*.sql
+*.dump
+
+# Flask-specific
+*.db
+*.sqlite
+instance/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
