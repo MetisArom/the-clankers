@@ -1,12 +1,20 @@
 from flask import Flask, jsonify, request
 from database import db, User, Trip
 import os
+from dotenv import load_dotenv
 
 # -------------------------
 # Flask App Config
 # -------------------------
+load_dotenv()
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+
+if DB_PASSWORD == None:
+    print("")
+    os.exit(1)
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:password@localhost:5432/tripview"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:" + DB_PASSWORD + "@localhost:5432/tripview"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # ✅ Initialize the existing db instance (do NOT re-create it)

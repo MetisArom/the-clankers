@@ -4,13 +4,17 @@ from flask import Flask
 from database import db, User, Trip
 from datetime import date
 import time
+import os
+from dotenv import load_dotenv
 
 # -------------------------
 # CONFIGURATION
 # -------------------------
+load_dotenv()
+
 DB_NAME = "tripview"
 DB_USER = "postgres"
-DB_PASSWORD = "password"   # change this
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = "localhost"
 
 # -------------------------
