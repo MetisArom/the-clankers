@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import theclankers.tripview.ui.navigation.BottomNavigationBar
 import theclankers.tripview.ui.navigation.TripViewNavGraph
 import theclankers.tripview.ui.navigation.TripViewNavigationBar
 import theclankers.tripview.ui.theme.TripViewTheme

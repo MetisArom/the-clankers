@@ -30,7 +30,7 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable(BottomNavItem.Friends.route) { FriendsScreen() }
         composable(BottomNavItem.Profile.route) { ProfileScreen() }
         composable("camera2") { Camera2Screen() }
-        composable("navigation") { NavigationScreen() }
+        composable("navigation") { NavigationScreen(navController) }
     }
 }
 

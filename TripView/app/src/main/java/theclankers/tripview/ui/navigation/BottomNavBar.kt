@@ -24,7 +24,7 @@ fun TripViewNavigationBar(navController: NavHostController) {
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
             NavigationBarItem(
-                icon = { item.icon?.let { Icon(it, contentDescription = item.label) } },
+                icon = { item.icon },
                 label = { Text(item.label) },
                 selected = currentRoute == item.route,
                 onClick = {
