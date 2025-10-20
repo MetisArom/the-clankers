@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import theclankers.tripview.ui.navigation.BottomNavigationBar
 import theclankers.tripview.ui.navigation.TripViewNavGraph
+import theclankers.tripview.ui.navigation.TripViewNavigationBar
 import theclankers.tripview.ui.theme.TripViewTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,7 +36,7 @@ fun MainScreen() {
     val navController = rememberNavController()
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
+        bottomBar = { TripViewNavigationBar(navController) }
     ) { innerPadding ->
         // Apply padding to the NavHost
         androidx.compose.foundation.layout.Box(modifier = Modifier.padding(innerPadding)) {

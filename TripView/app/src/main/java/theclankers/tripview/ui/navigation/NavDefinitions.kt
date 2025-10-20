@@ -1,5 +1,7 @@
 package theclankers.tripview.ui.navigation
 
+import android.net.http.SslCertificate.restoreState
+import android.net.http.SslCertificate.saveState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -10,24 +12,25 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import theclankers.tripview.ui.screens.NavigationScreen
 
-sealed class NavItem(val route: String, val label: String, val icon: ImageVector? = null) {
-    // don't delete the icon for the top 4 or i will be sad
-    object Home : NavItem("home", "Home", Icons.Default.Home)
-    object Camera : NavItem("camera", "Camera", Icons.Default.Search)
-    object Friends : NavItem("friends", "Friends", Icons.Default.Search)
-    object Profile : NavItem("profile", "Profile", Icons.Default.Person)
-    object Camera2 : NavItem("camera", "Camera 2", Icons.Default.Search)
+sealed class BottomNavItem(val route: String, val label: String, val icon: ImageVector) {
+    // don't delete the icon or i will be sad
+    object Home : BottomNavItem("home", "Home", Icons.Default.Home)
+    object Camera : BottomNavItem("camera", "Camera", Icons.Default.Search)
+    object Friends : BottomNavItem("friends", "Friends", Icons.Default.Search)
+    object Profile : BottomNavItem("profile", "Profile", Icons.Default.Person)
 }
 
 @Composable
 fun TripViewNavGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = NavItem.Home.route) {
-        composable(NavItem.Home.route) { HomeScreen() }
-        composable(NavItem.Camera.route) { CameraScreen() }
-        composable(NavItem.Camera2.route) { Camera2Screen() }
-        composable(NavItem.Friends.route) { FriendsScreen() }
-        composable(NavItem.Profile.route) { ProfileScreen() }
+    NavHost(navController, startDestination = BottomNavItem.Home.route) {
+        composable(BottomNavItem.Home.route) { HomeScreen(navController) }
+        composable(BottomNavItem.Camera.route) { CameraScreen(navController) }
+        composable(BottomNavItem.Friends.route) { FriendsScreen() }
+        composable(BottomNavItem.Profile.route) { ProfileScreen() }
+        composable("camera2") { Camera2Screen() }
+        composable("navigation") { NavigationScreen() }
     }
 }
 

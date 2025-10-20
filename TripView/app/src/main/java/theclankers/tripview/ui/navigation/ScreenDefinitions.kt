@@ -4,15 +4,20 @@ import android.R.attr.text
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 
 @Composable
-fun HomeScreen() { Text("Home Screen") }
+fun HomeScreen(navController: NavHostController) { Button(onClick = {
+    navigateTo(navController, "navigation")
+}) { Text("Go to Navigation Screen")  } }
 @Composable
-fun CameraScreen() { Text("Camera Screen") Button(text="Go to Camera2 Screen") }
+fun CameraScreen(navController: NavHostController) { Button(onClick = {
+    navigateTo(navController, "camera2")
+}) { Text("Go to Camera 2 Screen")  } }
 @Composable
 fun FriendsScreen() { Text("Friends Screen") }
 @Composable
 fun ProfileScreen() { Text("Profile Screen") }
 
 @Composable
-fun Camera2Screen() { Text("Camera Screen") }
+fun Camera2Screen() { Text("Camera 2 Screen") }

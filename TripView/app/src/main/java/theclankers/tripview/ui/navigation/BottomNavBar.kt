@@ -12,12 +12,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
+fun TripViewNavigationBar(navController: NavHostController) {
     val items = listOf(
-        NavItem.Home,
-        NavItem.Camera,
-        NavItem.Friends,
-        NavItem.Profile
+        BottomNavItem.Home,
+        BottomNavItem.Camera,
+        BottomNavItem.Friends,
+        BottomNavItem.Profile
     )
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
