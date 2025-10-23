@@ -14,21 +14,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import theclankers.tripview.ui.screens.NavigationScreen
 
-sealed class BottomNavItem(val route: String, val label: String, val icon: ImageVector) {
-    // don't delete the icon or i will be sad
-    object Home : BottomNavItem("home", "Home", Icons.Default.Home)
-    object Camera : BottomNavItem("camera", "Camera", Icons.Default.Search)
-    object Friends : BottomNavItem("friends", "Friends", Icons.Default.Search)
-    object Profile : BottomNavItem("profile", "Profile", Icons.Default.Person)
-}
-
 @Composable
 fun TripViewNavGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = BottomNavItem.Home.route) {
-        composable(BottomNavItem.Home.route) { HomeScreen(navController) }
-        composable(BottomNavItem.Camera.route) { CameraScreen(navController) }
-        composable(BottomNavItem.Friends.route) { FriendsScreen() }
-        composable(BottomNavItem.Profile.route) { ProfileScreen() }
+    NavHost(navController, startDestination = "home") {
+        //Create an entry here for each route following the format
+        //composable([route]]) { [composable] }
+        //if you need navigation other than the nav bar on that route,
+        //you must pass in navController to use navigateTo on that page.
+        composable("home") { HomeScreen(navController) }
+        composable("camera") { CameraScreen(navController) }
+        composable("friends") { FriendsScreen() }
+        composable("profile") { ProfileScreen() }
         composable("camera2") { Camera2Screen() }
         composable("navigation") { NavigationScreen(navController) }
     }
