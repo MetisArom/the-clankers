@@ -16,6 +16,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import theclankers.tripview.ui.screens.HomeScreen
 import theclankers.tripview.ui.screens.NavigationScreen
+import theclankers.tripview.ui.screens.TripCreationForm
+import theclankers.tripview.ui.screens.TripsScreen
 
 @Composable
 fun TripViewNavGraph(navController: NavHostController) {
@@ -34,7 +36,11 @@ fun TripViewNavGraph(navController: NavHostController) {
             backStackEntry ->
                 StopScreen(navController, backStackEntry.arguments?.getInt("itemId"))
             }
+        composable("trips") { TripsScreen(navController) }
+        composable("tripcreationform") {
+            TripCreationForm(navController = navController)
         }
+    }
 }
 
 fun navigateTo(navController: NavController, route: String) {

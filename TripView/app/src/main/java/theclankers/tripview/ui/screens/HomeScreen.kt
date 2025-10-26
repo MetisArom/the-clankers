@@ -25,5 +25,12 @@ fun HomeScreen(navController: NavHostController) {
             activityVM.toggleNavbar()
         })
         { Text("Toggle navbar (current val: ${activityVM.showNavbar})")  }
+
+        //this is just temporary until we make authentication
+        //after you authenticate, that will directly take you to trips.kt
+        Button(onClick = {
+            navigateTo(navController, "trips")
+        })
+        { Text("Go to TripCreation")  }
     }
 }
