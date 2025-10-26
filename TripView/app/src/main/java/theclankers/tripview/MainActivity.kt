@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import theclankers.tripview.ui.components.SampleButton
 import theclankers.tripview.ui.navigation.TripViewNavGraph
 import theclankers.tripview.ui.navigation.TripViewNavigationBar
 import theclankers.tripview.ui.theme.TripViewTheme
@@ -39,7 +42,11 @@ fun MainScreen() {
     ) { innerPadding ->
         // Apply padding to the NavHost
         androidx.compose.foundation.layout.Box(modifier = Modifier.padding(innerPadding)) {
-            TripViewNavGraph(navController)
+            SampleButton(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 80.dp) // avoid overlap with nav bar
+            )
         }
     }
 }
