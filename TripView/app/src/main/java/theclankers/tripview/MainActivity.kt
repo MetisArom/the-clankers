@@ -42,11 +42,12 @@ fun MainScreen() {
     ) { innerPadding ->
         // Apply padding to the NavHost
         androidx.compose.foundation.layout.Box(modifier = Modifier.padding(innerPadding)) {
-            SampleButton(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 80.dp) // avoid overlap with nav bar
-            )
+            // DON'T MODIFY THIS!! If you're looking to add UI elements to the screen,
+            // go edit the screen definition in ui/screens!
+            // Basically, the way this works is that the NavGraph handles rendering
+            // the composable for each screen. Then we do all UI work in that composable.
+            // To add a new screen, go to TripViewNavGraph in ui/navigation/NavDefinitions.kt
+            TripViewNavGraph(navController)
         }
     }
 }
