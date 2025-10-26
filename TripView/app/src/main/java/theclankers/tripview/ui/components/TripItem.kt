@@ -1,6 +1,5 @@
 package theclankers.tripview.ui.components
 
-
 // Takes as input a single trip object, containing the trip name and description
 
 // Trip Name
