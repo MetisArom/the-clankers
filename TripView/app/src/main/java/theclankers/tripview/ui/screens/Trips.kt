@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import theclankers.tripview.ui.components.HeaderText
 
 @Composable
 fun TripsScreen(navController: NavController) {
@@ -24,10 +25,8 @@ fun TripsScreen(navController: NavController) {
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text(
+        HeaderText(
             text = "Your Trips",
-            fontSize = 20.sp,
-            color = Color.Black,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -57,20 +56,16 @@ fun TripsScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
+        HeaderText(
             text = "Friends Trips",
-            fontSize = 20.sp,
-            color = Color.Black,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         TripCard(title = "Trip 5", description = "Supporting line text lorem ipsum dolor sit amet, consectetur.")
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
+        HeaderText(
             text = "Completed Trips",
-            fontSize = 20.sp,
-            color = Color.Black,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         TripCard(title = "Trip 6", description = "Supporting line text lorem ipsum dolor sit amet, consectetur.")

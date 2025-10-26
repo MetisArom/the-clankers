@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.sp
 import theclankers.tripview.ui.theme.Black
 
 @Composable
-fun TripTitle(
+fun HeaderText(
     text: String,
     modifier: Modifier = Modifier,
     textColor: Color = Black
