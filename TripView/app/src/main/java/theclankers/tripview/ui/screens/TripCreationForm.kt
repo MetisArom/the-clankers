@@ -2,6 +2,8 @@ package theclankers.tripview.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
@@ -11,11 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import theclankers.tripview.ui.navigation.TripViewNavigationBar
+import theclankers.tripview.ui.components.FormInput
 
 @Composable
 fun TripCreationForm(navController: NavController) {
@@ -31,7 +34,8 @@ fun TripCreationForm(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp, vertical = 16.dp),
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
@@ -48,32 +52,54 @@ fun TripCreationForm(navController: NavController) {
                 )
                 Spacer(modifier = Modifier.height(24.dp))
 
-                TripInputField(
-                    label = "Where are you going?",
+                FormInput(
                     value = destination,
-                    onValueChange = { destination = it }
+                    onValueChange = { destination = it },
+                    label = "Where are you going?",
+                    placeholder = "e.g., Paris, France",
+                    imeAction = ImeAction.Next,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                TripInputField(
-                    label = "How many days are you going for?",
+                FormInput(
                     value = days,
-                    onValueChange = { days = it }
+                    onValueChange = { days = it },
+                    label = "How many days are you going for?",
+                    placeholder = "e.g., 5",
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                TripInputField(
-                    label = "Where are you staying along the way?",
+                FormInput(
                     value = stops,
-                    onValueChange = { stops = it }
+                    onValueChange = { stops = it },
+                    label = "Where are you staying along the way?",
+                    placeholder = "e.g., Hotel Name, City",
+                    imeAction = ImeAction.Next,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                TripInputField(
-                    label = "Please specify the timeline of your trip, dates where you have to be in certain places",
+                FormInput(
                     value = timeline,
-                    onValueChange = { timeline = it }
+                    onValueChange = { timeline = it },
+                    label = "Please specify the timeline of your trip, dates where you have to be in certain places",
+                    placeholder = "e.g., Day 1: Paris, Day 3: Lyon",
+                    maxLines = 3,
+                    singleLine = false,
+                    imeAction = ImeAction.Done,
+                    modifier = Modifier.padding(bottom = 24.dp),
+                    onSubmit = {
+                        // Submit the form when user presses done
+                        navController.navigate("tripcreationform1")
+                    }
                 )
             }
 
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(vertical = 16.dp)
+            ) {
                 Button(
                     onClick = { navController.navigate("tripcreationform1") },
                     shape = RoundedCornerShape(50),
@@ -90,32 +116,5 @@ fun TripCreationForm(navController: NavController) {
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun TripInputField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit
-) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
-        Text(
-            text = label,
-            fontSize = 14.sp,
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 6.dp)
-        )
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Black,
-                unfocusedBorderColor = Color.Black.copy(alpha = 0.5f),
-                cursorColor = Color.Black
-            )
-        )
     }
 }
