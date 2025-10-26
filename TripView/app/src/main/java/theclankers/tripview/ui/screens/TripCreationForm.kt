@@ -86,7 +86,7 @@ fun TripCreationForm(navController: NavController) {
                         tint = Color.White
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Submit", color = Color.White)
+                    Text("Submit", color = Color.White) //will lead to Trip Creation Form - Part 2
                 }
             }
         }
