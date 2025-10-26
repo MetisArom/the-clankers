@@ -1,5 +1,6 @@
 package theclankers.tripview.ui.screens
 
+import android.R.attr.onClick
 import android.R.attr.text
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
@@ -25,21 +26,19 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.ktx.model.cameraPosition
+import theclankers.tripview.classes.Stop
 import theclankers.tripview.ui.navigation.navigateTo
 
 @Composable
-fun NavigationScreen(navController: NavHostController) { Button(onClick = {
-    navigateTo(navController, "camera2")
-}) { Text("Go to Camera 2 Screen")  }
-
+fun NavigationScreen(navController: NavHostController) {
     val cameraPositionState = rememberCameraPositionState()
     var mapLoaded by remember { mutableStateOf(false) }
 
     val stops = listOf(
-        LatLng(42.2776, -83.7409), // Gallup
-        LatLng(42.2456, -83.7106), // Cobblestone Farm
-        LatLng(42.2656, -83.7487),  // Michigan Stadium
-        LatLng(42.2804, -83.7495)  // Frita Batidos
+        Stop(1, LatLng(42.2776, -83.7409)), // Gallup
+        Stop(2,LatLng(42.2456, -83.7106)), // Cobblestone Farm
+        Stop(3,LatLng(42.2656, -83.7487)),  // Michigan Stadium
+        Stop(4,LatLng(42.2804, -83.7495))  // Frita Batidos
     )
 
     GoogleMap(
@@ -50,16 +49,20 @@ fun NavigationScreen(navController: NavHostController) { Button(onClick = {
         onMapLoaded = { mapLoaded = true }
     ) {
         // Add markers for each waypoint
-        stops.forEachIndexed { index, latLng ->
+        stops.forEachIndexed { index, stop ->
             Marker(
-                state = MarkerState(position = latLng),
+                state = MarkerState(position = stop.location),
                 title = "Waypoint ${index + 1}",
-                snippet = "Lat: ${latLng.latitude}, Lng: ${latLng.longitude}"
+                snippet = "Lat: ${stop.location.latitude}, Lng: ${stop.location.longitude}, stop id: ${stop.id}",
+                onClick = {
+                    navigateTo(navController, "stops/${stop.id}")
+                    true
+                }
             )
         }
 
         Polyline(
-            points = stops,
+            points = stops.map { it.location },
             color = androidx.compose.ui.graphics.Color.Blue,
             width = 8f
         )
@@ -67,7 +70,7 @@ fun NavigationScreen(navController: NavHostController) { Button(onClick = {
         LaunchedEffect(mapLoaded, stops) {
             if (mapLoaded && stops.isNotEmpty()) {
                 val boundsBuilder = LatLngBounds.builder()
-                stops.forEach { boundsBuilder.include(it) }
+                stops.forEach { boundsBuilder.include(it.location) }
                 val bounds = boundsBuilder.build()
 
                 // Use padding for spacing (in pixels)

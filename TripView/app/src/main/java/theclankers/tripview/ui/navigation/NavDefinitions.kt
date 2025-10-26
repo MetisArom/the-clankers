@@ -10,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import theclankers.tripview.ui.screens.NavigationScreen
 
 @Composable
@@ -27,15 +29,17 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("profile") { ProfileScreen() }
         composable("camera2") { Camera2Screen() }
         composable("navigation") { NavigationScreen(navController) }
-    }
+        composable("stops/{itemId}", arguments = listOf(navArgument("itemId") { type = NavType.IntType })) {
+            backStackEntry ->
+                StopScreen(navController, backStackEntry.arguments?.getInt("itemId"))
+            }
+        }
 }
 
 fun navigateTo(navController: NavController, route: String) {
-    navController.navigate(route) {
-        popUpTo(navController.graph.startDestinationId) {
-            saveState = true
-        }
-        launchSingleTop = true
-        restoreState = true
-    }
+    navController.navigate(route)
+}
+
+fun goBack(navController: NavController) {
+    navController.popBackStack()
 }
