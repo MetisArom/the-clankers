@@ -14,6 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import theclankers.tripview.ui.screens.HomeScreen
 import theclankers.tripview.ui.screens.NavigationScreen
 
 @Composable

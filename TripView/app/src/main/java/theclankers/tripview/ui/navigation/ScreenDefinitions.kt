@@ -8,10 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 
 @Composable
-fun HomeScreen(navController: NavHostController) { Button(onClick = {
-    navigateTo(navController, "navigation")
-}) { Text("Go to Navigation Screen")  } }
-@Composable
 fun CameraScreen(navController: NavHostController) { Button(onClick = {
     navigateTo(navController, "camera2")
 }) { Text("Go to Camera 2 Screen")  } }
