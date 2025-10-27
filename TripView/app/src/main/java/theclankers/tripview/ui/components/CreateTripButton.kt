@@ -34,7 +34,9 @@ fun CreateTripButton(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = RoundedCornerShape(8.dp),
+
+        shape = RoundedCornerShape(16.dp),
+
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Purple4),
         //border = BorderStroke(
@@ -43,7 +45,9 @@ fun CreateTripButton(
         //)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
         ) {
             HeaderText(
                 text = "Create New Trip",
