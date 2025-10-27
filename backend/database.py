@@ -50,9 +50,6 @@ class Stop(db.Model):
     completed = db.Column(db.Boolean, default=False)
     stop_order = db.Column(db.Integer)
 
-    def toJson(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
 
 class Chat(db.Model):
     __tablename__ = 'chats'
