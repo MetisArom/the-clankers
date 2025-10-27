@@ -73,4 +73,5 @@ dependencies {
     implementation("com.google.maps.android:maps-compose:6.10.0")
     implementation("androidx.compose.material3:material3:1.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("com.squareup.okhttp3:okhttp:5.1.0")
 }
