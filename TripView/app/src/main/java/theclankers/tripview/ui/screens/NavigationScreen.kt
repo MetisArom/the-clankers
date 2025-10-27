@@ -1,14 +1,14 @@
 package theclankers.tripview.ui.screens
 
-import android.R.attr.onClick
-import android.R.attr.text
+import android.R.attr.bottom
+import android.R.attr.strokeColor
+import android.R.attr.strokeWidth
 import android.net.Uri
-import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,13 +16,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.RoundCap
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -31,7 +34,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.ktx.model.cameraPosition
 import kotlinx.serialization.json.Json
 import theclankers.tripview.classes.Stop
 import theclankers.tripview.ui.navigation.navigateTo
@@ -40,6 +42,8 @@ import theclankers.tripview.ui.navigation.navigateTo
 fun NavigationScreen(navController: NavHostController) {
     val cameraPositionState = rememberCameraPositionState()
     var mapLoaded by remember { mutableStateOf(false) }
+
+    var showDirectPolyline by remember { mutableStateOf(false) }
 
     val stops = listOf(
         Stop(1, 42.2776, -83.7409), // Gallup
@@ -53,7 +57,7 @@ fun NavigationScreen(navController: NavHostController) {
         properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false),
         uiSettings = MapUiSettings(compassEnabled = true, mapToolbarEnabled = false),
         cameraPositionState = cameraPositionState,
-        onMapLoaded = { mapLoaded = true }
+        onMapLoaded = { mapLoaded = true } // Run Launched Effect at this point
     ) {
         // Add markers for each waypoint
         stops.forEachIndexed { index, stop ->
@@ -69,22 +73,49 @@ fun NavigationScreen(navController: NavHostController) {
             )
         }
 
-        Polyline(
-            points = stops.map { LatLng(it.latitude, it.longitude) },
-            color = androidx.compose.ui.graphics.Color.Blue,
-            width = 8f
-        )
+        //Direct Route Polyline
+        if (showDirectPolyline) {
+            Polyline(
+                points = stops.map { LatLng(it.latitude, it.longitude) },
+                color = Color(0xFF0F53FF), // Google Maps Blue
+                width = 16f,                   // Thicker line
+                jointType = JointType.ROUND,   // Rounded joins
+                startCap = RoundCap(),
+                endCap = RoundCap()
+            )
+        }
 
+        // Zoom map view into stops bounding box
         LaunchedEffect(mapLoaded, stops) {
             if (mapLoaded && stops.isNotEmpty()) {
+                //Compute bounding box
                 val boundsBuilder = LatLngBounds.builder()
                 stops.forEach { boundsBuilder.include(LatLng(it.latitude, it.longitude)) }
                 val bounds = boundsBuilder.build()
 
-                // Use padding for spacing (in pixels)
+                // Zoom to bounding box, use padding for spacing (in pixels)
                 cameraPositionState.animate(
                     update = CameraUpdateFactory.newLatLngBounds(bounds, 150)
                 )
+            }
+        }
+    }
+
+    Row(
+        modifier = Modifier.fillMaxSize().padding(bottom = 16.dp),
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.Center
+    )
+    {
+        Button(
+            onClick = {
+                showDirectPolyline = !showDirectPolyline
+            }
+        ) {
+            if (!showDirectPolyline) {
+                Text("Show Direct Route")
+            } else {
+                Text("Hide Direct Route")
             }
         }
     }
