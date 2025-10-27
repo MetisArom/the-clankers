@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import theclankers.tripview.ui.components.CreateTripButton
 import theclankers.tripview.ui.components.HeaderText
+import theclankers.tripview.ui.components.HeaderText1
 import theclankers.tripview.ui.components.HelperText
 import theclankers.tripview.ui.components.TripItem
 
@@ -28,7 +29,7 @@ fun TripsScreen(navController: NavController) {
             .verticalScroll(rememberScrollState())
     ) {
         // === Your Trips Section ===
-        HeaderText(
+        HeaderText1(
             text = "Your Trips",
             modifier = Modifier.padding(bottom = 8.dp)
         )

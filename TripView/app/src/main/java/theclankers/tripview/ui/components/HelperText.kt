@@ -49,9 +49,9 @@ fun HelperText2(
     Text(
         text = text,
         style = TextStyle(
-            fontSize = 22.sp,
+            fontSize = 20.sp,
             lineHeight = 20.sp,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Normal,
             color = textColor
         ),
         modifier = modifier

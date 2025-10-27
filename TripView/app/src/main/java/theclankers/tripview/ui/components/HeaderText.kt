@@ -3,6 +3,7 @@ package theclankers.tripview.ui.components
 // For consistent styling, takes as input text, for reference look at the Trip 1 screen on figma it's just the title text
 // textColor exposed
 
+import android.R.attr.fontWeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +21,22 @@ fun HeaderText(
 ) {
     Text(
         text = text,
-        fontSize = 32.sp,
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold,
+        color = textColor,
+        modifier = modifier
+    )
+}
+@Composable
+fun HeaderText1(
+    //for YourTrips
+    text: String,
+    modifier: Modifier = Modifier,
+    textColor: Color = Black
+) {
+    Text(
+        text = text,
+        fontSize = 26.sp,
         fontWeight = FontWeight.Bold,
         color = textColor,
         modifier = modifier
