@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
-from database import db, User, Trip, IsFriends, PartOf
+from database import db, User, Trip, Stop, IsFriends, PartOf
 from datetime import timedelta
 import google.generativeai as genai
 import os
@@ -486,6 +486,59 @@ def get_trips():
         "driving_polyline_timestamp": t.driving_polyline_timestamp
     } for t in trips])
 
+@app.route('/trips/<int:trip_id>', methods=['GET'])
+def display_itinerary(trip_id):
+    stops = Stop.query.filter_by(trip_id=trip_id).order_by(Stop.stop_order).all()
+    return jsonify([
+        {
+            "stop_type": s.stop_type,
+            "latitude": s.latitude,
+            "longitude": s.longitude,
+            "description": s.description,
+            "completed": s.completed,
+            "stop_order": s.stop_order
+        }
+        for s in stops
+    ])
+
+@app.route('/trips/<int:trip_id>', methods=['PATCH'])
+def modify_itinerary(trip_id):
+    data = request.get_json()
+
+    stops_data = data['stops']
+    existing_stops = Stop.query.filter_by(trip_id=trip_id).all()
+    existing_dict = {stop.stop_id: stop for stop in existing_stops}
+
+    # loop through new stop data sent by user
+    # if there is a new stop created, initial stop_id should be null (sent by app)
+    for s in stops_data:
+        stop_id = s.get('stop_id')
+        stop_order = s.get('stop_order')
+
+        # checking if existing stop's order changed
+        if stop_id and stop_id in existing_dict:
+            stop = existing_stops['stop_id']
+            stop.stop_order = stop_order
+
+        # adding newly added stop
+        elif not stop_id:
+            new_stop = Stop(
+                trip_id=trip_id,
+                stop_type=s.get('stop_type', ''),
+                latitude=s['latitude'],
+                longitude=s['longitude'],
+                description=s.get('description', ''),
+                completed=s.get('completed', False),
+                stop_order=stop_order
+            )
+            db.session.add(new_stop)
+        
+        elif stop_id not in existing_dict:
+            return jsonify({"error": f"stop_id {stop_id} not found in this trip"}), 404
+
+    db.session.commit()
+
+    return jsonify({"message": "Stops updated successfully"}), 200
 
 @app.route('/trips/<int:trip_id>', methods=['DELETE'])
 def delete_trip(trip_id):
@@ -494,10 +547,10 @@ def delete_trip(trip_id):
     db.session.commit()
     return jsonify({"message": f"Trip {trip_id} deleted successfully!"})
 
+
 @app.route('/trips/<int:trip_id>/debug_polyline', methods=['GET'])
 def debug_regenerate_polyline(trip_id):
     return regenerate_driving_polyline(trip_id, True)
-
 
 
 # ============================================================
