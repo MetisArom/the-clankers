@@ -12,7 +12,7 @@ import androidx.navigation.NavHostController
 import theclankers.tripview.ui.navigation.navigateTo
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun DebugScreen(navController: NavHostController) {
     //LocalActivity.current as ComponentActivity is for basically global state shared across screens.
     //You can have additional view models for each screen with navBackStackEntry.viewModel()!
     val activityVM: TripViewViewModel = viewModel(LocalActivity.current as ComponentActivity)

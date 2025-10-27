@@ -1,6 +1,7 @@
 package theclankers.tripview.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -20,19 +21,21 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 sealed class BottomNavItem(val route: String, val label: String, val icon: ImageVector) {
     // don't delete the icon or i will be sad
-    object Home : BottomNavItem("home", "Home", Icons.Default.Home)
+    object Trips : BottomNavItem("trips", "Trips", Icons.Default.Home)
     object Camera : BottomNavItem("camera", "Camera", Icons.Default.Search)
     object Friends : BottomNavItem("friends", "Friends", Icons.Default.Search)
     object Profile : BottomNavItem("profile", "Profile", Icons.Default.Person)
+    object Debug : BottomNavItem("debug", "Debug", Icons.Default.Build)
 }
 
 @Composable
 fun TripViewNavigationBar(navController: NavHostController) {
     val items = listOf(
-        BottomNavItem.Home,
+        BottomNavItem.Trips,
         BottomNavItem.Camera,
         BottomNavItem.Friends,
-        BottomNavItem.Profile
+        BottomNavItem.Profile,
+        BottomNavItem.Debug
     )
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()

@@ -14,32 +14,42 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import theclankers.tripview.ui.screens.HomeScreen
+import kotlinx.serialization.json.Json
+import theclankers.tripview.classes.Stop
+import theclankers.tripview.ui.screens.DebugScreen
 import theclankers.tripview.ui.screens.NavigationScreen
+import theclankers.tripview.ui.screens.StopScreen
 import theclankers.tripview.ui.screens.TripCreationForm
 import theclankers.tripview.ui.screens.TripsScreen
 
 @Composable
 fun TripViewNavGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = "home") {
+    NavHost(navController, startDestination = "trips") {
         //Create an entry here for each route following the format
         //composable([route]]) { [composable] }
         //if you need navigation other than the nav bar on that route,
         //you must pass in navController to use navigateTo on that page.
-        composable("home") { HomeScreen(navController) }
+        //composable("home") { HomeScreen(navController) }
         composable("camera") { CameraScreen(navController) }
         composable("friends") { FriendsScreen() }
         composable("profile") { ProfileScreen() }
         composable("camera2") { Camera2Screen() }
         composable("navigation") { NavigationScreen(navController) }
-        composable("stops/{itemId}", arguments = listOf(navArgument("itemId") { type = NavType.IntType })) {
+        composable("stops/{stop}", arguments = listOf(navArgument("stop") { type = NavType.StringType })) {
             backStackEntry ->
-                StopScreen(navController, backStackEntry.arguments?.getInt("itemId"))
+                val stopJson = backStackEntry.arguments?.getString("stop")
+                if (stopJson != null) {
+                    val stop = Json.decodeFromString<Stop>(stopJson)
+                    StopScreen(navController, stop)
+                } else {
+                    goBack(navController)
+                }
             }
         composable("trips") { TripsScreen(navController) }
         composable("tripcreationform") {
             TripCreationForm(navController = navController)
         }
+        composable("debug") { DebugScreen(navController) }
     }
 }
 

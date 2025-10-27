@@ -18,13 +18,3 @@ fun ProfileScreen() { Text("Profile Screen") }
 
 @Composable
 fun Camera2Screen() { Text("Camera 2 Screen") }
-
-@Composable
-fun StopScreen(navController: NavHostController, itemId: Int?) {
-    Column {
-        Text("This is the stop page for stop $itemId")
-        Button(onClick = {
-            goBack(navController)
-        }) { Text("Go back") }
-    }
-}
