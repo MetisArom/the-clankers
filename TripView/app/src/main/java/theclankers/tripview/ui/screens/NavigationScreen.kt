@@ -1,12 +1,11 @@
 package theclankers.tripview.ui.screens
 
-import android.R.attr.bottom
-import android.R.attr.strokeColor
-import android.R.attr.strokeWidth
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -14,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,9 +34,12 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import theclankers.tripview.classes.Stop
 import theclankers.tripview.ui.navigation.navigateTo
+import theclankers.tripview.ui.utils.decodePolyline
 
 @Composable
 fun NavigationScreen(navController: NavHostController) {
@@ -44,6 +47,14 @@ fun NavigationScreen(navController: NavHostController) {
     var mapLoaded by remember { mutableStateOf(false) }
 
     var showDirectPolyline by remember { mutableStateOf(false) }
+    var showDrivingPolyline by remember { mutableStateOf(false) }
+
+    val drivingPolyline by remember { mutableStateOf("c|lsoArmcv~CVvbA`dB}@h@tkArrCeC~TxOdzVmtXbsMwlIt`KqxHzyDm}HoH_uG}b@xD|b@yDBtxGi}C`eH{sKfmIytLjuHvAt~H_X|_BqqAn~DuxArzI_Tl{B^z~DisA|@oyHgHkqF_kAmwJeTy@xy@") } //Example
+    val drivingPoints by produceState(initialValue = emptyList(), drivingPolyline) {
+        withContext(Dispatchers.Default) {
+            value = decodePolyline(drivingPolyline)
+        }
+    }
 
     val stops = listOf(
         Stop(1, 42.2776, -83.7409), // Gallup
@@ -85,6 +96,18 @@ fun NavigationScreen(navController: NavHostController) {
             )
         }
 
+        //Driving Route Polyline
+        if (showDrivingPolyline) {
+            Polyline(
+                points = drivingPoints,
+                color = Color(0xFF0F53FF), // Google Maps Blue
+                width = 16f,                   // Thicker line
+                jointType = JointType.ROUND,   // Rounded joins
+                startCap = RoundCap(),
+                endCap = RoundCap()
+            )
+        }
+
         // Zoom map view into stops bounding box
         LaunchedEffect(mapLoaded, stops) {
             if (mapLoaded && stops.isNotEmpty()) {
@@ -102,20 +125,38 @@ fun NavigationScreen(navController: NavHostController) {
     }
 
     Row(
-        modifier = Modifier.fillMaxSize().padding(bottom = 16.dp),
+        modifier = Modifier.fillMaxHeight().fillMaxWidth(0.88F).padding(bottom = 16.dp),
         verticalAlignment = Alignment.Bottom,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.SpaceEvenly
     )
     {
         Button(
             onClick = {
                 showDirectPolyline = !showDirectPolyline
+                if (showDrivingPolyline) {
+                    showDrivingPolyline = false
+                }
             }
         ) {
             if (!showDirectPolyline) {
                 Text("Show Direct Route")
             } else {
                 Text("Hide Direct Route")
+            }
+        }
+        Button(
+            onClick = {
+                showDrivingPolyline = !showDrivingPolyline
+                if (showDirectPolyline) {
+                    showDirectPolyline = false
+                }
+            },
+            enabled = drivingPoints.isNotEmpty() //Don't let user click if driving route not decoded yet
+        ) {
+            if (!showDrivingPolyline) {
+                Text("Show Driving Route")
+            } else {
+                Text("Hide Driving Route")
             }
         }
     }

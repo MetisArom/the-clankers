@@ -13,8 +13,8 @@ def regenerate_driving_polyline(trip_id, debug):
         debug_response["before_polyline"] = trip.driving_polyline
 
     # Get a string of all lat/long pairs joined by ';' for OSRM then get full OSRM api URL
-    coordinatesSubStr = ';'.join(f'{s.latitude},{s.longitude}' for s in stops)
-    OSRM_url = f"https://router.project-osrm.org/route/v1/driving/{coordinatesSubStr}"
+    coordinatesSubStr = ';'.join(f'{s.longitude},{s.latitude}' for s in stops)
+    OSRM_url = f"https://routing.openstreetmap.de/routed-car/route/v1/driving/{coordinatesSubStr}?geometries=polyline6"
 
     OSRMreq = requests.get(OSRM_url)
     OSRMresponse = OSRMreq.json()
