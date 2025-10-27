@@ -8,6 +8,7 @@ from datetime import timedelta
 import google.generativeai as genai
 import os
 import json
+from polyline import regenerate_driving_polyline
 from dotenv import load_dotenv
 
 # -------------------------
@@ -492,6 +493,11 @@ def delete_trip(trip_id):
     db.session.delete(trip)
     db.session.commit()
     return jsonify({"message": f"Trip {trip_id} deleted successfully!"})
+
+@app.route('/trips/<int:trip_id>/debug_polyline', methods=['GET'])
+def debug_regenerate_polyline(trip_id):
+    return regenerate_driving_polyline(trip_id, True)
+
 
 
 # ============================================================
