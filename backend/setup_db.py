@@ -82,6 +82,7 @@ with app.app_context():
         IsFriends(friend1_id=bob.user_id, friend2_id=charlie.user_id, relationship=True, initiator_id=bob.user_id),
         IsFriends(friend1_id=charlie.user_id, friend2_id=david.user_id, relationship=False, initiator_id=charlie.user_id),
         IsFriends(friend1_id=charlie.user_id, friend2_id=emily.user_id, relationship=False, initiator_id=emily.user_id),
+        IsFriends(friend1_id=charlie.user_id, friend2_id=frank.user_id, relationship=True, initiator_id=frank.user_id)
     ])
 
     # --- TRIPS ---

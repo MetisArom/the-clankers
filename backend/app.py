@@ -547,79 +547,113 @@ def debug_regenerate_polyline(trip_id):
 # ============================================================
 
 @app.route('/party/invite', methods=['POST'])
+@jwt_required()
 def invite_to_party():
+    # Get current logged-in user from JWT
+    current_user_id = int(get_jwt_identity())
+
     data = request.get_json()
-    owner_id = data.get('owner_id')
     friend_id = data.get('friend_id')
     trip_id = data.get('trip_id')
 
-    if not all([owner_id, friend_id, trip_id]):
+    if not all([friend_id, trip_id]):
         return jsonify({"error": "Missing required fields"}), 400
-    if owner_id == friend_id:
+
+    if friend_id == current_user_id:
         return jsonify({"error": "Cannot invite yourself"}), 400
 
-    trip = Trip.query.get(trip_id)
+    trip = db.session.get(Trip, trip_id)
     if not trip:
         return jsonify({"error": "Trip not found"}), 404
-    if trip.owner_id != owner_id:
+
+    # ✅ Only allow if current user is the trip owner
+    if trip.owner_id != current_user_id:
         return jsonify({"error": "Only the trip owner can invite members"}), 403
 
-    # Only invite confirmed friends
-    f1, f2 = sorted([owner_id, friend_id])
+    # ✅ Ensure invitee is a confirmed friend
+    f1, f2 = sorted([current_user_id, friend_id])
     friendship = IsFriends.query.filter_by(friend1_id=f1, friend2_id=f2, relationship=True).first()
     if not friendship:
         return jsonify({"error": "You can only invite confirmed friends"}), 403
 
-    # Check existing membership
+    # ✅ Check if friend is already part of the trip
     existing = PartOf.query.filter_by(trip_id=trip_id, user_id=friend_id).first()
     if existing:
         return jsonify({"error": "User already in trip"}), 409
 
+    # ✅ Add invited member to the trip
     db.session.add(PartOf(trip_id=trip_id, user_id=friend_id))
     db.session.commit()
+
     return jsonify({"message": f"User {friend_id} invited to trip {trip_id}"}), 201
 
 
-@app.route('/party/remove', methods=['DELETE'])
+@app.route('/party/remove', methods=['POST'])
+@jwt_required()
 def remove_from_party():
+    # Get the current logged-in user ID from the JWT token
+    current_user_id = int(get_jwt_identity())
+
     data = request.get_json()
-    owner_id = data.get('owner_id')
     friend_id = data.get('friend_id')
     trip_id = data.get('trip_id')
 
-    if not all([owner_id, friend_id, trip_id]):
+    if not all([friend_id, trip_id]):
         return jsonify({"error": "Missing required fields"}), 400
 
-    trip = Trip.query.get(trip_id)
+    # Fetch the trip and verify ownership
+    trip = db.session.get(Trip, trip_id)
     if not trip:
         return jsonify({"error": "Trip not found"}), 404
-    if trip.owner_id != owner_id:
+
+    # ✅ Only the owner of the trip can remove members
+    if trip.owner_id != current_user_id:
         return jsonify({"error": "Only the trip owner can remove members"}), 403
 
+    # Check if the target user is part of the trip
     member = PartOf.query.filter_by(trip_id=trip_id, user_id=friend_id).first()
     if not member:
         return jsonify({"error": "User not part of this trip"}), 404
 
+    # ✅ Remove the member
     db.session.delete(member)
     db.session.commit()
-    return jsonify({"message": f"User {friend_id} removed from trip {trip_id}"}), 200
+
+    return jsonify({
+        "message": f"User {friend_id} removed from trip {trip_id}",
+        "removed_by": current_user_id
+    }), 200
 
 
 @app.route('/party/<int:trip_id>', methods=['GET'])
+@jwt_required()
 def get_party_members(trip_id):
-    trip = Trip.query.get(trip_id)
+    # Get the user ID from the JWT token
+    current_user_id = int(get_jwt_identity())
+
+    # Check if the trip exists
+    trip = db.session.get(Trip, trip_id)
     if not trip:
         return jsonify({"error": "Trip not found"}), 404
 
+    # Get all current members of this trip (excluding owner for now)
     members = PartOf.query.filter_by(trip_id=trip_id).all()
-    user_ids = [m.user_id for m in members] + [trip.owner_id]
+    member_ids = [m.user_id for m in members]
+
+    # ✅ Access Control: Only owner or members can view
+    if current_user_id != trip.owner_id and current_user_id not in member_ids:
+        return jsonify({"error": "You are not part of this trip"}), 403
+
+    # Combine owner + members
+    user_ids = member_ids + [trip.owner_id]
     users = User.query.filter(User.user_id.in_(user_ids)).all()
 
+    # ✅ Return the trip’s full member list
     return jsonify({
         "trip_id": trip_id,
         "owner_id": trip.owner_id,
         "members": [
-            {"user_id": u.user_id, "username": u.username, "fullname": u.fullname}
+            {"user_id": u.user_id, "username": u.username, "firstname": u.firstname, "lastname": u.lastname}
             for u in users
         ]
     }), 200
