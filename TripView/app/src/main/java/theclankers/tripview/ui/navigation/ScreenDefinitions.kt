@@ -1,11 +1,12 @@
 package theclankers.tripview.ui.navigation
 
-import android.R.attr.text
-import androidx.compose.foundation.layout.Column
+
+
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import theclankers.tripview.ui.components.ProfileComponent
 
 @Composable
 fun CameraScreen(navController: NavHostController) { Button(onClick = {
@@ -14,7 +15,9 @@ fun CameraScreen(navController: NavHostController) { Button(onClick = {
 @Composable
 fun FriendsScreen() { Text("Friends Screen") }
 @Composable
-fun ProfileScreen() { Text("Profile Screen") }
+fun ProfileScreen() {
+        ProfileComponent(1)
+}
 
 @Composable
 fun Camera2Screen() { Text("Camera 2 Screen") }

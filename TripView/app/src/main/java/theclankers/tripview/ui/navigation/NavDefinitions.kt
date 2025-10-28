@@ -17,6 +17,7 @@ import androidx.navigation.navArgument
 import kotlinx.serialization.json.Json
 import theclankers.tripview.classes.Stop
 import theclankers.tripview.ui.screens.DebugScreen
+import theclankers.tripview.ui.screens.FriendsListScreen
 import theclankers.tripview.ui.screens.NavigationScreen
 import theclankers.tripview.ui.screens.StopScreen
 import theclankers.tripview.ui.screens.TripCreationForm
@@ -31,7 +32,8 @@ fun TripViewNavGraph(navController: NavHostController) {
         //you must pass in navController to use navigateTo on that page.
         //composable("home") { HomeScreen(navController) }
         composable("camera") { CameraScreen(navController) }
-        composable("friends") { FriendsScreen() }
+        //composable("friends") { FriendsScreen() }
+        composable("friends") { FriendsListScreen() }
         composable("profile") { ProfileScreen() }
         composable("camera2") { Camera2Screen() }
         composable("navigation") { NavigationScreen(navController) }

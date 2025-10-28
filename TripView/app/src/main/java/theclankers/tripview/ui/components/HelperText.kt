@@ -42,6 +42,7 @@ fun HelperText(
 @Composable
 fun HelperText2(
     //for the title of each trip (ie. Trip 1, Trip 2 on Trips screen on Figma)
+    //also for friend name
     text: String,
     textColor: Color = Black,
     modifier: Modifier = Modifier
