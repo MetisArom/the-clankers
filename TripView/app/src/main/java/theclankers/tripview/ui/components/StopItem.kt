@@ -1,5 +1,28 @@
 package theclankers.tripview.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import theclankers.tripview.classes.Stop
+
 // For reference, look at the Trip 1 Screen, these are each of the stops
 
 
@@ -10,3 +33,44 @@ package theclankers.tripview.ui.components
 
 
 // Clicking this stop opens up the Stop in its own screen
+
+@Composable
+fun StopItem(
+    stop: Stop,
+    onStopClick: (Stop) -> Unit,
+    onCompletedChange: (Stop, Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .background(Color.White, RoundedCornerShape(8.dp))
+            .clickable { onStopClick(stop) } // opens stop detail screen
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(
+            checked = stop.completed,
+            onCheckedChange = { checked -> onCompletedChange(stop, checked) }
+        )
+
+        Spacer(Modifier.width(16.dp))
+
+        Icon(
+            imageVector = Icons.Default.Place,
+            contentDescription = "Stop icon",
+            tint = Color.Gray
+        )
+
+        Spacer(Modifier.width(16.dp))
+
+        Column {
+            Text(
+                text = stop.name,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
