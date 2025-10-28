@@ -32,5 +32,10 @@ fun DebugScreen(navController: NavHostController) {
             navigateTo(navController, "trips")
         })
         { Text("Go to TripCreation")  }
+
+        Button(onClick = {
+            navigateTo(navController, route = "sampleTrip")
+        })
+        { Text(text="Itinerary Debug") }
     }
 }

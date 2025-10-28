@@ -19,6 +19,7 @@ import theclankers.tripview.classes.Stop
 import theclankers.tripview.ui.screens.DebugScreen
 import theclankers.tripview.ui.screens.FriendsListScreen
 import theclankers.tripview.ui.screens.NavigationScreen
+import theclankers.tripview.ui.screens.SampleTrip
 import theclankers.tripview.ui.screens.StopScreen
 import theclankers.tripview.ui.screens.TripCreationForm
 import theclankers.tripview.ui.screens.TripsScreen
@@ -52,6 +53,7 @@ fun TripViewNavGraph(navController: NavHostController) {
             TripCreationForm(navController = navController)
         }
         composable("debug") { DebugScreen(navController) }
+        composable("sampleTrip"){ SampleTrip(navController) }
     }
 }
 
