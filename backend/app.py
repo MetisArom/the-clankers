@@ -366,11 +366,9 @@ def generate_ai_trip():
 
         data = request.get_json()
         destination = data.get("destination", "").strip()
-        duration_days = int(data.get("duration_days", 3))
         num_versions = int(data.get("num_versions", 1))
         trip_likes = data.get("likes", "")
         trip_dislikes = data.get("dislikes", "")
-        important_dates = data.get("important_dates", "")
 
         if not destination:
             return jsonify({"error": "Destination is required"}), 400
@@ -380,75 +378,69 @@ def generate_ai_trip():
 
         # 🧠 Gemini Prompt with ... markers for repetition clarity
         prompt = f"""
-        You are TripView AI — an expert travel planner that generates realistic, structured itineraries.
-        You must always output valid JSON strictly following the schema below.
+        You are TripView AI — an expert travel planner that generates realistic, structured trip itineraries.
 
         ---
 
         ### INPUT DETAILS
         Destination: {destination}
-        Trip Duration (days): {duration_days}
         Number of Versions: {num_versions}
 
         Trip-Specific Likes (HIGH PRIORITY): {trip_likes}
         Trip-Specific Dislikes (HIGH PRIORITY): {trip_dislikes}
         User-Level Likes (LOWER PRIORITY): {user_likes}
         User-Level Dislikes (LOWER PRIORITY): {user_dislikes}
-        Important Dates or Constraints: {important_dates}
 
         ---
 
         ### RULES
-        1. Generate {num_versions} complete trip versions for the specified number of days.
-        2. Each trip version must contain:
-        - Multiple days (equal to duration_days) or 1 day if duration_days == 1.
-        - Each day typically includes multiple activities (morning, afternoon, evening)
-        - If one activity naturally consumes a full day (e.g., full-day hike or long journey), only include that one, but keep the same JSON structure.
-        3. Each activity must contain at least one stop with:
-        - name, coordinates (lat, lng), stop_type, and description (1-2 short sentences)
+        1. Generate {num_versions} complete trip versions for the given destination.
+        2. Each trip version should include:
+        - A single list of **stops**.
+        - Each stop should represent a key experience, activity, or location aligned with the user's interests.
+        3. Each stop must include:
+        - name, coordinates (lat, lng), stop_type, and a short description (1-2 sentences). 
+        - Include details like how long the activity at the stop usually takes in the short description whenever applicable.
         4. Coordinates should be realistic near the destination.
-        5. Prioritize trip-specific likes/dislikes. Use user-level preferences only for additional context.
-        6. The JSON format must always remain identical and fully valid.
-        7. Do not add explanations, Markdown, or text outside JSON.
-        8. Try to make the trips as personalized as possible, using the various likes and dislikes.
+        5. Prioritize trip-specific likes and dislikes over user-level preferences. 
+        - Trip-specific preferences represent this trip's immediate mood and goals.
+        - User-level preferences represent general tendencies and should only influence filler ideas or extra variety when not in conflict.
+        6. If a trip-specific dislike conflicts with a user-level like, the trip-specific dislike **always overrides**. 
+        - Example: if the trip-specific dislike is “museums” but user-level like is “museums,” then exclude museums completely.
+        7. If a trip-specific like conflicts with a user-level dislike, the trip-specific like **always overrides**. 
+        - Example: if the trip-specific like is “beach activities” but user-level dislike is “beach,” then include beaches for this trip anyway.
+        8. You may use user-level likes only when they do not contradict trip-specific dislikes.
+        9. The JSON format must always remain identical, valid, and strictly follow the schema below.
+        10. Do not include Markdown, explanations, or any text outside the JSON block.
+        11. Always generate at least 5-10 stops depending on the duration and trip type.
+        12. Personalize every stop so it feels custom-tailored to the traveler's interests.
 
         ---
 
         ### STRICT JSON SCHEMA EXAMPLE
-        Use this as the structure and include "..." where multiple elements may appear.
+        Use this structure exactly and include "..." where multiple elements may appear.
         """
+
         schema_block = r"""
-        {
-        "trips": [
             {
-            "version": 1,
-            "destination": "string",
-            "duration_days": number,
-            "itinerary": [
+            "trips": [
                 {
-                "day": 1,
-                "activities": [
+                "version": 1,
+                "destination": "string",
+                "duration_days": number,
+                "stops": [
                     {
-                    "time_of_day": "morning",
-                    "stops": [
-                        {
-                        "name": "string",
-                        "coordinates": {"lat": number, "lng": number},
-                        "stop_type": "string",
-                        "description": "string"
-                        },
-                        ...
-                    ]
+                    "name": "string",
+                    "coordinates": {"lat": number, "lng": number},
+                    "stop_type": "string",
+                    "description": "string"
                     },
                     ...
                 ]
                 },
                 ...
             ]
-            },
-            ...
-        ]
-        }
+            }
         """
         final_prompt = prompt + "\n```json\n" + schema_block + "\n```\n\n" + f"Generate {num_versions} complete trip versions following this JSON schema exactly."
         ""
@@ -467,10 +459,7 @@ def generate_ai_trip():
             return jsonify({"error": "Gemini returned invalid JSON", "raw": response_text}), 500
 
         # ✅ Return AI-generated trip JSON
-        return jsonify({
-            "message": "AI-generated trip(s) created successfully!",
-            "generated_trips": itinerary_data
-        }), 200
+        return itinerary_data, 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
