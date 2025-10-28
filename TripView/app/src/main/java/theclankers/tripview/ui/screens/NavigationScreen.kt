@@ -38,6 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import theclankers.tripview.classes.Stop
+import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.navigation.navigateTo
 import theclankers.tripview.ui.utils.decodePolyline
 
@@ -62,6 +63,15 @@ fun NavigationScreen(navController: NavHostController) {
         Stop(3, 42.2656, -83.7487),  // Michigan Stadium
         Stop(4, 42.2804, -83.7495)  // Frita Batidos
     )
+
+    Row(
+        modifier = Modifier.fillMaxHeight().fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        HeaderText("Map Loading...")
+    }
+
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
