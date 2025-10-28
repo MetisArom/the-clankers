@@ -23,12 +23,12 @@ import theclankers.tripview.ui.navigation.navigateTo
 
 // for friends list
 @Composable
-fun ProfileComponent( user_id: Int, modifier: Modifier = Modifier){
+fun FriendProfileComponent( user_id: Int, navController: NavController, modifier: Modifier = Modifier){
     Row(Modifier.padding(20.dp)) {
         SimpleImage(R.drawable.profile_picture, modifier= Modifier.size(150.dp))
         Column(Modifier.padding(15.dp) ){
             // change to input based on the user ID from the backend
-            HeaderText("First Name Last Name")
+            HeaderText("Friend Name Last Name")
             Text( text="Username",  fontSize=20.sp)
         }
     }

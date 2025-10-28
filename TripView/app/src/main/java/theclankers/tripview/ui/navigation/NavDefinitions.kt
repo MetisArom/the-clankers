@@ -11,6 +11,7 @@ import kotlinx.serialization.json.Json
 import theclankers.tripview.classes.Stop
 import theclankers.tripview.ui.screens.DebugScreen
 import theclankers.tripview.ui.screens.EditProfileScreen
+import theclankers.tripview.ui.screens.FriendProfileScreen
 import theclankers.tripview.ui.screens.FriendsListScreen
 import theclankers.tripview.ui.screens.NavigationScreen
 import theclankers.tripview.ui.screens.StopScreen
@@ -27,9 +28,10 @@ fun TripViewNavGraph(navController: NavHostController) {
         //composable("home") { HomeScreen(navController) }
         composable("camera") { CameraScreen(navController) }
         //composable("friends") { FriendsScreen() }
-        composable("friends") { FriendsListScreen() }
+        composable("friends") { FriendsListScreen(navController) }
         composable("profile") { ProfileScreen(navController) }
         composable("editProfile") { EditProfileScreen(navController) }
+        composable("friendProfile") { FriendProfileScreen(navController) }
         composable("camera2") { Camera2Screen() }
         composable("navigation") { NavigationScreen(navController) }
         composable("stops/{stop}", arguments = listOf(navArgument("stop") { type = NavType.StringType })) {
