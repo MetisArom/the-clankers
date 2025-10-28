@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import theclankers.tripview.ui.components.BackButton
 import theclankers.tripview.ui.components.ProfilePageComponent
 import theclankers.tripview.ui.components.TripItem
 
@@ -33,6 +34,7 @@ fun ProfileScreen(navController: NavController) {
             .padding(16.dp)
             .verticalScroll(rememberScrollState())){
 
+            BackButton(navController)
             //example user
             ProfilePageComponent(1, navController)
 
