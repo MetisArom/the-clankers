@@ -55,7 +55,7 @@ fun TripViewNavGraph(navController: NavHostController) {
         }
         composable("debug") { DebugScreen(navController) }
         composable("sampleTrip"){ SampleTrip(navController) }
-        composable("editItinerary"){ EditItinerary(navController)}
+//        composable("editItinerary"){ EditItinerary(navController)}
 //        composable("ItineraryScreen"){ ItineraryScreen(navController, 1, viewModel)}
 //        composable("stop/{stopId}") { backStackEntry ->
 //            val stop = backStackEntry.arguments?.getInt("stopId") ?: 0

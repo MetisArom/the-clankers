@@ -13,11 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import theclankers.tripview.classes.Stop
 import theclankers.tripview.ui.components.StopItem
+import kotlin.collections.map
 
 @Composable
 fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: ItineraryViewModel) {
@@ -43,19 +45,18 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: It
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            items(stops) { stop ->
+            items(stops, key = { it.id }) { stop ->
                 StopItem(
                     stop = stop,
                     onStopClick = { clickedStop ->
-                        // navigate or show details
-                        println("Hello")
+                        println("clicked stop ${clickedStop.name}")
                     },
-                    onCompletedChange = { updatedStop, isChecked ->
-                        // update stop in list/viewmodel
-                        println("Stop ${updatedStop.name} marked as $isChecked")
+                    onCompletedChange = { stop, _ ->
+                        viewModel.toggleCompleted(stop)
                     }
                 )
             }
+
         }
     }
 }
