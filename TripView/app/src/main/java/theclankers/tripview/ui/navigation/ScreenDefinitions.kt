@@ -1,8 +1,5 @@
 package theclankers.tripview.ui.navigation
 
-import android.R.id.bold
-
-
 import androidx.compose.foundation.background
 import android.R.id.bold
 import androidx.compose.foundation.layout.Column
@@ -22,10 +19,7 @@ import androidx.navigation.NavHostController
 import theclankers.tripview.ui.components.ProfilePageComponent
 import theclankers.tripview.ui.components.TripItem
 
-@Composable
-fun HomeScreen(navController: NavHostController) { Button(onClick = {
-    navigateTo(navController, "navigation")
-}) { Text("Go to Navigation Screen")  } }
+
 @Composable
 fun CameraScreen(navController: NavHostController) { Button(onClick = {
     navigateTo(navController, "camera2")
