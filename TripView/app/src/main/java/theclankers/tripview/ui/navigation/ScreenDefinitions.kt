@@ -12,35 +12,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import theclankers.tripview.ui.theme.Purple80
-import theclankers.tripview.ui.theme.PurpleGrey80
 
 import theclankers.tripview.ui.components.ProfilePageComponent
 import theclankers.tripview.ui.components.TripItem
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
-    Column() {
-        Button(onClick = {
-            navigateTo(navController, "navigation")
-        }) { Text("Go to Navigation Screen") }
-
-        Text(text = "Your Trips", fontSize = 40.sp, color = Purple80)// need this darker
-        //Add component/button for create a trip
-        // add list component for user's trip
-        Text(text = "Friends' Trips", fontSize = 40.sp, color = Purple80)// need this darker
-        //add list component for friend trips
-        Text(text = "Completed Trips", fontSize = 40.sp, color = Purple80)// need this darker
-        // add list component for friend trips
-    }
-}
+fun HomeScreen(navController: NavHostController) { Button(onClick = {
+    navigateTo(navController, "navigation")
+}) { Text("Go to Navigation Screen")  } }
 @Composable
 fun CameraScreen(navController: NavHostController) { Button(onClick = {
     navigateTo(navController, "camera2")
