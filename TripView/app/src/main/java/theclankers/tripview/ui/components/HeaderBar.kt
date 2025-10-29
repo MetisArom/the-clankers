@@ -5,7 +5,9 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 // This component needs to somehow be fully integrated with the Navigation stack
 // It needs to always show the name of the screen at the top
@@ -19,7 +21,7 @@ fun Header(
     onBackClick: () -> Unit = {}
 ) {
     TopAppBar(
-        title = {"test" },
+        title = {"_" },
         navigationIcon = {
             if (showBackButton) {
                 IconButton(onClick = onBackClick) {
@@ -29,6 +31,9 @@ fun Header(
                     )
                 }
             } else null
-        }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color(0xFFF7F6F8)
+        ),
     )
 }
