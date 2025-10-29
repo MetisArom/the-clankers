@@ -11,11 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import theclankers.tripview.ui.components.FriendItem
 import theclankers.tripview.ui.components.HeaderText1
 
 @Composable
-fun FriendsListScreen() {
+fun FriendsListScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -24,8 +25,8 @@ fun FriendsListScreen() {
     ) {
         HeaderText1("Your Friends")
 
-        FriendItem(username = "janesmith67", displayName = "Jane Smith")
-        FriendItem(username = "ozzy67", displayName = "Ozzy Osbourne")
+        FriendItem(username = "janesmith67", displayName = "Jane Smith", onClick = { navController.navigate("friendProfile") })
+        FriendItem(username = "ozzy67", displayName = "Ozzy Osbourne", onClick = { navController.navigate("friendProfile")})
 
         Spacer(modifier = Modifier.height(16.dp))
         Text("Invite Requests", style = MaterialTheme.typography.titleLarge)
@@ -35,7 +36,8 @@ fun FriendsListScreen() {
             displayName = "Andrew",
             showActions = true,
             onAccept = { /* handle accept */ },
-            onDecline = { /* handle decline */ }
+            onDecline = { /* handle decline */ },
+            onClick = { navController.navigate("friendProfile")}
         )
     }
 }

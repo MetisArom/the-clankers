@@ -1,823 +1,178 @@
 {
-    "generated_trips": {
-        "trips": [
-            {
-                "destination": "California",
-                "duration_days": 5,
-                "itinerary": [
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 33.9416,
-                                            "lng": -118.4003
-                                        },
-                                        "description": "Arrive at LAX, pick up rental car, and head towards the coast for a relaxed start to the trip.",
-                                        "name": "Arrival at Los Angeles International Airport (LAX)",
-                                        "stop_type": "airport"
-                                    },
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.0119,
-                                            "lng": -118.4913
-                                        },
-                                        "description": "Settle into your hotel located near the Santa Monica beach, offering convenient access to local attractions.",
-                                        "name": "Check-in to Santa Monica Hotel",
-                                        "stop_type": "accommodation"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.0088,
-                                            "lng": -118.4975
-                                        },
-                                        "description": "Enjoy a gentle stroll along the iconic Santa Monica Pier and relax on the adjacent beach, avoiding the noisier sections.",
-                                        "name": "Santa Monica Pier & Beach Walk",
-                                        "stop_type": "landmark"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.015,
-                                            "lng": -118.4905
-                                        },
-                                        "description": "Savor a peaceful dinner at a restaurant with an outdoor patio or a quieter ambiance away from bustling crowds.",
-                                        "name": "Dinner at a quiet Santa Monica restaurant",
-                                        "stop_type": "restaurant"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 1
+    "trips": [
+        {
+            "destination": "California",
+            "duration_days": 4,
+            "stops": [
+                {
+                    "coordinates": {
+                        "lat": 37.4853,
+                        "lng": -122.0799
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.0535,
-                                            "lng": -118.5262
-                                        },
-                                        "description": "Embark on a tranquil hike offering scenic views of the city and ocean, a quiet escape from urban noise.",
-                                        "name": "Morning Hike in Will Rogers State Historic Park",
-                                        "stop_type": "park"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.0381,
-                                            "lng": -118.7798
-                                        },
-                                        "description": "Enjoy a leisurely drive along the PCH, stopping at picturesque viewpoints and quiet beaches in Malibu.",
-                                        "name": "Pacific Coast Highway (PCH) Drive to Malibu",
-                                        "stop_type": "scenic_drive"
-                                    },
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.0205,
-                                            "lng": -118.8105
-                                        },
-                                        "description": "Unwind at Zuma Beach, a less crowded and more serene alternative to some of the busier Southern California beaches.",
-                                        "name": "Zuma Beach Relaxation",
-                                        "stop_type": "beach"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.0416,
-                                            "lng": -118.6874
-                                        },
-                                        "description": "Experience a peaceful dinner with stunning ocean views in Malibu, focusing on fresh, local cuisine.",
-                                        "name": "Sunset Dining in Malibu",
-                                        "stop_type": "restaurant"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 2
+                    "description": "Dive into the origins of computing with a quiet, immersive exploration of hardware and software evolution. Expect to spend 2-3 hours absorbing the history that paved the way for modern coding.",
+                    "name": "Computer History Museum",
+                    "stop_type": "Museum"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.4275,
+                        "lng": -122.1697
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 36.2731,
-                                            "lng": -121.8415
-                                        },
-                                        "description": "Begin a scenic drive up the iconic Highway 1 towards the majestic Big Sur coastline, a journey of natural beauty.",
-                                        "name": "Drive North to Big Sur",
-                                        "stop_type": "scenic_drive"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 36.3712,
-                                            "lng": -121.8229
-                                        },
-                                        "description": "Stop for photos at Bixby Bridge and enjoy a quiet walk or short hike in Pfeiffer Big Sur State Park amidst redwoods.",
-                                        "name": "Bixby Bridge & Pfeiffer Big Sur State Park",
-                                        "stop_type": "landmark"
-                                    },
-                                    {
-                                        "coordinates": {
-                                            "lat": 36.1472,
-                                            "lng": -121.6705
-                                        },
-                                        "description": "Witness the stunning McWay Falls cascading onto the beach, a truly serene and picturesque natural wonder.",
-                                        "name": "Julia Pfeiffer Burns State Park (McWay Falls)",
-                                        "stop_type": "park"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 36.5982,
-                                            "lng": -121.8947
-                                        },
-                                        "description": "Check into your accommodation in the charming and relatively quiet towns of Monterey or Carmel.",
-                                        "name": "Stay in Monterey/Carmel-by-the-Sea",
-                                        "stop_type": "accommodation"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 3
+                    "description": "Enjoy a contemplative walk through the serene, intellectually stimulating campus, perfect for quiet reflection and inspiration. Allocate 1-2 hours to explore the architecture and peaceful courtyards.",
+                    "name": "Stanford University Campus",
+                    "stop_type": "University"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.3,
+                        "lng": -122.0177
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 36.6177,
-                                            "lng": -121.8998
-                                        },
-                                        "description": "Explore the world-renowned Monterey Bay Aquarium, an engaging and educational experience with a calm atmosphere.",
-                                        "name": "Monterey Bay Aquarium",
-                                        "stop_type": "aquarium"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 36.6174,
-                                            "lng": -121.8972
-                                        },
-                                        "description": "Take a leisurely walk along Cannery Row, exploring its shops and history, which can be quieter away from peak times.",
-                                        "name": "Cannery Row Walk",
-                                        "stop_type": "historic_district"
-                                    },
-                                    {
-                                        "coordinates": {
-                                            "lat": 36.5786,
-                                            "lng": -121.9482
-                                        },
-                                        "description": "Drive the famous 17-Mile Drive, enjoying stunning coastal views, iconic cypress trees, and tranquil golf courses.",
-                                        "name": "17-Mile Drive (Pebble Beach)",
-                                        "stop_type": "scenic_drive"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 36.5552,
-                                            "lng": -121.9234
-                                        },
-                                        "description": "Dine in the charming, village-like atmosphere of Carmel, known for its quaint streets and peaceful eateries.",
-                                        "name": "Dinner in Carmel-by-the-Sea",
-                                        "stop_type": "restaurant"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 4
+                    "description": "Observe the innovative design and technology at Apple's campus from the dedicated visitor center, a generally calm environment for tech enthusiasts. This visit typically takes about 1 hour.",
+                    "name": "Apple Park Visitor Center",
+                    "stop_type": "Tech Campus"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.4287,
+                        "lng": -122.0838
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 36.5552,
-                                            "lng": -121.9234
-                                        },
-                                        "description": "Enjoy a final peaceful morning exploring Carmel's art galleries, unique shops, or a quiet walk on Carmel Beach.",
-                                        "name": "Morning in Carmel-by-the-Sea",
-                                        "stop_type": "town"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.6213,
-                                            "lng": -122.379
-                                        },
-                                        "description": "Commence the drive north towards SFO for your departure, allowing ample time for traffic and check-in.",
-                                        "name": "Drive to San Francisco International Airport (SFO)",
-                                        "stop_type": "airport"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.6213,
-                                            "lng": -122.379
-                                        },
-                                        "description": "Board your flight from SFO, concluding your tranquil coastal California adventure.",
-                                        "name": "Departure from San Francisco International Airport (SFO)",
-                                        "stop_type": "airport"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 5
-                    }
-                ],
-                "version": 1
-            },
-            {
-                "destination": "California",
-                "duration_days": 5,
-                "itinerary": [
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.6213,
-                                            "lng": -122.379
-                                        },
-                                        "description": "Arrive at SFO, pick up your rental car, and head into the city of San Francisco.",
-                                        "name": "Arrival at San Francisco International Airport (SFO)",
-                                        "stop_type": "airport"
-                                    },
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.7858,
-                                            "lng": -122.4064
-                                        },
-                                        "description": "Settle into your hotel in a central San Francisco location, providing a good base for exploration.",
-                                        "name": "Check-in to San Francisco Hotel",
-                                        "stop_type": "accommodation"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.7694,
-                                            "lng": -122.4862
-                                        },
-                                        "description": "Explore the vast Golden Gate Park, focusing on quieter areas like the Japanese Tea Garden or the Botanical Garden.",
-                                        "name": "Golden Gate Park Exploration",
-                                        "stop_type": "park"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.756,
-                                            "lng": -122.493
-                                        },
-                                        "description": "Enjoy a relaxed dinner in San Francisco's Sunset District, known for its diverse and often less noisy eateries.",
-                                        "name": "Dinner in the Sunset District",
-                                        "stop_type": "restaurant"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 1
+                    "description": "Find tranquility by the lake, an ideal quiet spot for a coding break or to simply gather thoughts amidst natural beauty. Plan for 1-2 hours of peaceful solitude.",
+                    "name": "Shoreline Lake",
+                    "stop_type": "Park"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.422,
+                        "lng": -122.0841
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.4144,
-                                            "lng": -122.0772
-                                        },
-                                        "description": "Delve into the history of computing and coding at this fascinating museum, a perfect reflection of 'coding' interest.",
-                                        "name": "Computer History Museum (Mountain View)",
-                                        "stop_type": "museum"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.3875,
-                                            "lng": -121.9632
-                                        },
-                                        "description": "Visit Intel's corporate museum to learn about microprocessors and the evolution of technology, resonating with a coding interest.",
-                                        "name": "Intel Museum (Santa Clara)",
-                                        "stop_type": "museum"
-                                    },
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.4275,
-                                            "lng": -122.1697
-                                        },
-                                        "description": "Stroll through the beautiful and intellectual campus of Stanford, a hub for innovation and coding talent.",
-                                        "name": "Stanford University Campus Walk",
-                                        "stop_type": "university"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.4419,
-                                            "lng": -122.143
-                                        },
-                                        "description": "Dine in Palo Alto, a vibrant yet manageable city in Silicon Valley, offering diverse culinary options.",
-                                        "name": "Dinner in Palo Alto",
-                                        "stop_type": "restaurant"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 2
+                    "description": "A quick, quiet drive-by or exterior view of Google's iconic campus, offering a glimpse into one of the world's leading tech environments without the noise of a bustling interior tour. This is a brief stop, around 30 minutes.",
+                    "name": "Googleplex (Exterior View)",
+                    "stop_type": "Tech Campus"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.3861,
+                        "lng": -122.0838
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.9063,
-                                            "lng": -122.576
-                                        },
-                                        "description": "Escape to the serene redwood forests of Muir Woods, a peaceful natural environment away from city noise.",
-                                        "name": "Muir Woods National Monument",
-                                        "stop_type": "park"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.859,
-                                            "lng": -122.485
-                                        },
-                                        "description": "Enjoy the charming waterfront town of Sausalito, offering stunning views of San Francisco and a quieter atmosphere.",
-                                        "name": "Sausalito Waterfront Stroll",
-                                        "stop_type": "town"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.7997,
-                                            "lng": -122.4082
-                                        },
-                                        "description": "Savor authentic Italian cuisine in North Beach, choosing a cozy spot that offers a more intimate dining experience.",
-                                        "name": "Dinner in North Beach, San Francisco",
-                                        "stop_type": "restaurant"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 3
+                    "description": "Settle into a quiet corner with a coffee, perfect for a focused coding session or brainstorming new project ideas. Allow 1-2 hours for a relaxed, productive stop.",
+                    "name": "Red Rock Coffee",
+                    "stop_type": "Cafe"
+                }
+            ],
+            "version": 1
+        },
+        {
+            "destination": "California",
+            "duration_days": 4,
+            "stops": [
+                {
+                    "coordinates": {
+                        "lat": 37.7699,
+                        "lng": -122.4661
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.8021,
-                                            "lng": -122.4187
-                                        },
-                                        "description": "Experience a classic San Francisco cable car ride, descending the iconic Lombard Street for unique city views.",
-                                        "name": "Cable Car Ride & Lombard Street",
-                                        "stop_type": "landmark"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.7956,
-                                            "lng": -122.3934
-                                        },
-                                        "description": "Explore the Ferry Building, a gourmet food hall with artisanal products, less noisy than other tourist hotspots.",
-                                        "name": "The Ferry Building Marketplace",
-                                        "stop_type": "marketplace"
-                                    },
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.7981,
-                                            "lng": -122.3932
-                                        },
-                                        "description": "Enjoy a peaceful walk along The Embarcadero, taking in views of the Bay Bridge and the bay itself.",
-                                        "name": "Walk along The Embarcadero",
-                                        "stop_type": "waterfront"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.8016,
-                                            "lng": -122.3987
-                                        },
-                                        "description": "Attend an 'After Dark' event at the Exploratorium, offering a quieter, adult-focused experience of science and art.",
-                                        "name": "Exploratorium (Adults Only Night)",
-                                        "stop_type": "museum"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 4
+                    "description": "Explore the wonders of nature and science in a largely calm environment, with exhibits like the rainforest dome and aquarium inspiring quiet contemplation. Dedicate 2-3 hours to fully appreciate the varied collections.",
+                    "name": "California Academy of Sciences",
+                    "stop_type": "Museum"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.9063,
+                        "lng": -122.5714
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.8267,
-                                            "lng": -122.423
-                                        },
-                                        "description": "Take a ferry to Alcatraz Island for a historical tour, which offers a surprisingly quiet and contemplative experience.",
-                                        "name": "Alcatraz Island Tour",
-                                        "stop_type": "historic_site"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.808,
-                                            "lng": -122.4177
-                                        },
-                                        "description": "Have a relaxed lunch in Fisherman's Wharf, choosing a restaurant away from the main bustling areas for a quieter meal.",
-                                        "name": "Relaxed Lunch in Fisherman's Wharf (avoiding crowds)",
-                                        "stop_type": "restaurant"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 37.6213,
-                                            "lng": -122.379
-                                        },
-                                        "description": "Head to SFO for your departure, reflecting on a trip that blended technology, nature, and quieter urban exploration.",
-                                        "name": "Departure from San Francisco International Airport (SFO)",
-                                        "stop_type": "airport"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 5
-                    }
-                ],
-                "version": 2
-            },
-            {
-                "destination": "California",
-                "duration_days": 5,
-                "itinerary": [
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 32.7338,
-                                            "lng": -117.1933
-                                        },
-                                        "description": "Arrive in sunny San Diego, pick up your rental car, and begin your Southern California adventure.",
-                                        "name": "Arrival at San Diego International Airport (SAN)",
-                                        "stop_type": "airport"
-                                    },
-                                    {
-                                        "coordinates": {
-                                            "lat": 32.7157,
-                                            "lng": -117.1611
-                                        },
-                                        "description": "Settle into your hotel, ideally located to explore San Diego's vibrant areas with options for quieter evenings.",
-                                        "name": "Check-in to San Diego Hotel (Gaslamp Quarter or nearby)",
-                                        "stop_type": "accommodation"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 32.7788,
-                                            "lng": -117.1477
-                                        },
-                                        "description": "Explore the diverse museums and tranquil gardens of Balboa Park, offering cultural enrichment without excessive noise.",
-                                        "name": "Balboa Park Museums & Gardens",
-                                        "stop_type": "park"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 32.7214,
-                                            "lng": -117.1666
-                                        },
-                                        "description": "Enjoy a delightful dinner in San Diego's charming Little Italy, selecting a restaurant with a cozy atmosphere.",
-                                        "name": "Dinner in Little Italy",
-                                        "stop_type": "restaurant"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 1
+                    "description": "Immerse yourself in the profound quiet of ancient redwood forests, an unparalleled setting for clearing the mind and finding natural inspiration. Plan for 2-3 hours to hike and absorb the majestic scenery.",
+                    "name": "Muir Woods National Monument",
+                    "stop_type": "National Monument"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.8199,
+                        "lng": -122.4783
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 32.8488,
-                                            "lng": -117.2727
-                                        },
-                                        "description": "Observe seals and sea lions at La Jolla Cove and the Children's Pool, a natural and generally calm experience.",
-                                        "name": "La Jolla Cove & Children's Pool",
-                                        "stop_type": "beach"
-                                    },
-                                    {
-                                        "coordinates": {
-                                            "lat": 32.9328,
-                                            "lng": -117.252
-                                        },
-                                        "description": "Embark on a peaceful hike through Torrey Pines, enjoying stunning coastal views and the quiet of nature.",
-                                        "name": "Torrey Pines State Natural Reserve Hike",
-                                        "stop_type": "park"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 32.9566,
-                                            "lng": -117.2657
-                                        },
-                                        "description": "Stroll through the upscale Del Mar Plaza and enjoy the scenic, often less crowded Del Mar Beach.",
-                                        "name": "Del Mar Plaza & Beach",
-                                        "stop_type": "shopping_center"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 32.8473,
-                                            "lng": -117.2721
-                                        },
-                                        "description": "Dine at a restaurant in La Jolla offering beautiful sunset views over the Pacific Ocean, providing a serene ambiance.",
-                                        "name": "Sunset Dinner in La Jolla",
-                                        "stop_type": "restaurant"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 2
+                    "description": "Enjoy a contemplative walk across the engineering marvel of the Golden Gate Bridge, focusing on the expansive views and the serene sounds of the bay (best during off-peak hours). This walk usually takes 1.5-2 hours.",
+                    "name": "Golden Gate Bridge Walk",
+                    "stop_type": "Landmark"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.8716,
+                        "lng": -122.2585
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 33.9416,
-                                            "lng": -118.4003
-                                        },
-                                        "description": "Begin the scenic drive from San Diego up to the diverse metropolis of Los Angeles.",
-                                        "name": "Drive North to Los Angeles",
-                                        "stop_type": "road_trip"
-                                    },
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.0999,
-                                            "lng": -118.3377
-                                        },
-                                        "description": "Settle into your hotel in Hollywood or West Hollywood, a central location for exploring the city.",
-                                        "name": "Check-in to Los Angeles Hotel (Hollywood or West Hollywood)",
-                                        "stop_type": "accommodation"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.1185,
-                                            "lng": -118.3004
-                                        },
-                                        "description": "Visit the Griffith Observatory for panoramic city views and celestial exhibits, a stimulating yet generally calm environment.",
-                                        "name": "Griffith Observatory & Park",
-                                        "stop_type": "observatory"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.1066,
-                                            "lng": -118.2831
-                                        },
-                                        "description": "Enjoy dinner in the charming Los Feliz neighborhood, known for its relaxed vibe and local eateries.",
-                                        "name": "Dinner in Los Feliz",
-                                        "stop_type": "restaurant"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 3
+                    "description": "Stroll through the historic and academically rich campus, finding quiet spots for reflection or to draw inspiration from its innovative spirit. Allow 1-2 hours for a peaceful exploration.",
+                    "name": "University of California, Berkeley Campus",
+                    "stop_type": "University"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.871,
+                        "lng": -122.26
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.0782,
-                                            "lng": -118.474
-                                        },
-                                        "description": "Explore the art, architecture, and gardens of the Getty Center, an inspiring and peaceful cultural experience.",
-                                        "name": "The Getty Center",
-                                        "stop_type": "museum"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.107,
-                                            "lng": -118.3619
-                                        },
-                                        "description": "Take a refreshing hike in Runyon Canyon, offering great views of the city and a chance to get some exercise in nature.",
-                                        "name": "Hike in Runyon Canyon Park",
-                                        "stop_type": "park"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.0901,
-                                            "lng": -118.3756
-                                        },
-                                        "description": "Indulge in a diverse culinary experience in West Hollywood, selecting a restaurant with a refined and inviting ambiance.",
-                                        "name": "West Hollywood Dining",
-                                        "stop_type": "restaurant"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 4
+                    "description": "Discover a quiet independent bookstore in Berkeley, a perfect sanctuary for browsing technical books or jotting down coding ideas in a peaceful setting. Spend 1-2 hours enjoying the calm atmosphere.",
+                    "name": "North Light Books (Quiet Bookstore)",
+                    "stop_type": "Bookstore"
+                }
+            ],
+            "version": 2
+        },
+        {
+            "destination": "California",
+            "duration_days": 5,
+            "stops": [
+                {
+                    "coordinates": {
+                        "lat": 34.1185,
+                        "lng": -118.3004
                     },
-                    {
-                        "activities": [
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 33.9912,
-                                            "lng": -118.4682
-                                        },
-                                        "description": "Enjoy a peaceful morning stroll through the scenic Venice Canals, a quiet escape from the bustling beach areas.",
-                                        "name": "Venice Canals Walk",
-                                        "stop_type": "landmark"
-                                    }
-                                ],
-                                "time_of_day": "morning"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 34.0093,
-                                            "lng": -118.4975
-                                        },
-                                        "description": "Experience the vibrant energy of Santa Monica Pier and browse the shops on Third Street Promenade, finding quieter spots.",
-                                        "name": "Santa Monica Pier & Third Street Promenade (shopping)",
-                                        "stop_type": "shopping_district"
-                                    }
-                                ],
-                                "time_of_day": "afternoon"
-                            },
-                            {
-                                "stops": [
-                                    {
-                                        "coordinates": {
-                                            "lat": 33.9416,
-                                            "lng": -118.4003
-                                        },
-                                        "description": "Head to LAX for your departure, concluding your varied Southern California exploration.",
-                                        "name": "Departure from Los Angeles International Airport (LAX)",
-                                        "stop_type": "airport"
-                                    }
-                                ],
-                                "time_of_day": "evening"
-                            }
-                        ],
-                        "day": 5
-                    }
-                ],
-                "version": 3
-            }
-        ]
-    },
-    "message": "AI-generated trip(s) created successfully!"
+                    "description": "Explore celestial exhibits and enjoy expansive, relatively quiet views of the city and cosmos, particularly during off-peak hours. This scientific exploration typically takes 2-3 hours.",
+                    "name": "Griffith Observatory",
+                    "stop_type": "Observatory"
+                },
+                {
+                    "coordinates": {
+                        "lat": 34.1989,
+                        "lng": -118.1738
+                    },
+                    "description": "Delve into space exploration and robotics at this intellectually stimulating and often quiet environment (check for public tour availability). A visit usually lasts 1-2 hours.",
+                    "name": "Jet Propulsion Laboratory (JPL) Visitor Center",
+                    "stop_type": "Science Center"
+                },
+                {
+                    "coordinates": {
+                        "lat": 34.1278,
+                        "lng": -118.1147
+                    },
+                    "description": "Wander through diverse, tranquil gardens and quiet library exhibits, offering abundant opportunities for peaceful contemplation and inspiration. Plan 3-4 hours to fully experience the extensive grounds.",
+                    "name": "The Huntington Library, Art Museum, and Botanical Gardens",
+                    "stop_type": "Botanical Garden"
+                },
+                {
+                    "coordinates": {
+                        "lat": 34.0089,
+                        "lng": -118.497
+                    },
+                    "description": "Enjoy a contemplative walk along the quiet Santa Monica beach during the early morning hours, observing the ocean and gathering thoughts without the typical crowds and noise. Dedicate 1-2 hours to this serene experience.",
+                    "name": "Santa Monica Beach (Early Morning)",
+                    "stop_type": "Beach"
+                },
+                {
+                    "coordinates": {
+                        "lat": 34.0689,
+                        "lng": -118.4452
+                    },
+                    "description": "Stroll through the beautiful and architecturally inspiring campus, soaking in the academic atmosphere and finding quiet spots for reflection. A peaceful exploration takes about 1-2 hours.",
+                    "name": "University of California, Los Angeles (UCLA) Campus",
+                    "stop_type": "University"
+                },
+                {
+                    "coordinates": {
+                        "lat": 34.085,
+                        "lng": -118.252
+                    },
+                    "description": "Find a quiet, elevated spot with city views within Elysian Park, perfect for contemplation, light reading, or simply enjoying the peaceful expanse. Allocate 1-2 hours for relaxation.",
+                    "name": "Elysian Park",
+                    "stop_type": "Park"
+                }
+            ],
+            "version": 3
+        }
+    ]
 }

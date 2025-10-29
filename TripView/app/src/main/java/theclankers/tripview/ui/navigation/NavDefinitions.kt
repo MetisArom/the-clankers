@@ -1,11 +1,5 @@
 package theclankers.tripview.ui.navigation
 
-import android.net.http.SslCertificate.restoreState
-import android.net.http.SslCertificate.saveState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,6 +13,8 @@ import kotlinx.serialization.json.Json
 import theclankers.tripview.classes.Stop
 import theclankers.tripview.ui.screens.DebugScreen
 import theclankers.tripview.ui.screens.EditItinerary
+import theclankers.tripview.ui.screens.EditProfileScreen
+import theclankers.tripview.ui.screens.FriendProfileScreen
 import theclankers.tripview.ui.screens.FriendsListScreen
 import theclankers.tripview.ui.screens.ItineraryScreen
 import theclankers.tripview.ui.screens.NavigationScreen
@@ -37,8 +33,10 @@ fun TripViewNavGraph(navController: NavHostController) {
         //composable("home") { HomeScreen(navController) }
         composable("camera") { CameraScreen(navController) }
         //composable("friends") { FriendsScreen() }
-        composable("friends") { FriendsListScreen() }
-        composable("profile") { ProfileScreen() }
+        composable("friends") { FriendsListScreen(navController) }
+        composable("profile") { ProfileScreen(navController) }
+        composable("editProfile") { EditProfileScreen(navController) }
+        composable("friendProfile") { FriendProfileScreen(navController) }
         composable("camera2") { Camera2Screen() }
         composable("navigation") { NavigationScreen(navController) }
         composable("stops/{stop}", arguments = listOf(navArgument("stop") { type = NavType.StringType })) {
