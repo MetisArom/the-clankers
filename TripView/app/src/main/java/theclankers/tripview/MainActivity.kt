@@ -13,17 +13,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import theclankers.tripview.ui.components.Header
 import theclankers.tripview.ui.components.SampleButton
 import theclankers.tripview.ui.navigation.TripViewNavGraph
 import theclankers.tripview.ui.navigation.TripViewNavigationBar
 import theclankers.tripview.ui.theme.TripViewTheme
+import java.lang.ProcessBuilder.Redirect.to
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +48,23 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val navController = rememberNavController()
     val activityVM: TripViewViewModel = viewModel(LocalActivity.current as ComponentActivity)
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = currentBackStackEntry?.destination?.route
+
+    val (title, showBack) = when (currentDestination) {
+        //To disable the back button for a specific page do it like this:
+        //EX: "profile" -> "profile" to false
+        "trips" -> "trips" to false
+        else -> "App" to true
+    }
 
     Scaffold(
+        topBar = {
+            Header(
+                showBackButton = showBack,
+                onBackClick = { navController.popBackStack() }
+            )
+        },
         bottomBar = {
             if (activityVM.showNavbar) {
                 TripViewNavigationBar(navController)

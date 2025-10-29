@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import theclankers.tripview.ui.components.BackButton
 import theclankers.tripview.ui.components.FriendProfileComponent
 import theclankers.tripview.ui.components.TripItem
 
@@ -24,7 +23,6 @@ fun FriendProfileScreen(navController: NavController) {
         .verticalScroll(rememberScrollState())){
 
 
-        BackButton(navController)
         //example user
         FriendProfileComponent(1, navController)
 
