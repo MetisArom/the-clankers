@@ -24,7 +24,7 @@ class ItineraryViewModel : ViewModel() {
             try {
                 val request = Request.Builder()
 //                    should be changed to wherever server is running
-                    .url("http://127.0.0.1:5000/trips/$tripId/stops")
+                    .url("http://127.0.0.1:8080/trips/$tripId/")
                     .get()
                     .build()
 

@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import theclankers.tripview.classes.Stop
 import theclankers.tripview.ui.components.StopItem
-import java.nio.file.Files.walk
 
 @Composable
 fun SampleTrip(navController: NavHostController) {
@@ -31,7 +30,6 @@ fun SampleTrip(navController: NavHostController) {
         Stop(3, 37.8267, -122.4230, "Afternoon tour of the historic prison", completed = false),
         Stop(3, 37.8267, -122.4230, "Afternoon tour of the historic prison", completed = false),
         Stop(3, 37.8267, -122.4230, "Afternoon tour of the historic prison", completed = false)
-
 
         )
 
