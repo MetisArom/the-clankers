@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Trip(
-    val trip_id: Int,
-    val owner_id: Int,
+    val tripId: Int,
+    val ownerId: Int,
     val status: String
 )

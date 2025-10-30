@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Stop(
-    val stop_id: Int,
-    val trip_id: Int,
+    val stopId: Int,
+    val tripId: Int,
     val latitude: Double,
     val longitude: Double,
     val description: String,
