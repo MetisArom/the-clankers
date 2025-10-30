@@ -50,6 +50,7 @@ kotlin {
     }
 }
 
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -74,4 +75,5 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("com.squareup.okhttp3:okhttp:5.1.0")
+
 }
