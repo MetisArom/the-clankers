@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import theclankers.tripview.R
 import theclankers.tripview.ui.navigation.navigateTo
+import theclankers.tripview.ui.viewmodels.useUser
 
 // Input: user_id
 
@@ -23,7 +24,7 @@ import theclankers.tripview.ui.navigation.navigateTo
 
 // for friends list
 @Composable
-fun FriendProfileComponent( user_id: Int, navController: NavController, modifier: Modifier = Modifier){
+fun FriendProfileComponent( userId: Int, navController: NavController, modifier: Modifier = Modifier){
     Row(Modifier.padding(20.dp)) {
         SimpleImage(R.drawable.profile_picture, modifier= Modifier.size(150.dp))
         Column(Modifier.padding(15.dp) ){
@@ -36,13 +37,16 @@ fun FriendProfileComponent( user_id: Int, navController: NavController, modifier
 
 //for the profile page
 @Composable
-fun ProfilePageComponent( user_id: Int, navController: NavController, modifier: Modifier = Modifier){
+fun ProfilePageComponent( userId: Int, navController: NavController, modifier: Modifier = Modifier){
+    val userState = useUser("not implemented yet", userId)
+    val user = userState.value
+
     Row(Modifier.padding(20.dp)) {
         SimpleImage(R.drawable.profile_picture, modifier= Modifier.size(150.dp))
         Column(Modifier.padding(15.dp) ){
             // change to input based on the user ID from the backend
-            HeaderText("First Name Last Name")
-            Text( text="Username",  fontSize=20.sp, modifier= Modifier.padding(bottom=10.dp))
+            HeaderText("${user?.firstName ?: ""} ${user?.lastName ?: ""}")
+            Text( text= user?.username ?: "",  fontSize=20.sp, modifier= Modifier.padding(bottom=10.dp))
 
             //Edit profile button
             Button(

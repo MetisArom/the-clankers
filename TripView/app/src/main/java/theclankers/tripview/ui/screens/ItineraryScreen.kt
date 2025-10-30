@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import theclankers.tripview.classes.Stop
+import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.StopItem
 import kotlin.collections.map
 
@@ -60,7 +60,7 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: It
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                items(stops, key = { it.id }) { stop ->
+                items(stops, key = { it.stopId }) { stop ->
                     StopItem(
                         stop = stop,
                         onStopClick = { clickedStop -> // add function to go to stop screen

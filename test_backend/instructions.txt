@@ -1,0 +1,11 @@
+Hey Ethan made this for testing front-end routes, there's no database connected
+to this backend, I just made it to serve hard-coded data from an endpoint.
+I'm just hosting it locally or using ngrok to make a temporary
+development endpoint. You can ignore it!
+
+to use:
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 app.py
+ngrok http 5000

@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import theclankers.tripview.classes.Stop
+import theclankers.tripview.data.models.Stop
 
 class ItineraryViewModel : ViewModel() {
 
@@ -50,7 +50,7 @@ class ItineraryViewModel : ViewModel() {
     fun toggleCompleted(stop: Stop) {
         _stops.update { currentList ->
             currentList.map { currentStop ->
-                if (currentStop.id == stop.id) currentStop.copy(completed = !currentStop.completed)
+                if (currentStop.stopId == stop.stopId) currentStop.copy(completed = !currentStop.completed)
                 else currentStop
             }
         }

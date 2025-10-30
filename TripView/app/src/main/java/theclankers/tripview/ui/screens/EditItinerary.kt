@@ -21,8 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import org.burnoutcrew.reorderable.*
-import theclankers.tripview.classes.Stop
+import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.StopItem
 
 @Composable
@@ -31,70 +30,19 @@ fun EditItinerary(navController: NavHostController) {
     var stops by remember {
         mutableStateOf(
             listOf(
-                Stop(1, 37.8199, -122.4783, "Morning walk across the bridge", completed = true),
-                Stop(2, 37.8080, -122.4177, "Seafood lunch by the bay", completed = false),
-                Stop(
-                    3,
-                    37.8267,
-                    -122.4230,
-                    "Afternoon tour of the historic prison",
-                    completed = false
-                ),
-                Stop(4, 37.7544, -122.4477, "Sunset view over San Francisco", completed = true),
-                Stop(
-                    5,
-                    37.8267,
-                    -122.4230,
-                    "Afternoon tour of the historic prison",
-                    completed = false
-                ),
-                Stop(
-                    6,
-                    37.8267,
-                    -122.4230,
-                    "Afternoon tour of the historic prison",
-                    completed = false
-                ),
-                Stop(
-                    7,
-                    37.8267,
-                    -122.4230,
-                    "Afternoon tour of the historic prison",
-                    completed = false
-                ),
-                Stop(
-                    8,
-                    37.8267,
-                    -122.4230,
-                    "Afternoon tour of the historic prison",
-                    completed = false
-                ),
-                Stop(
-                    9,
-                    37.8267,
-                    -122.4230,
-                    "Afternoon tour of the historic prison",
-                    completed = false
-                ),
-                Stop(
-                    10,
-                    37.8267,
-                    -122.4230,
-                    "Afternoon tour of the historic prison",
-                    completed = false
-                )
-
+                Stop(1, 37.8199, -122.4783, 0, "Morning walk across the bridge", "Bridge", 0, completed = true, "test"),
+                Stop(2, 37.8080, -122.4177, 0, "Seafood lunch by the bay", "Bay", 0, completed = false, "test"),
+                Stop(3,37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
+                Stop(4, 37.7544, -122.4477, 0, "Sunset view over San Francisco", "Mountain", 0, completed = true, "test"),
+                Stop(5, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
+                Stop(6, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
+                Stop(7, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
+                Stop(8, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
+                Stop(9, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
+                Stop(10, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test")
             )
         )
     }
-
-    val reorderState = rememberReorderableLazyListState(
-        onMove = { from, to ->
-            stops = stops.toMutableList().apply {
-                add(to.index, removeAt(from.index))
-            }
-        }
-    )
 
     Scaffold(
         topBar = {
@@ -117,35 +65,30 @@ fun EditItinerary(navController: NavHostController) {
                 .padding(padding)
         ) {
             LazyColumn(
-                state = reorderState.listState,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
-                    .reorderable(reorderState)
-//                    .detectReorderAfterLongPress(reorderState)
             ) {
-                items(stops, key = { it.id }) { stop ->
-                    ReorderableItem(reorderState, key = stop.id) { isDragging ->
-                        StopItem(
-                            stop = stop,
-                            onStopClick = { println("Clicked ") },
-                            onCompletedChange = { s, completed ->
-                                stops = stops.map {
-                                    if (it.id == s.id) it.copy(completed = completed) else it
-                                }
-                            },
-                            editMode = true
-                        )
-                    }
+                items(stops) { stop ->
+                    StopItem(
+                        stop = stop,
+                        onStopClick = { println("Hello") },
+                        onCompletedChange = { stop, completed ->
+                            stops = stops.map {
+                                if (it.stopId == stop.stopId) it.copy(completed = completed) else it
+                            }
+                        },
+                        editMode = true
+                    )
                 }
             }
 
             Button(
                 onClick = {
-                    // call save logic to api here -> PATCH request
+                    // call archive logic to api here
                     // navigate to trips screen after
                     // also add confirmation toast?
-                    println("Changes saved")
+                    println("Trip archived")
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -153,7 +96,7 @@ fun EditItinerary(navController: NavHostController) {
                     .width(150.dp),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text("Save Changes")
+                Text("Archive Trip")
             }
         }
     }

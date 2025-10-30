@@ -37,10 +37,10 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import theclankers.tripview.classes.Stop
+import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.navigation.navigateTo
-import theclankers.tripview.ui.utils.decodePolyline
+import theclankers.tripview.utils.decodePolyline
 
 @Composable
 fun NavigationScreen(navController: NavHostController) {
@@ -58,10 +58,10 @@ fun NavigationScreen(navController: NavHostController) {
     }
 
     val stops = listOf(
-        Stop(1, 42.2776, -83.7409, "Gallup", false), // Gallup
-        Stop(2, 42.2456, -83.7106, name="Cobblestone Farm", false), // Cobblestone Farm
-        Stop(3, 42.2656, -83.7487, name="Michigan Stadium", false),  // Michigan Stadium
-        Stop(4, 42.2804, -83.7495, name="Frita Batidos", false)  // Frita Batidos
+        Stop(1, 42.2776, -83.7409, 0, "This is gallup park", "Gallup Park", 0, false, "test"), // Gallup
+        Stop(2, 42.2456, -83.7106, 0, "This is cobblestone farm", "Cobblestone Farm", 1, false, "test"), // Cobblestone Farm
+        Stop(3, 42.2656, -83.7487, 0, "This is michigan stadium", "Big House", 2, false, "test"),  // Michigan Stadium
+        Stop(4, 42.2804, -83.7495, 0, "We love fritas!", "Frita Batidos", 3, false, "test")  // Frita Batidos
     )
 
     Row(
@@ -85,7 +85,7 @@ fun NavigationScreen(navController: NavHostController) {
             Marker(
                 state = MarkerState(position = LatLng(stop.latitude, stop.longitude)),
                 title = "Waypoint ${index + 1}",
-                snippet = "Lat: ${stop.latitude}, Lng: ${stop.longitude}, stop id: ${stop.id}",
+                snippet = "Lat: ${stop.latitude}, Lng: ${stop.longitude}, stop id: ${stop.stopId}",
                 onClick = {
                     val stopJson = Uri.encode(Json.encodeToString(stop))
                     navigateTo(navController, "stops/$stopJson")
