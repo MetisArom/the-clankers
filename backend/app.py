@@ -541,6 +541,36 @@ def delete_trip(trip_id):
 def debug_regenerate_polyline(trip_id):
     return regenerate_driving_polyline(trip_id, True)
 
+# ============================================================
+# STOP MANAGEMENT (Owner Controlled)
+# ============================================================
+
+@app.route('/trips/<int:trip_id>/<int:stop_id>', methods=["PATCH"])
+@jwt_required
+def flip_stop_completed(trip_id, stop_id):
+    """
+    Function to mark a stop as completed or not completed, used for
+    when checkbox is clicked on itinerary screen.
+    """
+    stop = Stop.query.filter_by(trip_id=trip_id, stop_id=stop_id).first()   
+    data = request.get_json()
+    if "completed" in data:
+        stop.completed = not stop.completed
+    
+    db.session.commit()
+    return jsonify({"message": f"Stop with trip_id {trip_id} and stop_id {stop_id} marked as {stop.completed}"})
+
+@app.route('/trips/<int:trip_id>/<int:stop_id>', methods=["DELETE"])
+@jwt_required
+def delete_stop(trip_id, stop_id):
+    stop = Stop.query.filter_by(trip_id=trip_id, stop_id=stop_id).first()
+    if not stop:
+        return jsonify({"ERROR": f"Stop with trip_id {trip_id} and stop_id {stop_id} not found"})
+    db.session.delete(stop)
+    db.session.commit()
+    return jsonify({"message": f"Stop with trip_id {trip_id} and stop_id {stop_id} successfully deleted"})
+
+
 
 # ============================================================
 # PARTY MANAGEMENT (Owner Controlled)

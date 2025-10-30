@@ -100,6 +100,7 @@ fun StopItem(
                     checked = stop.completed,
                     onCheckedChange = {
                         onCompletedChange(stop, !stop.completed)
+                        // api call to mark stop as incomplete
                     }
 
                 )

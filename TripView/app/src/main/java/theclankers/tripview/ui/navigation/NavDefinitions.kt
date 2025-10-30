@@ -17,6 +17,7 @@ import theclankers.tripview.ui.screens.EditProfileScreen
 import theclankers.tripview.ui.screens.FriendProfileScreen
 import theclankers.tripview.ui.screens.FriendsListScreen
 import theclankers.tripview.ui.screens.ItineraryScreen
+import theclankers.tripview.ui.screens.ItineraryViewModel
 import theclankers.tripview.ui.screens.NavigationScreen
 import theclankers.tripview.ui.screens.SampleTrip
 import theclankers.tripview.ui.screens.StopScreen
@@ -56,7 +57,19 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("debug") { DebugScreen(navController) }
         composable("sampleTrip"){ SampleTrip(navController) }
         composable("editItinerary"){ EditItinerary(navController)}
-//        composable("ItineraryScreen"){ ItineraryScreen(navController, 1, viewModel)}
+        composable(
+            route = "ItineraryScreen/{tripId}",
+            arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getInt("tripId") ?: return@composable
+            val itineraryViewModel: ItineraryViewModel = viewModel()
+
+            ItineraryScreen(
+                navController = navController,
+                tripId = tripId,
+                viewModel = itineraryViewModel
+            )
+        }
 //        composable("stop/{stopId}") { backStackEntry ->
 //            val stop = backStackEntry.arguments?.getInt("stopId") ?: 0
 //            StopScreen(navController, stop)

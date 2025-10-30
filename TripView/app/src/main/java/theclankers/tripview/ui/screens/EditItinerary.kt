@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import org.burnoutcrew.reorderable.*
 import theclankers.tripview.classes.Stop
 import theclankers.tripview.ui.components.StopItem
 
@@ -87,6 +88,14 @@ fun EditItinerary(navController: NavHostController) {
         )
     }
 
+    val reorderState = rememberReorderableLazyListState(
+        onMove = { from, to ->
+            stops = stops.toMutableList().apply {
+                add(to.index, removeAt(from.index))
+            }
+        }
+    )
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -108,30 +117,35 @@ fun EditItinerary(navController: NavHostController) {
                 .padding(padding)
         ) {
             LazyColumn(
+                state = reorderState.listState,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
+                    .reorderable(reorderState)
+//                    .detectReorderAfterLongPress(reorderState)
             ) {
-                items(stops) { stop ->
-                    StopItem(
-                        stop = stop,
-                        onStopClick = { println("Hello") },
-                        onCompletedChange = { stop, completed ->
-                            stops = stops.map {
-                                if (it.id == stop.id) it.copy(completed = completed) else it
-                            }
-                        },
-                        editMode = true
-                    )
+                items(stops, key = { it.id }) { stop ->
+                    ReorderableItem(reorderState, key = stop.id) { isDragging ->
+                        StopItem(
+                            stop = stop,
+                            onStopClick = { println("Clicked ") },
+                            onCompletedChange = { s, completed ->
+                                stops = stops.map {
+                                    if (it.id == s.id) it.copy(completed = completed) else it
+                                }
+                            },
+                            editMode = true
+                        )
+                    }
                 }
             }
 
             Button(
                 onClick = {
-                    // call archive logic to api here
+                    // call save logic to api here -> PATCH request
                     // navigate to trips screen after
                     // also add confirmation toast?
-                    println("Trip archived")
+                    println("Changes saved")
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -139,7 +153,7 @@ fun EditItinerary(navController: NavHostController) {
                     .width(150.dp),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text("Archive Trip")
+                Text("Save Changes")
             }
         }
     }
