@@ -37,7 +37,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import theclankers.tripview.classes.Stop
+import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.navigation.navigateTo
 import theclankers.tripview.utils.decodePolyline

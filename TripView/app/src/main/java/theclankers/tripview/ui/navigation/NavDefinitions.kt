@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import kotlinx.serialization.json.Json
-import theclankers.tripview.classes.Stop
+import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.screens.DebugScreen
 import theclankers.tripview.ui.screens.EditProfileScreen
 import theclankers.tripview.ui.screens.FriendProfileScreen
