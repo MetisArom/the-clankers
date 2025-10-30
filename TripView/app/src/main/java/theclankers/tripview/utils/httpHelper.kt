@@ -1,21 +1,11 @@
 package theclankers.tripview.utils
 
-import android.util.Log.e
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import kotlinx.coroutines.sync.withLock
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
 import java.io.IOException
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
