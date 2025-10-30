@@ -58,6 +58,13 @@ fake_friends = {
 # USER ENDPOINTS
 # -------------------------------
 
+@app.route("/user/<int:user_id>", methods=["GET"])
+def get_user(user_id):
+    user = next((u for u in fake_users if u["user_id"] == user_id), None)
+    if user:
+        return jsonify(user)
+    return jsonify({"message": "User not found"}), 404
+
 @app.route("/create_user", methods=["POST"])
 def create_user():
     data = request.get_json()
