@@ -1,4 +1,4 @@
-package theclankers.tripview.ui.utils
+package theclankers.tripview.utils
 
 import android.R.attr.factor
 import android.R.attr.path

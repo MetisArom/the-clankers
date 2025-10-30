@@ -1,4 +1,4 @@
-package theclankers.tripview.ui.utils
+package theclankers.tripview.utils
 
 import android.util.Log.e
 import androidx.compose.runtime.MutableState

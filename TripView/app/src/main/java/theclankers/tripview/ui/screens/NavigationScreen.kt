@@ -40,7 +40,7 @@ import kotlinx.serialization.json.Json
 import theclankers.tripview.classes.Stop
 import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.navigation.navigateTo
-import theclankers.tripview.ui.utils.decodePolyline
+import theclankers.tripview.utils.decodePolyline
 
 @Composable
 fun NavigationScreen(navController: NavHostController) {

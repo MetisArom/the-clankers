@@ -1,4 +1,4 @@
-package theclankers.tripview.ui.data.model
+package theclankers.tripview.data.models
 
 import kotlinx.serialization.Serializable
 

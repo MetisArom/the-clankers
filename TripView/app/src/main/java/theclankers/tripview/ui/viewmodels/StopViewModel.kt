@@ -1,6 +1,4 @@
-package theclankers.tripview.ui.viewmodel
-
-import kotlinx.serialization.Serializable
+package theclankers.tripview.ui.viewmodels
 
 // Use this ViewModel to grab data related to an individaul Stop
 // Pass as input a "stop_id" and it will give access to all relevant stop object varaibles according to the ER diagram
