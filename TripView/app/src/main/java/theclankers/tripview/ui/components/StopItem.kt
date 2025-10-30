@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import theclankers.tripview.classes.Stop
+import theclankers.tripview.data.models.Stop
 
 // For reference, look at the Trip 1 Screen, these are each of the stops
 

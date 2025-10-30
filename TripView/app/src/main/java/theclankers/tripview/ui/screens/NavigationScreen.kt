@@ -58,10 +58,10 @@ fun NavigationScreen(navController: NavHostController) {
     }
 
     val stops = listOf(
-        Stop(1, 42.2776, -83.7409, 0, "This is gallup park", "Gallup Park", 0, False, "test"), // Gallup
-        Stop(2, 42.2456, -83.7106, 0, "This is cobblestone farm", "Cobblestone Farm", 1, False, "test"), // Cobblestone Farm
-        Stop(3, 42.2656, -83.7487, 0, "This is michigan stadium", "Big House", 2, False, "test"),  // Michigan Stadium
-        Stop(4, 42.2804, -83.7495, 0, "We love fritas!", "Frita Batidos", 3, False, "test")  // Frita Batidos
+        Stop(1, 42.2776, -83.7409, 0, "This is gallup park", "Gallup Park", 0, false, "test"), // Gallup
+        Stop(2, 42.2456, -83.7106, 0, "This is cobblestone farm", "Cobblestone Farm", 1, false, "test"), // Cobblestone Farm
+        Stop(3, 42.2656, -83.7487, 0, "This is michigan stadium", "Big House", 2, false, "test"),  // Michigan Stadium
+        Stop(4, 42.2804, -83.7495, 0, "We love fritas!", "Frita Batidos", 3, false, "test")  // Frita Batidos
     )
 
     Row(
