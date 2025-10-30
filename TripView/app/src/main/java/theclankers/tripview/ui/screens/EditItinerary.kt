@@ -1,27 +1,12 @@
 package theclankers.tripview.ui.screens
 
-import android.R.attr.onClick
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,19 +14,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerInputScope
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import theclankers.tripview.classes.Stop
@@ -49,74 +26,120 @@ import theclankers.tripview.ui.components.StopItem
 
 @Composable
 fun EditItinerary(navController: NavHostController) {
-    val stops = remember {
-        mutableStateListOf(
-            Stop(1, 37.8199, -122.4783, "Morning walk across the bridge", completed = true),
-            Stop(2, 37.8080, -122.4177, "Seafood lunch by the bay", completed = false),
-            Stop(3, 37.8267, -122.4230, "Afternoon tour of the historic prison", completed = false),
-            Stop(4, 37.7544, -122.4477, "Sunset view over San Francisco", completed = true),
+    // sample data hardcoded
+    var stops by remember {
+        mutableStateOf(
+            listOf(
+                Stop(1, 37.8199, -122.4783, "Morning walk across the bridge", completed = true),
+                Stop(2, 37.8080, -122.4177, "Seafood lunch by the bay", completed = false),
+                Stop(
+                    3,
+                    37.8267,
+                    -122.4230,
+                    "Afternoon tour of the historic prison",
+                    completed = false
+                ),
+                Stop(4, 37.7544, -122.4477, "Sunset view over San Francisco", completed = true),
+                Stop(
+                    5,
+                    37.8267,
+                    -122.4230,
+                    "Afternoon tour of the historic prison",
+                    completed = false
+                ),
+                Stop(
+                    6,
+                    37.8267,
+                    -122.4230,
+                    "Afternoon tour of the historic prison",
+                    completed = false
+                ),
+                Stop(
+                    7,
+                    37.8267,
+                    -122.4230,
+                    "Afternoon tour of the historic prison",
+                    completed = false
+                ),
+                Stop(
+                    8,
+                    37.8267,
+                    -122.4230,
+                    "Afternoon tour of the historic prison",
+                    completed = false
+                ),
+                Stop(
+                    9,
+                    37.8267,
+                    -122.4230,
+                    "Afternoon tour of the historic prison",
+                    completed = false
+                ),
+                Stop(
+                    10,
+                    37.8267,
+                    -122.4230,
+                    "Afternoon tour of the historic prison",
+                    completed = false
+                )
+
+            )
         )
     }
-    var draggingIndex by remember { mutableStateOf<Int?>(null) }
-    var dragOffset by remember { mutableStateOf(0f) }
 
-    val itemHeightDp = 80.dp
-    val density = LocalDensity.current
-    val itemHeightPx = with(density) { itemHeightDp.toPx() }
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        itemsIndexed(stops, key = { _, stop -> stop.id }) { index, stop ->
-            val isDragging = index == draggingIndex
-
-            Card(
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("San Francisco Itinerary") },
+                actions = {
+                    Button(onClick = { println("Navigation clicked") }) { Text("Navigation") }
+                    Button(onClick = { println("Chat clicked") }) { Text("Chat") }
+                    Button(onClick = { println("Edit clicked") }) { Text("Edit") }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            )
+        }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(itemHeightDp)
-                    .then(
-                        if (isDragging) Modifier.offset { IntOffset(0, dragOffset.toInt()) } else Modifier
-                    )
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDragStart = { draggingIndex = index },
-                            onDrag = { change, dragAmount ->
-                                dragOffset += dragAmount.y
-                                change.consume()
-
-                                val targetIndex = ((dragOffset + index * itemHeightPx) / itemHeightPx)
-                                    .toInt()
-                                    .coerceIn(0, stops.size - 1)
-
-                                if (targetIndex != index && targetIndex in stops.indices) {
-                                    stops.removeAt(index)
-                                    stops.add(targetIndex, stop)
-                                    draggingIndex = targetIndex
-                                    dragOffset = 0f
-                                }
-                            },
-                            onDragEnd = {
-                                draggingIndex = null
-                                dragOffset = 0f
-                            },
-                            onDragCancel = {
-                                draggingIndex = null
-                                dragOffset = 0f
-                            }
-                        )
-                    },
-                elevation = CardDefaults.cardElevation(4.dp)
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(stop.name)
+                items(stops) { stop ->
+                    StopItem(
+                        stop = stop,
+                        onStopClick = { println("Hello") },
+                        onCompletedChange = { stop, completed ->
+                            stops = stops.map {
+                                if (it.id == stop.id) it.copy(completed = completed) else it
+                            }
+                        },
+                        editMode = true
+                    )
                 }
+            }
+
+            Button(
+                onClick = {
+                    // call archive logic to api here
+                    // navigate to trips screen after
+                    // also add confirmation toast?
+                    println("Trip archived")
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp)
+                    .width(150.dp),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text("Archive Trip")
             }
         }
     }

@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -53,7 +55,7 @@ fun StopItem(
     onStopClick: (Stop) -> Unit,
     onCompletedChange: (Stop, Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    showDragHandle: Boolean = false
+    editMode: Boolean = false
 ) {
     Card(
         modifier = modifier
@@ -87,9 +89,9 @@ fun StopItem(
                 )
             }
 
-            if (showDragHandle) {
+            if (editMode) {
                 Icon(
-                    imageVector = Icons.Rounded.Search, // replace with a proper drag icon
+                    imageVector = Icons.Filled.Delete,
                     contentDescription = "Drag handle",
                     modifier = Modifier.padding(start = 8.dp)
                 )
