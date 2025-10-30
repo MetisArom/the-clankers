@@ -6,13 +6,3 @@ import kotlinx.serialization.Serializable
 // Pass as input a "stop_id" and it will give access to all relevant stop object varaibles according to the ER diagram
 
 
-@Serializable
-data class Stop(
-    val stop_id: Int,
-    val trip_id: Int,
-    val latitude: Double,
-    val longitude: Double,
-    val description: String,
-    val name: String,
-    val order: Int,
-)
