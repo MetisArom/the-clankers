@@ -58,10 +58,10 @@ fun NavigationScreen(navController: NavHostController) {
     }
 
     val stops = listOf(
-        Stop(1, 42.2776, -83.7409), // Gallup
-        Stop(2, 42.2456, -83.7106), // Cobblestone Farm
-        Stop(3, 42.2656, -83.7487),  // Michigan Stadium
-        Stop(4, 42.2804, -83.7495)  // Frita Batidos
+        Stop(1, 42.2776, -83.7409, 0, "This is gallup park", "Gallup Park", 0), // Gallup
+        Stop(2, 42.2456, -83.7106, 0, "This is cobblestone farm", "Cobblestone Farm", 1), // Cobblestone Farm
+        Stop(3, 42.2656, -83.7487, 0, "This is michigan stadium", "Big House", 2),  // Michigan Stadium
+        Stop(4, 42.2804, -83.7495, 0, "We love fritas!", "Frita Batidos", 3)  // Frita Batidos
     )
 
     Row(
@@ -85,7 +85,7 @@ fun NavigationScreen(navController: NavHostController) {
             Marker(
                 state = MarkerState(position = LatLng(stop.latitude, stop.longitude)),
                 title = "Waypoint ${index + 1}",
-                snippet = "Lat: ${stop.latitude}, Lng: ${stop.longitude}, stop id: ${stop.id}",
+                snippet = "Lat: ${stop.latitude}, Lng: ${stop.longitude}, stop id: ${stop.stopId}",
                 onClick = {
                     val stopJson = Uri.encode(Json.encodeToString(stop))
                     navigateTo(navController, "stops/$stopJson")
