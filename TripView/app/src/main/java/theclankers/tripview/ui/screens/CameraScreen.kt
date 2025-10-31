@@ -1,6 +1,5 @@
 package theclankers.tripview.ui.screens
 
-
 import android.Manifest
 import android.content.pm.PackageManager
 import android.util.Log
