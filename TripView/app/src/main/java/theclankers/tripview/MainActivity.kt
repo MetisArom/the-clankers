@@ -1,6 +1,5 @@
 package theclankers.tripview
 
-import TripViewViewModel
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -27,6 +26,7 @@ import theclankers.tripview.ui.components.SampleButton
 import theclankers.tripview.ui.navigation.TripViewNavGraph
 import theclankers.tripview.ui.navigation.TripViewNavigationBar
 import theclankers.tripview.ui.theme.TripViewTheme
+import theclankers.tripview.ui.viewmodels.AppViewModel
 import java.lang.ProcessBuilder.Redirect.to
 
 class MainActivity : ComponentActivity() {
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val activityVM: TripViewViewModel = viewModel(LocalActivity.current as ComponentActivity)
+    val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
 

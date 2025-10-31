@@ -1,6 +1,5 @@
 package theclankers.tripview.ui.screens
 
-import TripViewViewModel
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Column
@@ -10,12 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import theclankers.tripview.ui.navigation.navigateTo
+import theclankers.tripview.ui.viewmodels.AppViewModel
 
 @Composable
 fun DebugScreen(navController: NavHostController) {
     //LocalActivity.current as ComponentActivity is for basically global state shared across screens.
     //You can have additional view models for each screen with navBackStackEntry.viewModel()!
-    val activityVM: TripViewViewModel = viewModel(LocalActivity.current as ComponentActivity)
+    val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
     Column {
         Button(onClick = {
             navigateTo(navController, "navigation")
