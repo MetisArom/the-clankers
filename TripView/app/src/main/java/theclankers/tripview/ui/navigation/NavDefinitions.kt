@@ -21,6 +21,7 @@ import theclankers.tripview.ui.screens.NavigationScreen
 import theclankers.tripview.ui.screens.SampleTrip
 import theclankers.tripview.ui.screens.StopScreen
 import theclankers.tripview.ui.screens.TripCreationForm
+import theclankers.tripview.ui.screens.TripFormPt2
 import theclankers.tripview.ui.screens.TripsScreen
 
 @Composable
@@ -52,6 +53,9 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("trips") { TripsScreen(navController) }
         composable("tripcreationform") {
             TripCreationForm(navController = navController)
+        }
+        composable(route="TripFormPt2") {
+            TripFormPt2(navController = navController)
         }
         composable("debug") { DebugScreen(navController) }
         composable("sampleTrip"){ SampleTrip(navController) }
