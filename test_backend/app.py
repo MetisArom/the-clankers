@@ -7,7 +7,7 @@ app = Flask(__name__)
 # -------------------------------
 fake_users = [
     {
-        "user_id": 1,
+        "id": 1,
         "username": "alice",
         "firstname": "Alice",
         "lastname": "Anderson",
@@ -15,7 +15,7 @@ fake_users = [
         "dislikes": "crowds"
     },
     {
-        "user_id": 2,
+        "id": 2,
         "username": "bob",
         "firstname": "Bob",
         "lastname": "Brown",

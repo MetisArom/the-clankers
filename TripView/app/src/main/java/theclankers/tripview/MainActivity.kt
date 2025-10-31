@@ -28,6 +28,8 @@ import theclankers.tripview.ui.navigation.TripViewNavigationBar
 import theclankers.tripview.ui.theme.TripViewTheme
 import theclankers.tripview.ui.viewmodels.AppViewModel
 import java.lang.ProcessBuilder.Redirect.to
+import theclankers.tripview.core.Constants.USERNAME
+import theclankers.tripview.core.Constants.PASSWORD
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,9 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val navController = rememberNavController()
     val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
+    //TEMP LOGIN FOR DEBUG
+    activityVM.login(USERNAME,PASSWORD)
+
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
 
