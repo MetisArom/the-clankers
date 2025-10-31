@@ -1,5 +1,8 @@
 package theclankers.tripview.ui.navigation
 
+import android.R.attr.bitmap
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -9,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import kotlinx.serialization.json.Json
 import theclankers.tripview.data.models.Stop
+import theclankers.tripview.ui.screens.Camera3Screen
 import theclankers.tripview.ui.screens.DebugScreen
 import theclankers.tripview.ui.screens.EditProfileScreen
 import theclankers.tripview.ui.screens.FriendProfileScreen
@@ -17,6 +21,7 @@ import theclankers.tripview.ui.screens.NavigationScreen
 import theclankers.tripview.ui.screens.StopScreen
 import theclankers.tripview.ui.screens.TripCreationForm
 import theclankers.tripview.ui.screens.TripsScreen
+import java.io.ByteArrayOutputStream
 
 @Composable
 fun TripViewNavGraph(navController: NavHostController) {
@@ -33,6 +38,12 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("editProfile") { EditProfileScreen(navController) }
         composable("friendProfile") { FriendProfileScreen(navController) }
         composable("camera2") { Camera2Screen() }
+        composable("camera3") {
+            Camera3Screen(
+                onPhotoCaptured = { bitmap ->
+                    Log.d("Camera3Screen", "Captured photo size: ${bitmap.width}x${bitmap.height}")
+                }
+            )}
         composable("navigation") { NavigationScreen(navController) }
         composable("stops/{stop}", arguments = listOf(navArgument("stop") { type = NavType.StringType })) {
             backStackEntry ->
