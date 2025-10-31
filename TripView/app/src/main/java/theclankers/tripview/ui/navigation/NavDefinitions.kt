@@ -47,6 +47,12 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("editProfile") { EditProfileScreen(navController) }
         composable("friendProfile") { FriendProfileScreen(navController) }
         composable("camera2") { Camera2Screen() }
+        composable("camera3") {
+            Camera3Screen(
+                onPhotoCaptured = { bitmap ->
+                    Log.d("Camera3Screen", "Captured photo size: ${bitmap.width}x${bitmap.height}")
+                }
+            )}
         composable("navigation/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { NavigationScreen(navController) }
         composable("camera3") {
             Camera3Screen(
