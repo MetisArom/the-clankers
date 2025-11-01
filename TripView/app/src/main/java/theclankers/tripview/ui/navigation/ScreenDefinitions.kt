@@ -18,6 +18,7 @@ import androidx.navigation.NavHostController
 
 import theclankers.tripview.ui.components.ProfilePageComponent
 import theclankers.tripview.ui.components.TripItem
+import theclankers.tripview.ui.viewmodels.getAuthedUser
 
 
 @Composable
@@ -28,6 +29,8 @@ fun CameraScreen(navController: NavHostController) { Button(onClick = {
 fun FriendsScreen() { Text("Friends Screen") }
 @Composable
 fun ProfileScreen(navController: NavController) {
+        val authedUserId = getAuthedUser().value?.userId ?: 0
+
         Column(modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF7F6F8))
@@ -35,7 +38,7 @@ fun ProfileScreen(navController: NavController) {
             .verticalScroll(rememberScrollState())){
 
             //example user
-            ProfilePageComponent(1, navController)
+            ProfilePageComponent(authedUserId, navController)
 
 
 

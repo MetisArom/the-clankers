@@ -1,5 +1,6 @@
 package theclankers.tripview.data.network
 
+import android.util.Log
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -198,6 +199,19 @@ object ApiClient {
             .build()
 
         val response = HttpHelper.post(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        return response.body?.string() ?: throw IOException("Empty response")
+    }
+
+    suspend fun getTrip(token: String, tripId: Int): String {
+        val url = "$BASE_URL/trips/$tripId/info"
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.get(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
         return response.body?.string() ?: throw IOException("Empty response")
     }

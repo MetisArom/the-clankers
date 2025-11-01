@@ -8,5 +8,6 @@ import kotlinx.serialization.Serializable
 data class Trip(
     val tripId: Int,
     val ownerId: Int,
-    val status: String
+    val status: String,
+    val drivingPolyline: String
 )
