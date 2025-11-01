@@ -538,6 +538,8 @@ def modify_itinerary(trip_id):
 
     db.session.commit()
 
+    regenerate_driving_polyline(trip_id, True)
+
     return jsonify({"message": "Stops updated successfully"}), 200
 
 @app.route('/trips/<int:trip_id>', methods=['DELETE'])
