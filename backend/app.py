@@ -490,6 +490,17 @@ def display_itinerary(trip_id):
         for s in stops
     ])
 
+@app.route('/trips/<int:trip_id>/info', methods=['GET'])
+def get_trip(trip_id):
+    trip = Trip.query.get_or_404(trip_id)
+    return jsonify({
+        "trip_id": trip.trip_id,
+        "owner_id": trip.owner_id,
+        "status": str(trip.status),
+        "driving_polyline": str(trip.driving_polyline),
+        "driving_polyline_timestamp": trip.driving_polyline_timestamp
+    })
+
 @app.route('/trips/<int:trip_id>', methods=['PATCH'])
 def modify_itinerary(trip_id):
     data = request.get_json()
