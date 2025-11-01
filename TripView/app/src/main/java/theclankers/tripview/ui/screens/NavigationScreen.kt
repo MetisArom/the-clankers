@@ -1,6 +1,8 @@
 package theclankers.tripview.ui.screens
 
 import android.net.Uri
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.JointType
@@ -39,21 +42,35 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.HeaderText
+import theclankers.tripview.ui.navigation.goBack
 import theclankers.tripview.ui.navigation.navigateTo
+import theclankers.tripview.ui.viewmodels.AppViewModel
+import theclankers.tripview.ui.viewmodels.useTrip
 import theclankers.tripview.utils.decodePolyline
 
 @Composable
 fun NavigationScreen(navController: NavHostController) {
+    //returns 0 if no argument, bounce back
+    val tripId = navController.currentBackStackEntry?.arguments?.getInt("tripId") ?: 0
+    if (tripId == 0) {
+        goBack(navController)
+        return
+    }
+
+    val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
+
+    val tripState = useTrip(activityVM.authAccessToken.value, tripId)
+    val trip = tripState.value
+
     val cameraPositionState = rememberCameraPositionState()
     var mapLoaded by remember { mutableStateOf(false) }
 
     var showDirectPolyline by remember { mutableStateOf(false) }
     var showDrivingPolyline by remember { mutableStateOf(false) }
 
-    val drivingPolyline by remember { mutableStateOf("c|lsoArmcv~CVvbA`dB}@h@tkArrCeC~TxOdzVmtXbsMwlIt`KqxHzyDm}HoH_uG}b@xD|b@yDBtxGi}C`eH{sKfmIytLjuHvAt~H_X|_BqqAn~DuxArzI_Tl{B^z~DisA|@oyHgHkqF_kAmwJeTy@xy@") } //Example
-    val drivingPoints by produceState(initialValue = emptyList(), drivingPolyline) {
+    val drivingPoints by produceState(initialValue = emptyList(), trip?.drivingPolyline) {
         withContext(Dispatchers.Default) {
-            value = decodePolyline(drivingPolyline)
+            value = decodePolyline(trip?.drivingPolyline ?: "")
         }
     }
 
