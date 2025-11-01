@@ -38,6 +38,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             TripViewTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
+                    activityVM.login(USERNAME,PASSWORD)
                     MainScreen()
                 }
             }
@@ -45,13 +47,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
     //TEMP LOGIN FOR DEBUG
-    activityVM.login(USERNAME,PASSWORD)
+    val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
