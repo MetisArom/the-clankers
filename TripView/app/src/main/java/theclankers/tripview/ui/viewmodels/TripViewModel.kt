@@ -1,5 +1,6 @@
 package theclankers.tripview.ui.viewmodels
 
+import android.R.attr.description
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,7 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONObject
+import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.models.User
 import theclankers.tripview.data.network.ApiClient
@@ -29,17 +32,50 @@ class TripViewModel(private val token: String) : ViewModel() {
             isLoading.value = true
             errorMessage.value = null
             try {
-                val responseString = ApiClient.getTrip(token, tripId)
-                val json = JSONObject(responseString)
+                val infoResponse = ApiClient.getTrip(token, tripId)
+                val infoJson = JSONObject(infoResponse)
                 val trip = Trip(
-                    tripId = json.getInt("trip_id"),
-                    ownerId = json.getInt("owner_id"),
-                    status = json.getString("status"),
-                    drivingPolyline = json.getString("driving_polyline")
+                    tripId = infoJson.getInt("trip_id"),
+                    ownerId = infoJson.getInt("owner_id"),
+                    status = infoJson.getString("status"),
+                    drivingPolyline = infoJson.getString("driving_polyline"),
+                    stops = emptyList()
                 )
                 tripState.value = trip
 
                 Log.d(null,"tripState value updated!")
+
+                val stopResponse = ApiClient.getTripStops(token, tripId)
+                val stopjson = JSONArray(stopResponse)
+                val stops = mutableListOf<Stop>()
+
+                for (i in 0 until stopjson.length()) {
+                    val stopObject = stopjson.getJSONObject(i)
+                    stops.add(
+                        Stop(
+                            stopId = stopObject.getInt("stop_id"),
+                            latitude = stopObject.getDouble("latitude"),
+                            longitude = stopObject.getDouble("longitude"),
+                            description = stopObject.getString("description"),
+                            order = stopObject.getInt("stop_order"),
+                            completed = stopObject.getBoolean("completed"),
+                            stopType = stopObject.getString("stop_type"),
+                            name = "PLACEHOLDER",
+                            tripId = tripId
+                        )
+                    )
+                }
+
+                val tripWithStops = Trip(
+                    tripId = infoJson.getInt("trip_id"),
+                    ownerId = infoJson.getInt("owner_id"),
+                    status = infoJson.getString("status"),
+                    drivingPolyline = infoJson.getString("driving_polyline"),
+                    stops = stops
+                )
+                tripState.value = tripWithStops
+
+                Log.d(null,"tripState value updated with stops!")
             } catch (e: Exception) {
                 errorMessage.value = e.message
             } finally {

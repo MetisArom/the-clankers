@@ -1,5 +1,6 @@
 package theclankers.tripview.ui.screens
 
+import android.net.Uri
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -12,8 +13,14 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.MarkerState.Companion.invoke
+import kotlinx.serialization.json.Json
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.ui.navigation.goBack
+import theclankers.tripview.ui.navigation.navigateTo
 import theclankers.tripview.ui.viewmodels.AppViewModel
 import theclankers.tripview.ui.viewmodels.useTrip
 import theclankers.tripview.ui.viewmodels.useUser
@@ -37,6 +44,10 @@ fun TripDetailsScreen(navController: NavHostController) {
         Button(onClick = {
             goBack(navController)
         }) { Text("Go back") }
+
+        user?.stops?.forEachIndexed { index, stop ->
+            Text("${stop.stopId}: ${stop.description}")
+        }
     }
 
 }

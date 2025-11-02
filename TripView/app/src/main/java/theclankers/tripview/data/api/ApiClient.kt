@@ -216,6 +216,19 @@ object ApiClient {
         return response.body?.string() ?: throw IOException("Empty response")
     }
 
+    suspend fun getTripStops(token: String, tripId: Int): String {
+        val url = "$BASE_URL/trips/$tripId"
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.get(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        return response.body?.string() ?: throw IOException("Empty response")
+    }
+
     // -------------------------------
     // PARTY MANAGEMENT ENDPOINTS
     // -------------------------------
