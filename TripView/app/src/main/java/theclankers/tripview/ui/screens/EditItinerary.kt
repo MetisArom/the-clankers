@@ -2,11 +2,17 @@ package theclankers.tripview.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.StopItem
 
@@ -44,9 +52,18 @@ fun EditItinerary(navController: NavHostController) {
         )
     }
 
+    val lazyListState = rememberLazyListState()
+    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        // Update the list
+        stops = stops.toMutableList().apply {
+            add(to.index, removeAt(from.index))
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
+                // should be based on whatever trip object is passed into this
                 title = { Text("San Francisco Itinerary") },
                 actions = {
                     Button(onClick = { println("Navigation clicked") }) { Text("Navigation") }
@@ -67,22 +84,34 @@ fun EditItinerary(navController: NavHostController) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                state = lazyListState
             ) {
-                items(stops) { stop ->
-                    StopItem(
-                        stop = stop,
-                        onStopClick = { println("Hello") },
-                        onCompletedChange = { stop, completed ->
-                            stops = stops.map {
-                                if (it.stopId == stop.stopId) it.copy(completed = completed) else it
-                            }
-                        },
-                        editMode = true
-                    )
-                }
-            }
+                items(stops, key = { it.stopId }) { stop ->
+                    ReorderableItem(reorderableLazyListState, key = stop.stopId) { isDragging ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .draggableHandle()
+                        ) {
+                            StopItem(
+                                stop = stop,
+                                onStopClick = { println("Hello") },
+                                onCompletedChange = { stopChanged, completed ->
+                                    stops = stops.map {
+                                        if (it.stopId == stopChanged.stopId) it.copy(completed = completed) else it
+                                    }
+                                },
+                                editMode = true
+                            )
+                        }
 
+                    }
+
+                }
+
+            }
             Button(
                 onClick = {
                     // call archive logic to api here

@@ -75,7 +75,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("com.squareup.okhttp3:okhttp:5.1.0")
-    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
+    implementation("sh.calvin.reorderable:reorderable:3.0.0")
 
 
 }

@@ -69,7 +69,7 @@ fun SampleTrip(navController: NavHostController) {
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                items(stops) { stop ->
+                items(stops, key = { it.stopId }) { stop ->
                     StopItem(
                         stop = stop,
                         onStopClick = { println("Hello") },
