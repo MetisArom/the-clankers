@@ -1,6 +1,8 @@
 package theclankers.tripview.ui.screens
 
 import android.net.Uri
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.JointType
@@ -39,30 +42,39 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.HeaderText
+import theclankers.tripview.ui.navigation.goBack
 import theclankers.tripview.ui.navigation.navigateTo
+import theclankers.tripview.ui.viewmodels.AppViewModel
+import theclankers.tripview.ui.viewmodels.useTrip
 import theclankers.tripview.utils.decodePolyline
 
 @Composable
 fun NavigationScreen(navController: NavHostController) {
+    //returns 0 if no argument, bounce back
+    val tripId = navController.currentBackStackEntry?.arguments?.getInt("tripId") ?: 0
+    if (tripId == 0) {
+        goBack(navController)
+        return
+    }
+
+    val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
+
+    val tripState = useTrip(activityVM.authAccessToken.value, tripId)
+    val trip = tripState.value
+
     val cameraPositionState = rememberCameraPositionState()
     var mapLoaded by remember { mutableStateOf(false) }
 
     var showDirectPolyline by remember { mutableStateOf(false) }
     var showDrivingPolyline by remember { mutableStateOf(false) }
 
-    val drivingPolyline by remember { mutableStateOf("c|lsoArmcv~CVvbA`dB}@h@tkArrCeC~TxOdzVmtXbsMwlIt`KqxHzyDm}HoH_uG}b@xD|b@yDBtxGi}C`eH{sKfmIytLjuHvAt~H_X|_BqqAn~DuxArzI_Tl{B^z~DisA|@oyHgHkqF_kAmwJeTy@xy@") } //Example
-    val drivingPoints by produceState(initialValue = emptyList(), drivingPolyline) {
+    val drivingPoints by produceState(initialValue = emptyList(), trip?.drivingPolyline) {
         withContext(Dispatchers.Default) {
-            value = decodePolyline(drivingPolyline)
+            value = decodePolyline(trip?.drivingPolyline ?: "")
         }
     }
 
-    val stops = listOf(
-        Stop(1, 42.2776, -83.7409, 0, "This is gallup park", "Gallup Park", 0, false, "test"), // Gallup
-        Stop(2, 42.2456, -83.7106, 0, "This is cobblestone farm", "Cobblestone Farm", 1, false, "test"), // Cobblestone Farm
-        Stop(3, 42.2656, -83.7487, 0, "This is michigan stadium", "Big House", 2, false, "test"),  // Michigan Stadium
-        Stop(4, 42.2804, -83.7495, 0, "We love fritas!", "Frita Batidos", 3, false, "test")  // Frita Batidos
-    )
+    val stops = trip?.stops
 
     Row(
         modifier = Modifier.fillMaxHeight().fillMaxWidth(),
@@ -81,7 +93,7 @@ fun NavigationScreen(navController: NavHostController) {
         onMapLoaded = { mapLoaded = true } // Run Launched Effect at this point
     ) {
         // Add markers for each waypoint
-        stops.forEachIndexed { index, stop ->
+        stops?.forEachIndexed { index, stop ->
             Marker(
                 state = MarkerState(position = LatLng(stop.latitude, stop.longitude)),
                 title = "Waypoint ${index + 1}",
@@ -97,7 +109,7 @@ fun NavigationScreen(navController: NavHostController) {
         //Direct Route Polyline
         if (showDirectPolyline) {
             Polyline(
-                points = stops.map { LatLng(it.latitude, it.longitude) },
+                points = stops?.map { LatLng(it.latitude, it.longitude) } ?: emptyList(),
                 color = Color(0xFF0F53FF), // Google Maps Blue
                 width = 16f,                   // Thicker line
                 jointType = JointType.ROUND,   // Rounded joins
@@ -120,7 +132,7 @@ fun NavigationScreen(navController: NavHostController) {
 
         // Zoom map view into stops bounding box
         LaunchedEffect(mapLoaded, stops) {
-            if (mapLoaded && stops.isNotEmpty()) {
+            if (mapLoaded && stops != null && stops.isNotEmpty()) {
                 //Compute bounding box
                 val boundsBuilder = LatLngBounds.builder()
                 stops.forEach { boundsBuilder.include(LatLng(it.latitude, it.longitude)) }

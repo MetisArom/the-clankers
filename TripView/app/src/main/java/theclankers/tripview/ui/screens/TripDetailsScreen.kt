@@ -41,13 +41,11 @@ fun TripDetailsScreen(navController: NavHostController) {
 
     Column {
         Text("This is the trip page for trip ${user?.tripId}")
-        Button(onClick = {
-            goBack(navController)
-        }) { Text("Go back") }
-
         user?.stops?.forEachIndexed { index, stop ->
             Text("${stop.stopId}: ${stop.description}")
         }
+        Button(onClick = {
+            navigateTo(navController, "navigation/$tripId")
+        }) { Text("Navigation") }
     }
-
 }

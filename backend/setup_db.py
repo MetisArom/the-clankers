@@ -86,11 +86,11 @@ with app.app_context():
     ])
 
     # --- TRIPS ---
-    trip1 = Trip(owner_id=alice.user_id, status="ongoing", driving_polyline="encoded_path1",
+    trip1 = Trip(owner_id=alice.user_id, status="ongoing", driving_polyline="c|lsoArmcv~CVvbA`dB}@h@tkArrCeC~TxOdzVmtXbsMwlIt`KqxHzyDm}HoH_uG}b@xD|b@yDBtxGi}C`eH{sKfmIytLjuHvAt~H_X|_BqqAn~DuxArzI_Tl{B^z~DisA|@oyHgHkqF_kAmwJeTy@xy@",
                  driving_polyline_timestamp=datetime.now(timezone.utc))
-    trip2 = Trip(owner_id=bob.user_id, status="ongoing", driving_polyline="encoded_path2",
+    trip2 = Trip(owner_id=bob.user_id, status="ongoing", driving_polyline="",
                  driving_polyline_timestamp=datetime.now(timezone.utc))
-    trip3 = Trip(owner_id=charlie.user_id, status="archived", driving_polyline="encoded_path3",
+    trip3 = Trip(owner_id=charlie.user_id, status="archived", driving_polyline="",
                  driving_polyline_timestamp=datetime.now(timezone.utc))
     db.session.add_all([trip1, trip2, trip3])
     db.session.commit()
