@@ -74,12 +74,7 @@ fun NavigationScreen(navController: NavHostController) {
         }
     }
 
-    val stops = listOf(
-        Stop(1, 42.2776, -83.7409, 0, "This is gallup park", "Gallup Park", 0, false, "test"), // Gallup
-        Stop(2, 42.2456, -83.7106, 0, "This is cobblestone farm", "Cobblestone Farm", 1, false, "test"), // Cobblestone Farm
-        Stop(3, 42.2656, -83.7487, 0, "This is michigan stadium", "Big House", 2, false, "test"),  // Michigan Stadium
-        Stop(4, 42.2804, -83.7495, 0, "We love fritas!", "Frita Batidos", 3, false, "test")  // Frita Batidos
-    )
+    val stops = trip?.stops
 
     Row(
         modifier = Modifier.fillMaxHeight().fillMaxWidth(),
@@ -98,7 +93,7 @@ fun NavigationScreen(navController: NavHostController) {
         onMapLoaded = { mapLoaded = true } // Run Launched Effect at this point
     ) {
         // Add markers for each waypoint
-        stops.forEachIndexed { index, stop ->
+        stops?.forEachIndexed { index, stop ->
             Marker(
                 state = MarkerState(position = LatLng(stop.latitude, stop.longitude)),
                 title = "Waypoint ${index + 1}",
@@ -114,7 +109,7 @@ fun NavigationScreen(navController: NavHostController) {
         //Direct Route Polyline
         if (showDirectPolyline) {
             Polyline(
-                points = stops.map { LatLng(it.latitude, it.longitude) },
+                points = stops?.map { LatLng(it.latitude, it.longitude) } ?: emptyList(),
                 color = Color(0xFF0F53FF), // Google Maps Blue
                 width = 16f,                   // Thicker line
                 jointType = JointType.ROUND,   // Rounded joins
@@ -137,7 +132,7 @@ fun NavigationScreen(navController: NavHostController) {
 
         // Zoom map view into stops bounding box
         LaunchedEffect(mapLoaded, stops) {
-            if (mapLoaded && stops.isNotEmpty()) {
+            if (mapLoaded && stops != null && stops.isNotEmpty()) {
                 //Compute bounding box
                 val boundsBuilder = LatLngBounds.builder()
                 stops.forEach { boundsBuilder.include(LatLng(it.latitude, it.longitude)) }
