@@ -48,5 +48,4 @@ fun TripDetailsScreen(navController: NavHostController) {
             navigateTo(navController, "navigation/$tripId")
         }) { Text("Navigation") }
     }
-
 }
