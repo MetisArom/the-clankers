@@ -480,6 +480,7 @@ def display_itinerary(trip_id):
     stops = Stop.query.filter_by(trip_id=trip_id).order_by(Stop.stop_order).all()
     return jsonify([
         {
+            "stop_id": s.stop_id,
             "stop_type": s.stop_type,
             "latitude": s.latitude,
             "longitude": s.longitude,
@@ -537,6 +538,8 @@ def modify_itinerary(trip_id):
             return jsonify({"error": f"stop_id {stop_id} not found in this trip"}), 404
 
     db.session.commit()
+
+    regenerate_driving_polyline(trip_id, True)
 
     return jsonify({"message": "Stops updated successfully"}), 200
 

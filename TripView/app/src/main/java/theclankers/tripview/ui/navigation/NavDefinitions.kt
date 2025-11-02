@@ -42,7 +42,7 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("editProfile") { EditProfileScreen(navController) }
         composable("friendProfile") { FriendProfileScreen(navController) }
         composable("camera2") { Camera2Screen() }
-        composable("navigation") { NavigationScreen(navController) }
+        composable("navigation/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { NavigationScreen(navController) }
         composable("stops/{stop}", arguments = listOf(navArgument("stop") { type = NavType.StringType })) {
             backStackEntry ->
                 val stopJson = backStackEntry.arguments?.getString("stop")
