@@ -1,6 +1,5 @@
-package theclankers.tripview.data.network
+package theclankers.tripview.data.api
 
-import android.util.Log
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -280,5 +279,39 @@ object ApiClient {
         val response = HttpHelper.get(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
         return response.body?.string() ?: throw IOException("Empty response")
+    }
+
+    suspend fun deleteStop(token: String, tripId: Int, stopId: Int): String {
+        val url = "$BASE_URL/trips/$tripId/$stopId"
+        val request = Request.Builder()
+            .url(url)
+            .delete()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.delete(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        return response.body?.string() ?: throw IOException("Empty response")
+
+    }
+
+    suspend fun archiveTrip(token: String, tripId: Int): String {
+        val url = "$BASE_URL/trips/$tripId/archive_trip"
+
+        val bodyJson = JSONObject().apply {
+            put("status", "archived")
+        }.toString()
+
+        val body = bodyJson.toRequestBody("application/json".toMediaType())
+        val request = Request.Builder()
+            .url(url)
+            .patch(body)
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.delete(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        return response.body?.string() ?: throw IOException("Empty response")
+
     }
 }

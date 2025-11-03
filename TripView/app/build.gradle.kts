@@ -76,6 +76,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("com.squareup.okhttp3:okhttp:5.1.0")
     implementation("sh.calvin.reorderable:reorderable:3.0.0")
-
+    implementation("androidx.compose.material:material-icons-extended")
 
 }

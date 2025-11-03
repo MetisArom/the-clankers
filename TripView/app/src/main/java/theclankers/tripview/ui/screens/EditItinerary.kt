@@ -9,10 +9,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,10 +29,11 @@ import androidx.navigation.NavHostController
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import theclankers.tripview.data.models.Stop
+import theclankers.tripview.data.api.ApiClient
 import theclankers.tripview.ui.components.StopItem
 
 @Composable
-fun EditItinerary(navController: NavHostController) {
+fun EditItinerary(navController: NavHostController, tripId: Int?) {
     // sample data hardcoded
     var stops by remember {
         mutableStateOf(
@@ -93,7 +93,7 @@ fun EditItinerary(navController: NavHostController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
-                                .draggableHandle()
+//                                .longPressDraggableHandle()
                         ) {
                             StopItem(
                                 stop = stop,
@@ -103,7 +103,26 @@ fun EditItinerary(navController: NavHostController) {
                                         if (it.stopId == stopChanged.stopId) it.copy(completed = completed) else it
                                     }
                                 },
-                                editMode = true
+                                onDeleteStop = { stopToDelete ->
+                                    try {
+                                        // api call
+                                        val response = ApiClient.deleteStop(token = "user_jwt_token", tripId = 1, stopId = stopToDelete.stopId)
+                                        println("Delete response: $response")
+
+                                        stops = stops.filter { it.stopId != stopToDelete.stopId }
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                },
+                                editMode = true,
+                                trailingContent = {
+                                    Icon(
+                                        imageVector = Icons.Rounded.DragHandle,
+                                        contentDescription = "Reorder",
+                                        modifier = Modifier.longPressDraggableHandle()
+
+                                    )
+                                }
                             )
                         }
 
@@ -114,10 +133,7 @@ fun EditItinerary(navController: NavHostController) {
             }
             Button(
                 onClick = {
-                    // call archive logic to api here
-                    // navigate to trips screen after
-                    // also add confirmation toast?
-                    println("Trip archived")
+                    println("Confirmed changes")
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -125,7 +141,7 @@ fun EditItinerary(navController: NavHostController) {
                     .width(150.dp),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text("Archive Trip")
+                Text("Confirm changes")
             }
         }
     }

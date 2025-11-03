@@ -38,4 +38,14 @@ object HttpHelper {
         val response = client.newCall(request).await()
         return response
     }
+
+    suspend fun delete(request: Request): Response {
+        val response = client.newCall(request).await()
+        return response
+    }
+
+    suspend fun patch(request: Request): Response {
+        val response = client.newCall(request).await()
+        return response
+    }
 }

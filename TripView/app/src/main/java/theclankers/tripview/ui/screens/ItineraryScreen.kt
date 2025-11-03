@@ -14,33 +14,38 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import theclankers.tripview.data.models.Stop
+import kotlinx.coroutines.launch
+import theclankers.tripview.data.api.ApiClient
 import theclankers.tripview.ui.components.StopItem
-import kotlin.collections.map
+import theclankers.tripview.ui.viewmodels.TripViewModel
 
 @Composable
-fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: ItineraryViewModel) {
+fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: TripViewModel) {
     LaunchedEffect(tripId) {
-        viewModel.loadStops(tripId)
+        viewModel.loadTrip(tripId)
     }
 
-    val stops by viewModel.stops.collectAsState()
+    val trip by viewModel.tripState
+    val isLoading by viewModel.isLoading
+    val errorMessage by viewModel.errorMessage
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("San Francisco Itinerary") },
+                title = { Text(trip?.let { "Trip #${it.tripId}" } ?: "Itinerary") },
                 actions = {
                     Button(onClick = { println("Navigation clicked") }) { Text("Navigation") }
                     Button(onClick = { println("Chat clicked") }) { Text("Chat") }
-                    Button(onClick = { println("Edit clicked") }) { Text("Edit") }
+                    Button(onClick = {
+                        navController.navigate("EditItinerary/$tripId")
+                    }) { Text("Edit") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -48,47 +53,75 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: It
             )
         }
     ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp)
+        when {
+            isLoading -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                items(stops, key = { it.stopId }) { stop ->
-                    StopItem(
-                        stop = stop,
-                        onStopClick = { clickedStop -> // add function to go to stop screen
-                            println("clicked stop ${clickedStop.name}")
-                        },
-                        onCompletedChange = { stop, _ ->
-                            viewModel.toggleCompleted(stop)
+                Text("Loading...")
+            }
+
+            errorMessage != null -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Error: $errorMessage")
+            }
+
+            else -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                ) {
+                    val stops = trip?.stops ?: emptyList()
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        items(stops, key = { it.stopId }) { stop ->
+                            StopItem(
+                                stop = stop,
+                                onStopClick = { clickedStop ->
+                                    println("Clicked stop ${clickedStop.name}")
+                                },
+                                onCompletedChange = { changedStop, _ ->
+                                    viewModel.toggleCompleted(changedStop)
+                                }
+                            )
                         }
-                    )
+                    }
+
+                    Button(
+                        onClick = {
+                            // call archive logic to api here
+                            // navigate to trips screen after
+                            // also add confirmation toast?
+                            scope.launch {
+                                try {
+                                    ApiClient.archiveTrip(token = "user_jwt_token", tripId = tripId)
+                                    println("Trip archived")
+                                    navController.navigate("trips") // lowercase, as in your NavGraph
+                                } catch (e: Exception) {
+                                    println("Error archiving trip: ${e.message}")
+                                }
+                            }
+                            viewModel.tripState.value = viewModel.tripState.value?.copy(status = "archived")
+                            println("Trip archived")
+                            navController.navigate("Trips")
+                        },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 24.dp)
+                            .width(150.dp),
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Text("Archive Trip")
+                    }
                 }
             }
-
-            Button(
-                onClick = {
-                    // call archive logic to api here
-                    // navigate to trips screen after
-                    // also add confirmation toast?
-                    println("Trip archived")
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp)
-                    .width(150.dp),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text("Archive Trip")
-            }
-
         }
     }
 }

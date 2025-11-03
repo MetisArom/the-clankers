@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import theclankers.tripview.data.models.Stop
 
 // For reference, look at the Trip 1 Screen, these are each of the stops
@@ -55,8 +57,12 @@ fun StopItem(
     onStopClick: (Stop) -> Unit,
     onCompletedChange: (Stop, Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    editMode: Boolean = false
+    onDeleteStop: suspend (Stop) -> Unit? = {},
+
+    editMode: Boolean = false,
+    trailingContent: @Composable (() -> Unit)? = null
 ) {
+    val coroutineScope = rememberCoroutineScope()
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -64,7 +70,7 @@ fun StopItem(
             .clickable { onStopClick(stop) },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (stop.completed)
+            containerColor = if (stop.completed and !editMode)
                 MaterialTheme.colorScheme.surfaceVariant
             else
                 MaterialTheme.colorScheme.surface
@@ -90,11 +96,23 @@ fun StopItem(
             }
 
             if (editMode) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Drag handle",
-                    modifier = Modifier.padding(start = 8.dp)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            onDeleteStop(stop)
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "Delete stop"
+                        )
+                    }
+
+                    trailingContent?.invoke()
+                }
             } else {
                 Checkbox(
                     checked = stop.completed,

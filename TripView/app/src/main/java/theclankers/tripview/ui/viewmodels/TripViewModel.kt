@@ -1,6 +1,5 @@
 package theclankers.tripview.ui.viewmodels
 
-import android.R.attr.description
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,8 +14,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.models.Trip
-import theclankers.tripview.data.models.User
-import theclankers.tripview.data.network.ApiClient
+import theclankers.tripview.data.api.ApiClient
 
 // Use this ViewModel for a specific individual Trip.
 // It will take as input a "trip_id" and return state variables defined in the ER diagram
@@ -83,6 +81,20 @@ class TripViewModel(private val token: String) : ViewModel() {
             }
         }
     }
+
+    fun toggleCompleted(stop: Stop) {
+        val currentTrip = tripState.value ?: return
+
+        // Create an updated list of stops
+        val updatedStops = currentTrip.stops.map { currentStop ->
+            if (currentStop.stopId == stop.stopId) {
+                currentStop.copy(completed = !currentStop.completed)
+            } else currentStop
+        }
+
+        tripState.value = currentTrip.copy(stops = updatedStops)
+    }
+
 }
 
 @Composable

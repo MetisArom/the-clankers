@@ -1,8 +1,7 @@
 package theclankers.tripview.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -18,14 +17,12 @@ import theclankers.tripview.ui.screens.EditProfileScreen
 import theclankers.tripview.ui.screens.FriendProfileScreen
 import theclankers.tripview.ui.screens.FriendsListScreen
 import theclankers.tripview.ui.screens.ItineraryScreen
-import theclankers.tripview.ui.screens.ItineraryViewModel
 import theclankers.tripview.ui.screens.NavigationScreen
 import theclankers.tripview.ui.screens.SampleTrip
 import theclankers.tripview.ui.screens.StopScreen
 import theclankers.tripview.ui.screens.TripCreationForm
-import theclankers.tripview.ui.screens.TripDetailsScreen
 import theclankers.tripview.ui.screens.TripsScreen
-import theclankers.tripview.ui.viewmodels.useTrip
+import theclankers.tripview.ui.viewmodels.TripViewModel
 
 @Composable
 fun TripViewNavGraph(navController: NavHostController) {
@@ -59,7 +56,12 @@ fun TripViewNavGraph(navController: NavHostController) {
         }
         composable("debug") { DebugScreen(navController) }
         composable("sampleTrip"){ SampleTrip(navController) }
-        composable("editItinerary"){ EditItinerary(navController)}
+        composable(
+            route = "EditItinerary/{tripId}"
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getString("tripId")?.toInt()
+            EditItinerary(navController, tripId)
+        }
 //        composable("tripdetail/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { TripDetailsScreen(navController) }
 //        composable("ItineraryScreen"){ ItineraryScreen(navController, 1, viewModel)}
         composable(
@@ -67,13 +69,19 @@ fun TripViewNavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("tripId") { type = NavType.IntType })
         ) { backStackEntry ->
             val tripId = backStackEntry.arguments?.getInt("tripId") ?: return@composable
-            val itineraryViewModel: ItineraryViewModel = viewModel()
+            val tripViewModel: TripViewModel = viewModel()
 
             ItineraryScreen(
                 navController = navController,
                 tripId = tripId,
-                viewModel = itineraryViewModel
+                viewModel = tripViewModel
             )
+        }
+        composable("ItineraryScreen/1") {
+            val debugToken = "user_jwt_token"
+
+            val tripViewModel = remember { TripViewModel(debugToken) }
+            ItineraryScreen(navController, 1, tripViewModel)
         }
 //        composable("stop/{stopId}") { backStackEntry ->
 //            val stop = backStackEntry.arguments?.getInt("stopId") ?: 0

@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import theclankers.tripview.data.models.User
-import theclankers.tripview.data.network.ApiClient
+import theclankers.tripview.data.api.ApiClient
 import androidx.compose.runtime.State
 
 // Use this ViewModel for grabbing state relevant to a specific user.
