@@ -16,6 +16,7 @@ import androidx.navigation.navArgument
 import kotlinx.serialization.json.Json
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.screens.Camera3Screen
+import theclankers.tripview.ui.screens.CameraConfirmScreen
 import theclankers.tripview.ui.screens.DebugScreen
 import theclankers.tripview.ui.screens.EditItinerary
 import theclankers.tripview.ui.screens.EditProfileScreen
@@ -49,10 +50,15 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("navigation/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { NavigationScreen(navController) }
         composable("camera3") {
             Camera3Screen(
-                onPhotoCaptured = { bitmap ->
-                    Log.d("Camera3Screen", "Captured photo size: ${bitmap.width}x${bitmap.height}")
-                }
+                navController
             )}
+        composable(
+            "cameraConfirmScreen/{photoPath}",
+            arguments = listOf(navArgument("photoPath") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val photoPath = backStackEntry.arguments?.getString("photoPath")
+            CameraConfirmScreen(photoPath)
+        }
         composable("navigation") { NavigationScreen(navController) }
         composable("stops/{stop}", arguments = listOf(navArgument("stop") { type = NavType.StringType })) {
             backStackEntry ->
