@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import kotlinx.serialization.json.Json
 import theclankers.tripview.data.models.Stop
-import theclankers.tripview.ui.screens.Camera3Screen
 import theclankers.tripview.ui.screens.CameraConfirmScreen
+import theclankers.tripview.ui.screens.CameraScreen
 import theclankers.tripview.ui.screens.DebugScreen
 import theclankers.tripview.ui.screens.EditItinerary
 import theclankers.tripview.ui.screens.EditProfileScreen
@@ -32,22 +32,15 @@ fun TripViewNavGraph(navController: NavHostController) {
         //if you need navigation other than the nav bar on that route,
         //you must pass in navController to use navigateTo on that page.
         //composable("home") { HomeScreen(navController) }
-        composable("camera") { CameraScreen(navController) }
+        //composable("camera") { CameraScreen(navController) }
         //composable("friends") { FriendsScreen() }
         composable("friends") { FriendsListScreen(navController) }
         composable("profile") { ProfileScreen(navController) }
         composable("editProfile") { EditProfileScreen(navController) }
         composable("friendProfile") { FriendProfileScreen(navController) }
-        composable("camera2") { Camera2Screen() }
-        composable("camera3") {
-            Camera3Screen(
-                navController
-            )}
+        //composable("camera2") { Camera2Screen() }
         composable("navigation/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { NavigationScreen(navController) }
-        composable("camera3") {
-            Camera3Screen(
-                navController
-            )}
+        composable("camera") { CameraScreen(navController)}
         composable(
             "cameraConfirmScreen/{photoPath}",
             arguments = listOf(navArgument("photoPath") { type = NavType.StringType })

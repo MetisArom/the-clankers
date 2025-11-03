@@ -29,28 +29,8 @@ import theclankers.tripview.ui.components.TripItem
 import theclankers.tripview.ui.viewmodels.getAuthedUser
 
 
-@Composable
-fun CameraScreen(navController: NavHostController) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(Color(0xFFF7F6F8))
-        .padding(24.dp)
-        .verticalScroll(rememberScrollState())){
-        HeaderText1("Camera",  modifier = Modifier.padding(bottom=16.dp))
-        Text(text="Take a photo of a landmark to get more info", fontWeight= FontWeight.Bold, fontSize = 18.sp)
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(
-            onClick = { navigateTo(navController, "camera2") },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))
-        ){
-            Icon(
-                painter = painterResource(R.drawable.camera_icon),
-                contentDescription = "camera"
-            )
-        }
-    }
-
-}
+//@Composable
+//fun CameraScreen() {}
 @Composable
 fun FriendsScreen() { Text("Friends Screen") }
 @Composable
@@ -90,8 +70,8 @@ fun ProfileScreen(navController: NavController) {
 
 }
 
-@Composable
-fun Camera2Screen() { Text("Camera 2 Screen") }
+//@Composable
+//fun Camera2Screen() { Text("Camera 2 Screen") }
 
 @Composable
 fun StopScreen(navController: NavHostController, itemId: Int?) {
