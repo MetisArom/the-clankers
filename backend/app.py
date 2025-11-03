@@ -475,6 +475,7 @@ def get_trips():
         "driving_polyline_timestamp": t.driving_polyline_timestamp
     } for t in trips])
 
+
 @app.route('/trips/<int:trip_id>', methods=['GET'])
 def display_itinerary(trip_id):
     stops = Stop.query.filter_by(trip_id=trip_id).order_by(Stop.stop_order).all()
@@ -501,6 +502,18 @@ def get_trip(trip_id):
         "driving_polyline": str(trip.driving_polyline),
         "driving_polyline_timestamp": trip.driving_polyline_timestamp
     })
+
+@app.route('/trips/<int:trip_id>/archive_trip', methods=['PATCH'])
+def archive_trip(trip_id):
+    trip = Trip.query.get_or_404(trip_id)
+    trip.status = "archived"
+    db.session.commit()
+    return jsonify({
+        "message": f"Trip {trip_id} archived successfully",
+        "trip_id": trip.trip_id,
+        "status": trip.status
+    })
+
 
 @app.route('/trips/<int:trip_id>', methods=['PATCH'])
 def modify_itinerary(trip_id):
@@ -559,8 +572,8 @@ def debug_regenerate_polyline(trip_id):
 # STOP MANAGEMENT (Owner Controlled)
 # ============================================================
 
-@app.route('/trips/<int:trip_id>/<int:stop_id>', methods=["PATCH"])
-@jwt_required
+@app.route('/trips/<int:trip_id>/<int:stop_id>', methods=['PATCH'], endpoint="flip_stop")
+# @jwt_required
 def flip_stop_completed(trip_id, stop_id):
     """
     Function to mark a stop as completed or not completed, used for
@@ -570,11 +583,12 @@ def flip_stop_completed(trip_id, stop_id):
     data = request.get_json()
     if "completed" in data:
         stop.completed = not stop.completed
+        print(stop.completed)
     
     db.session.commit()
     return jsonify({"message": f"Stop with trip_id {trip_id} and stop_id {stop_id} marked as {stop.completed}"})
 
-@app.route('/trips/<int:trip_id>/<int:stop_id>', methods=["DELETE"])
+@app.route('/trips/<int:trip_id>/<int:stop_id>', endpoint="delete_stop")
 @jwt_required
 def delete_stop(trip_id, stop_id):
     stop = Stop.query.filter_by(trip_id=trip_id, stop_id=stop_id).first()

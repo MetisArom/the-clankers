@@ -309,9 +309,30 @@ object ApiClient {
             .addHeader("Authorization", "Bearer $token")
             .build()
 
-        val response = HttpHelper.delete(request)
+        val response = HttpHelper.patch(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
         return response.body?.string() ?: throw IOException("Empty response")
+
+    }
+
+    suspend fun flipStop(token: String, tripId: Int, stopId: Int): String {
+        val url = "$BASE_URL/trips/$tripId/$stopId"
+
+        val bodyJson = JSONObject().apply {
+            put("completed", "flipped")
+        }.toString()
+
+        val body = bodyJson.toRequestBody("application/json".toMediaType())
+        val request = Request.Builder()
+            .url(url)
+            .patch(body)
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.patch(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        return response.body?.string() ?: throw IOException("Empty response")
+
 
     }
 }

@@ -38,7 +38,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import theclankers.tripview.data.api.ApiClient
 import theclankers.tripview.data.models.Stop
 
 // For reference, look at the Trip 1 Screen, these are each of the stops
@@ -62,7 +64,7 @@ fun StopItem(
     editMode: Boolean = false,
     trailingContent: @Composable (() -> Unit)? = null
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -101,7 +103,7 @@ fun StopItem(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     IconButton(onClick = {
-                        coroutineScope.launch {
+                        scope.launch {
                             onDeleteStop(stop)
                         }
                     }) {
@@ -118,7 +120,16 @@ fun StopItem(
                     checked = stop.completed,
                     onCheckedChange = {
                         onCompletedChange(stop, !stop.completed)
-                        // api call to mark stop as incomplete
+                        // api call to flip stop completion status
+
+                        scope.launch {
+                            try {
+                                ApiClient.flipStop(token = "user_jwt_token", tripId = stop.tripId, stopId = stop.stopId)
+                                println("Trip archived")
+                            } catch (e: Exception) {
+                                println("Error archiving trip: ${e.message}")
+                            }
+                        }
                     }
 
                 )

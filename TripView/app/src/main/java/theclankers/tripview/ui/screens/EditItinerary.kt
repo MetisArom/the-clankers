@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,26 +32,18 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.api.ApiClient
 import theclankers.tripview.ui.components.StopItem
+import theclankers.tripview.ui.viewmodels.TripViewModel
 
 @Composable
-fun EditItinerary(navController: NavHostController, tripId: Int?) {
+fun EditItinerary(navController: NavHostController, tripId: Int?, viewModel: TripViewModel) {
     // sample data hardcoded
-    var stops by remember {
-        mutableStateOf(
-            listOf(
-                Stop(1, 37.8199, -122.4783, 0, "Morning walk across the bridge", "Bridge", 0, completed = true, "test"),
-                Stop(2, 37.8080, -122.4177, 0, "Seafood lunch by the bay", "Bay", 0, completed = false, "test"),
-                Stop(3,37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(4, 37.7544, -122.4477, 0, "Sunset view over San Francisco", "Mountain", 0, completed = true, "test"),
-                Stop(5, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(6, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(7, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(8, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(9, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(10, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test")
-            )
-        )
+
+    LaunchedEffect(tripId) {
+        tripId?.let { viewModel.loadTrip(it) }
     }
+
+    val trip by viewModel.tripState
+    var stops = trip?.stops ?: emptyList()
 
     val lazyListState = rememberLazyListState()
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
@@ -64,7 +57,8 @@ fun EditItinerary(navController: NavHostController, tripId: Int?) {
         topBar = {
             TopAppBar(
                 // should be based on whatever trip object is passed into this
-                title = { Text("San Francisco Itinerary") },
+                // TODO: current placeholder, need to add trip names to db later
+                title = { Text(trip?.let { "Trip #${it.tripId}" } ?: "Itinerary") },
                 actions = {
                     Button(onClick = { println("Navigation clicked") }) { Text("Navigation") }
                     Button(onClick = { println("Chat clicked") }) { Text("Chat") }

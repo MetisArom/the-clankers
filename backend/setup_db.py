@@ -100,7 +100,7 @@ with app.app_context():
         Stop(trip_id=trip1.trip_id, stop_type="pickup", latitude="42.2656", longitude="-83.7487", description="Start point 2", stop_order=3),
         Stop(trip_id=trip1.trip_id, stop_type="dropoff", latitude="42.2804", longitude="-83.7495", description="Destination 2", stop_order=4),
         Stop(trip_id=trip1.trip_id, stop_type="pickup", latitude="42.2776", longitude="-83.7409", description="Start point", stop_order=1),
-        Stop(trip_id=trip1.trip_id, stop_type="dropoff", latitude="42.2456", longitude="-83.7106", description="Destination", stop_order=2),
+        Stop(trip_id=trip1.trip_id, stop_type="dropoff", latitude="42.2456", longitude="-83.7106", description="Destination", stop_order=2, completed=True),
     ]
     db.session.add_all(stops)
 

@@ -103,7 +103,7 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: Tr
                                 try {
                                     ApiClient.archiveTrip(token = "user_jwt_token", tripId = tripId)
                                     println("Trip archived")
-                                    navController.navigate("trips") // lowercase, as in your NavGraph
+                                    navController.navigate("trips")
                                 } catch (e: Exception) {
                                     println("Error archiving trip: ${e.message}")
                                 }
