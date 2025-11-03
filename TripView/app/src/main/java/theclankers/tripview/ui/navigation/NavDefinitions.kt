@@ -1,12 +1,6 @@
 package theclankers.tripview.ui.navigation
 
-import android.R.attr.bitmap
-import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -22,15 +16,13 @@ import theclankers.tripview.ui.screens.EditItinerary
 import theclankers.tripview.ui.screens.EditProfileScreen
 import theclankers.tripview.ui.screens.FriendProfileScreen
 import theclankers.tripview.ui.screens.FriendsListScreen
-import theclankers.tripview.ui.screens.ItineraryScreen
+import theclankers.tripview.ui.screens.LandmarkContextScreen
 import theclankers.tripview.ui.screens.NavigationScreen
 import theclankers.tripview.ui.screens.SampleTrip
 import theclankers.tripview.ui.screens.StopScreen
 import theclankers.tripview.ui.screens.TripCreationForm
 import theclankers.tripview.ui.screens.TripDetailsScreen
 import theclankers.tripview.ui.screens.TripsScreen
-import theclankers.tripview.ui.viewmodels.useTrip
-import java.io.ByteArrayOutputStream
 
 @Composable
 fun TripViewNavGraph(navController: NavHostController) {
@@ -49,9 +41,7 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("camera2") { Camera2Screen() }
         composable("camera3") {
             Camera3Screen(
-                onPhotoCaptured = { bitmap ->
-                    Log.d("Camera3Screen", "Captured photo size: ${bitmap.width}x${bitmap.height}")
-                }
+                navController
             )}
         composable("navigation/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { NavigationScreen(navController) }
         composable("camera3") {
@@ -63,7 +53,14 @@ fun TripViewNavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("photoPath") { type = NavType.StringType })
         ) { backStackEntry ->
             val photoPath = backStackEntry.arguments?.getString("photoPath")
-            CameraConfirmScreen(photoPath)
+            CameraConfirmScreen(photoPath,navController)
+        }
+        composable(
+            "landmarkContext/{photoPath}",
+            arguments = listOf(navArgument("photoPath") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val photoPath = backStackEntry.arguments?.getString("photoPath")
+            LandmarkContextScreen(photoPath,navController)
         }
         composable("navigation") { NavigationScreen(navController) }
         composable("stops/{stop}", arguments = listOf(navArgument("stop") { type = NavType.StringType })) {
