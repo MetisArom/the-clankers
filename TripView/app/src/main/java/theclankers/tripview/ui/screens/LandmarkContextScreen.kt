@@ -46,7 +46,7 @@ fun LandmarkContextScreen (photoPath: String?,navController: NavHostController){
         Row() {
             HeaderText1("Camera")
             Button(
-                onClick = { navigateTo(navController, "camera3") },
+                onClick = { navigateTo(navController, "camera") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
                 modifier= Modifier.padding(start=20.dp))
 

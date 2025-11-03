@@ -48,10 +48,5 @@ fun DebugScreen(navController: NavHostController) {
             navigateTo(navController, "camera3")
         })
         { Text("Camera")  }
-
-        Button(onClick = {
-            navigateTo(navController, "camera3")
-        })
-        { Text("Camera")  }
     }
 }

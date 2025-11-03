@@ -119,7 +119,7 @@ fun CameraPreviewContent(
 }
 
 @Composable
-fun Camera3Screen(
+fun CameraScreen(
     navController: NavHostController
 ) {
     val context = LocalContext.current
