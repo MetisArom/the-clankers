@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import theclankers.tripview.ui.components.*
@@ -28,7 +29,10 @@ fun TripFormPt2(
     val stops by tripViewModel.stops.collectAsState()
     val isLoading by tripViewModel.isLoading.collectAsState()
     val errorMessage by tripViewModel.errorMessage.collectAsState()
-    var selectedTripId by remember { mutableStateOf<Int?>(null) }
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedTripId by remember { mutableStateOf<Int?>(null)
+    }
+
 
     when {
         isLoading -> {
@@ -118,10 +122,50 @@ fun TripFormPt2(
                             enabled = true,
                             onClick = {
                                 selectedTripId = trip.tripId
+                                showDialog =  true
                                 // You can navigate or perform your action here
                                 // e.g., navController.navigate("tripDetails/${trip.tripId}")
                             }
                         )
+                        // Confirmation Popup
+                        if (showDialog) {
+                            Dialog(onDismissRequest = { showDialog = false }) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(
+                                            color = PurpleGrey80.copy(alpha = 0.95f),
+                                            shape = RoundedCornerShape(16.dp)
+                                        )
+                                        .padding(24.dp)
+                                ) {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = "Your Trip Has Been Created Successfully!",
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontWeight = FontWeight.SemiBold
+                                            ),
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.padding(bottom = 16.dp)
+                                        )
+
+                                        Button(
+                                            onClick = { showDialog = false },
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = MaterialTheme.colorScheme.primary
+                                            ),
+                                            shape = RoundedCornerShape(50.dp)
+                                        ) {
+                                            Text("Okay")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                     }
                 }
             )
