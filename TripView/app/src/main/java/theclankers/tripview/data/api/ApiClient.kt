@@ -52,6 +52,8 @@ object ApiClient {
             throw IOException("Failed to parse user data")
         }
 
+        Log.d("ApiClient", "Fetched user: $user")
+
         return user
     }
 

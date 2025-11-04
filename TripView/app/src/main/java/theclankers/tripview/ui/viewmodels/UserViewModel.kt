@@ -8,10 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import theclankers.tripview.data.models.User
 import theclankers.tripview.data.network.ApiClient
-import androidx.compose.runtime.State
 
 // Use this ViewModel for grabbing state relevant to a specific user.
 // For example, pass as input "user_id" and it will return variables like "first_name", "last_name", and "username"
@@ -39,12 +37,12 @@ class UserViewModel(private val token: String) : ViewModel() {
 }
 
 @Composable
-fun useUser(token: String, userId: Int): State<User?> {
+fun useUser(token: String, userId: Int): UserViewModel {
     val viewModel = remember { UserViewModel(token) }
 
     LaunchedEffect(userId) {
         viewModel.loadUser(userId)
     }
 
-    return viewModel.userState
+    return viewModel
 }

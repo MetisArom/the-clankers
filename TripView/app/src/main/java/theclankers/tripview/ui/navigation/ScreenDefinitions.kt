@@ -28,7 +28,7 @@ fun CameraScreen(navController: NavHostController) { Button(onClick = {
 fun FriendsScreen() { Text("Friends Screen") }
 @Composable
 fun ProfileScreen(navController: NavController) {
-        val authedUserId = getAuthedUser().value?.userId ?: 0
+        val authedUserId = getAuthedUser().value?.userId ?: 1
 
         Column(modifier = Modifier
             .fillMaxSize()
@@ -38,8 +38,6 @@ fun ProfileScreen(navController: NavController) {
 
             //example user
             ProfilePageComponent(authedUserId, navController)
-
-
 
             // Example Trip list
 //            TripItem(

@@ -485,8 +485,8 @@ def get_user(user_id):
         "user_id": user.user_id,
         "username": user.username,
         "email": user.email,
-        "first_name": user.firstname,
-        "last_name": user.lastname,
+        "firstname": user.firstname,
+        "lastname": user.lastname,
         "likes": user.likes,
         "dislikes": user.dislikes
     })
@@ -568,8 +568,6 @@ def update_stop_completed(stop_id):
 #         }
 #         for s in stops
 #     ])
-
-
 
 @app.route('/trips/<int:trip_id>', methods=['PATCH'])
 def modify_itinerary(trip_id):

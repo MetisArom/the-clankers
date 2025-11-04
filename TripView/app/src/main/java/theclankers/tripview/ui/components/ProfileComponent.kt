@@ -1,6 +1,7 @@
 package theclankers.tripview.ui.components
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -37,9 +38,11 @@ fun FriendProfileComponent( userId: Int, navController: NavController, modifier:
 
 //for the profile page
 @Composable
-fun ProfilePageComponent( userId: Int, navController: NavController, modifier: Modifier = Modifier){
-    val userState = useUser("not implemented yet", userId)
-    val user = userState.value
+fun ProfilePageComponent( userId: Int, navController: NavController){
+    val userViewModel = useUser("not implemented yet", userId)
+    val user = userViewModel.userState.value
+
+    Log.d("ProfileComponent", "user: $user")
 
     Row(Modifier.padding(20.dp)) {
         SimpleImage(R.drawable.profile_picture, modifier= Modifier.size(150.dp))
