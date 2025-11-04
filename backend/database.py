@@ -33,6 +33,8 @@ class Trip(db.Model):
     status = db.Column(db.String(20), default='ongoing')
     driving_polyline = db.Column(db.Text)
     driving_polyline_timestamp = db.Column(db.DateTime)
+    name = db.Column(db.String(255))
+    description = db.Column(db.Text)
 
     stops = db.relationship('Stop', backref='trip', cascade="all, delete")
     chats = db.relationship('Chat', backref='trip', cascade="all, delete")
@@ -46,9 +48,9 @@ class Stop(db.Model):
     stop_type = db.Column(db.String(50))
     latitude = db.Column(db.Text, nullable=False)
     longitude = db.Column(db.Text, nullable=False)
-    description = db.Column(db.Text)
+    name = db.Column(db.Text)
     completed = db.Column(db.Boolean, default=False)
-    stop_order = db.Column(db.Integer)
+    order = db.Column(db.Integer)
 
 
 class Chat(db.Model):

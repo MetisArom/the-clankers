@@ -27,23 +27,23 @@ fun FriendProfileScreen(navController: NavController) {
         FriendProfileComponent(1, navController)
 
         // Example Trip list
-        TripItem(
-            tripName = "Trip 1",
-            tripDescription = "Supporting line text lorem ipsum dolor sit amet, consectetur.",
-            onClick = {
-                navController.navigate("tripdetail/1")
-                //will update this as i make more screens }
-            }
-            //modifier = Modifier.padding(bottom=24.dp)
-        )
-        TripItem(
-            tripName = "Trip 2",
-            tripDescription = "Supporting line text lorem ipsum dolor sit amet, consectetur.",
-            onClick = {
-                navController.navigate("tripdetail/2")
-                //will update this as i make more screens }
-            }
-        )
+//        TripItem(
+//            tripName = "Trip 1",
+//            tripDescription = "Supporting line text lorem ipsum dolor sit amet, consectetur.",
+//            onClick = {
+//                navController.navigate("tripdetail/1")
+//                //will update this as i make more screens }
+//            }
+//            //modifier = Modifier.padding(bottom=24.dp)
+//        )
+//        TripItem(
+//            tripName = "Trip 2",
+//            tripDescription = "Supporting line text lorem ipsum dolor sit amet, consectetur.",
+//            onClick = {
+//                navController.navigate("tripdetail/2")
+//                //will update this as i make more screens }
+//            }
+//        )
     }
 
 }

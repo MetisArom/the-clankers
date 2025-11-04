@@ -8,6 +8,8 @@ package theclankers.tripview.ui.components
 
 // Clicking this component ALWAYS opens up the trip screen
 
+import android.R.attr.onClick
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,24 +19,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import theclankers.tripview.ui.theme.Purple4
+import theclankers.tripview.ui.viewmodels.useTrip
 
 
-/**
- * Displays a single trip item with a name and description.
- * Clicking this component always opens the trip screen.
- *
- * @param tripName The title of the trip.
- * @param tripDescription A short description or detail about the trip.
- * @param onClick Callback when the trip card is clicked.
- */
 @Composable
 fun TripItem(
-    //for homepage
-    tripName: String,
-    tripDescription: String,
-    onClick: () -> Unit
+    tripId: Int,
+    navController: NavController
 ) {
+    val viewModel = useTrip("token", tripId)
+    val trip = viewModel.tripState.value
+
+    Log.d("TripItem", "Rendering TripItem for trip: $trip")
+
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -42,7 +41,7 @@ fun TripItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding( vertical = 8.dp)
-            .clickable { onClick() }
+            .clickable { navController.navigate("trip/${tripId}") }
     ) {
         Column(
             modifier = Modifier
@@ -51,12 +50,12 @@ fun TripItem(
             horizontalAlignment = Alignment.Start
         ) {
             HelperText2(
-                text = tripName,
+                text = trip?.name ?: "",
                 modifier = Modifier.padding(bottom = 4.dp)
             )
 
             HelperText(
-                text = tripDescription
+                text = trip?.description ?: ""
             )
         }
     }

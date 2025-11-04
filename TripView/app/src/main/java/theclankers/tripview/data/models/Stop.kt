@@ -7,12 +7,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Stop(
     val stopId: Int,
+    val tripId: Int,
+    val stopType: String,
     val latitude: Double,
     val longitude: Double,
-    val tripId: Int,
-    val description: String,
     val name: String,
-    val order: Int,
     val completed: Boolean,
-    val stopType: String,
+    val order: Int,
 )

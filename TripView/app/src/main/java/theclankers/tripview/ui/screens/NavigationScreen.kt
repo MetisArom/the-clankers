@@ -59,8 +59,8 @@ fun NavigationScreen(navController: NavHostController) {
 
     val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
 
-    val tripState = useTrip(activityVM.authAccessToken.value, tripId)
-    val trip = tripState.value
+    val viewModel = useTrip("token", tripId)
+    val trip = viewModel.tripState.value
 
     val cameraPositionState = rememberCameraPositionState()
     var mapLoaded by remember { mutableStateOf(false) }
@@ -74,7 +74,7 @@ fun NavigationScreen(navController: NavHostController) {
         }
     }
 
-    val stops = trip?.stops
+//    val stops = trip?.stops
 
     Row(
         modifier = Modifier.fillMaxHeight().fillMaxWidth(),
@@ -93,30 +93,30 @@ fun NavigationScreen(navController: NavHostController) {
         onMapLoaded = { mapLoaded = true } // Run Launched Effect at this point
     ) {
         // Add markers for each waypoint
-        stops?.forEachIndexed { index, stop ->
-            Marker(
-                state = MarkerState(position = LatLng(stop.latitude, stop.longitude)),
-                title = "Waypoint ${index + 1}",
-                snippet = "Lat: ${stop.latitude}, Lng: ${stop.longitude}, stop id: ${stop.stopId}",
-                onClick = {
-                    val stopJson = Uri.encode(Json.encodeToString(stop))
-                    navigateTo(navController, "stops/$stopJson")
-                    true
-                }
-            )
-        }
+//        stops?.forEachIndexed { index, stop ->
+//            Marker(
+//                state = MarkerState(position = LatLng(stop.latitude, stop.longitude)),
+//                title = "Waypoint ${index + 1}",
+//                snippet = "Lat: ${stop.latitude}, Lng: ${stop.longitude}, stop id: ${stop.stopId}",
+//                onClick = {
+//                    val stopJson = Uri.encode(Json.encodeToString(stop))
+//                    navigateTo(navController, "stops/$stopJson")
+//                    true
+//                }
+//            )
+//        }
 
         //Direct Route Polyline
-        if (showDirectPolyline) {
-            Polyline(
-                points = stops?.map { LatLng(it.latitude, it.longitude) } ?: emptyList(),
-                color = Color(0xFF0F53FF), // Google Maps Blue
-                width = 16f,                   // Thicker line
-                jointType = JointType.ROUND,   // Rounded joins
-                startCap = RoundCap(),
-                endCap = RoundCap()
-            )
-        }
+//        if (showDirectPolyline) {
+//            Polyline(
+//                points = stops?.map { LatLng(it.latitude, it.longitude) } ?: emptyList(),
+//                color = Color(0xFF0F53FF), // Google Maps Blue
+//                width = 16f,                   // Thicker line
+//                jointType = JointType.ROUND,   // Rounded joins
+//                startCap = RoundCap(),
+//                endCap = RoundCap()
+//            )
+//        }
 
         //Driving Route Polyline
         if (showDrivingPolyline) {
@@ -131,19 +131,19 @@ fun NavigationScreen(navController: NavHostController) {
         }
 
         // Zoom map view into stops bounding box
-        LaunchedEffect(mapLoaded, stops) {
-            if (mapLoaded && stops != null && stops.isNotEmpty()) {
-                //Compute bounding box
-                val boundsBuilder = LatLngBounds.builder()
-                stops.forEach { boundsBuilder.include(LatLng(it.latitude, it.longitude)) }
-                val bounds = boundsBuilder.build()
-
-                // Zoom to bounding box, use padding for spacing (in pixels)
-                cameraPositionState.animate(
-                    update = CameraUpdateFactory.newLatLngBounds(bounds, 150)
-                )
-            }
-        }
+//        LaunchedEffect(mapLoaded, stops) {
+//            if (mapLoaded && stops != null && stops.isNotEmpty()) {
+//                //Compute bounding box
+//                val boundsBuilder = LatLngBounds.builder()
+//                stops.forEach { boundsBuilder.include(LatLng(it.latitude, it.longitude)) }
+//                val bounds = boundsBuilder.build()
+//
+//                // Zoom to bounding box, use padding for spacing (in pixels)
+//                cameraPositionState.animate(
+//                    update = CameraUpdateFactory.newLatLngBounds(bounds, 150)
+//                )
+//            }
+//        }
     }
 
     Row(

@@ -38,6 +38,7 @@ class AppViewModel : ViewModel() {
                 val user = User(
                     userId = userJson.getInt("id"),
                     username = userJson.getString("username"),
+                    email = userJson.getString("email"),
                     firstName = userJson.getString("firstname"),
                     lastName = userJson.getString("lastname"),
                     likes = userJson.optString("likes", null),

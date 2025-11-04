@@ -474,33 +474,101 @@ def get_trips():
         "driving_polyline": str(t.driving_polyline),
         "driving_polyline_timestamp": t.driving_polyline_timestamp
     } for t in trips])
+    
+# ============================================================
+# Ethan added these routes
+# ============================================================
+@app.route('/user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = User.query.get_or_404(user_id)
+    return jsonify({
+        "user_id": user.user_id,
+        "username": user.username,
+        "email": user.email,
+        "first_name": user.firstname,
+        "last_name": user.lastname,
+        "likes": user.likes,
+        "dislikes": user.dislikes
+    })
 
-@app.route('/trips/<int:trip_id>', methods=['GET'])
-def display_itinerary(trip_id):
-    stops = Stop.query.filter_by(trip_id=trip_id).order_by(Stop.stop_order).all()
-    return jsonify([
-        {
-            "stop_id": s.stop_id,
-            "stop_type": s.stop_type,
-            "latitude": s.latitude,
-            "longitude": s.longitude,
-            "description": s.description,
-            "completed": s.completed,
-            "stop_order": s.stop_order
-        }
-        for s in stops
-    ])
+@app.route('/get_active_trips/<int:user_id>', methods=['GET'])
+def get_active_trips(user_id):
+    # Get trip_ids where the user is the owner and status is not "completed"
+    # ONLY return the trip_ids
+    trips = Trip.query.filter(Trip.owner_id == user_id, Trip.status != 'completed').all()
+    return jsonify([t.trip_id for t in trips])
+    
+@app.route('/get_completed_trips/<int:user_id>', methods=['GET'])
+def get_completed_trips(user_id):
+    # Get trips where the user is the owner and status is "completed"
+    trips = Trip.query.filter_by(owner_id=user_id, status='completed').all()
+    return jsonify([t.trip_id for t in trips])
+    
+@app.route('/get_friends_trips/<int:user_id>', methods=['GET'])
+def get_friends_trips(user_id):
+    # Get trips where the user is a member but not the owner
+    part_of_entries = PartOf.query.filter_by(user_id=user_id).all()
+    trip_ids = [entry.trip_id for entry in part_of_entries]
+    trips = Trip.query.filter(Trip.trip_id.in_(trip_ids), Trip.owner_id != user_id).all()
+    return jsonify([t.trip_id for t in trips])
 
-@app.route('/trips/<int:trip_id>/info', methods=['GET'])
+@app.route('/stop/<int:stop_id>', methods=['GET'])
+def get_stop(stop_id):
+    stop = Stop.query.get_or_404(stop_id)
+    return jsonify({
+        "stop_id": stop.stop_id,
+        "trip_id": stop.trip_id,
+        "stop_type": stop.stop_type,
+        "latitude": stop.latitude,
+        "longitude": stop.longitude,
+        "name": stop.name,
+        "completed": stop.completed,
+        "order": stop.order
+    })
+    
+@app.route('/trip/<int:trip_id>', methods=['GET'])
 def get_trip(trip_id):
     trip = Trip.query.get_or_404(trip_id)
     return jsonify({
         "trip_id": trip.trip_id,
         "owner_id": trip.owner_id,
         "status": str(trip.status),
+        "name": trip.name,
+        "description": trip.description,
         "driving_polyline": str(trip.driving_polyline),
-        "driving_polyline_timestamp": trip.driving_polyline_timestamp
+        "driving_polyline_timestamp": trip.driving_polyline_timestamp,
+        "stop_ids": [stop.stop_id for stop in trip.stops]
     })
+    
+@app.route('/update_stop_completed/<int:stop_id>', methods=['PUT'])
+def update_stop_completed(stop_id):
+    data = request.get_json()
+    stop = Stop.query.get_or_404(stop_id)
+    stop.completed = data.get('completed', stop.completed)
+    db.session.commit()
+    return jsonify({"message": f"Stop {stop_id} updated successfully!"})
+
+# ============================================================
+# Ethan added these routes
+# ============================================================
+
+# @app.route('/trips/<int:trip_id>', methods=['GET'])
+# def display_itinerary(trip_id):
+#     stops = Stop.query.filter_by(trip_id=trip_id).order_by(Stop.order).all()
+#     return jsonify([
+#         {
+#             "stop_id": s.stop_id,
+#             "stop_type": s.stop_type,
+#             "latitude": s.latitude,
+#             "longitude": s.longitude,
+#             "description": s.description,
+#             "completed": s.completed,
+#             "order": s.order
+#         }
+#         for s in stops
+#     ])
+
+
 
 @app.route('/trips/<int:trip_id>', methods=['PATCH'])
 def modify_itinerary(trip_id):
@@ -514,12 +582,12 @@ def modify_itinerary(trip_id):
     # if there is a new stop created, initial stop_id should be null (sent by app)
     for s in stops_data:
         stop_id = s.get('stop_id')
-        stop_order = s.get('stop_order')
+        order = s.get('order')
 
         # checking if existing stop's order changed
         if stop_id and stop_id in existing_dict:
             stop = existing_stops['stop_id']
-            stop.stop_order = stop_order
+            stop.order = order
 
         # adding newly added stop
         elif not stop_id:
@@ -528,9 +596,9 @@ def modify_itinerary(trip_id):
                 stop_type=s.get('stop_type', ''),
                 latitude=s['latitude'],
                 longitude=s['longitude'],
-                description=s.get('description', ''),
+                name=s.get('description', ''),
                 completed=s.get('completed', False),
-                stop_order=stop_order
+                order=order
             )
             db.session.add(new_stop)
         

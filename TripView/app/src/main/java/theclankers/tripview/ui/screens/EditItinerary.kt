@@ -30,16 +30,16 @@ fun EditItinerary(navController: NavHostController) {
     var stops by remember {
         mutableStateOf(
             listOf(
-                Stop(1, 37.8199, -122.4783, 0, "Morning walk across the bridge", "Bridge", 0, completed = true, "test"),
-                Stop(2, 37.8080, -122.4177, 0, "Seafood lunch by the bay", "Bay", 0, completed = false, "test"),
-                Stop(3,37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(4, 37.7544, -122.4477, 0, "Sunset view over San Francisco", "Mountain", 0, completed = true, "test"),
-                Stop(5, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(6, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(7, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(8, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(9, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test"),
-                Stop(10, 37.8267, -122.4230, 0, "Afternoon tour of the historic prison", "Prison", 0, completed = false, "test")
+                Stop(1, 1, "pickup", 37.8199, -122.4783, "Morning walk across the bridge", true, 0),
+                Stop(2, 1, "dropoff", 37.8080, -122.4177, "Seafood lunch by the bay", false, 1),
+                Stop(3,1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 2),
+                Stop(4, 1, "dropoff", 37.7544, -122.4477, "Sunset view over San Francisco", false, 3),
+                Stop(5, 1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 4),
+                Stop(6, 1, "dropoff", 37.8267, -122.4230, "Afternoon tour of the historic prison", false, 5),
+                Stop(7, 1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 6),
+                Stop(8, 1, "dropoff", 37.8267, -122.4230,  "Afternoon tour of the historic prison", false, 7),
+                Stop(9, 1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 8),
+                Stop(10, 1, "dropoff", 37.8267, -122.4230, "Afternoon tour of the historic prison", false, 9)
             )
         )
     }
@@ -70,16 +70,7 @@ fun EditItinerary(navController: NavHostController) {
                     .padding(16.dp)
             ) {
                 items(stops) { stop ->
-                    StopItem(
-                        stop = stop,
-                        onStopClick = { println("Hello") },
-                        onCompletedChange = { stop, completed ->
-                            stops = stops.map {
-                                if (it.stopId == stop.stopId) it.copy(completed = completed) else it
-                            }
-                        },
-                        editMode = true
-                    )
+                    StopItem(stopId = stop.stopId, navController = navController)
                 }
             }
 

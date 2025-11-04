@@ -61,15 +61,7 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: It
                     .padding(16.dp)
             ) {
                 items(stops, key = { it.stopId }) { stop ->
-                    StopItem(
-                        stop = stop,
-                        onStopClick = { clickedStop -> // add function to go to stop screen
-                            println("clicked stop ${clickedStop.name}")
-                        },
-                        onCompletedChange = { stop, _ ->
-                            viewModel.toggleCompleted(stop)
-                        }
-                    )
+                    StopItem(stopId = stop.stopId, navController = navController)
                 }
             }
 

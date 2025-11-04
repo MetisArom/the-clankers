@@ -1,9 +1,6 @@
 package theclankers.tripview.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -17,14 +14,12 @@ import theclankers.tripview.ui.screens.EditItinerary
 import theclankers.tripview.ui.screens.EditProfileScreen
 import theclankers.tripview.ui.screens.FriendProfileScreen
 import theclankers.tripview.ui.screens.FriendsListScreen
-import theclankers.tripview.ui.screens.ItineraryScreen
 import theclankers.tripview.ui.screens.NavigationScreen
 import theclankers.tripview.ui.screens.SampleTrip
 import theclankers.tripview.ui.screens.StopScreen
 import theclankers.tripview.ui.screens.TripCreationForm
-import theclankers.tripview.ui.screens.TripDetailsScreen
+import theclankers.tripview.ui.screens.TripScreen
 import theclankers.tripview.ui.screens.TripsScreen
-import theclankers.tripview.ui.viewmodels.useTrip
 
 @Composable
 fun TripViewNavGraph(navController: NavHostController) {
@@ -59,12 +54,12 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("debug") { DebugScreen(navController) }
         composable("sampleTrip"){ SampleTrip(navController) }
         composable("editItinerary"){ EditItinerary(navController)}
-        composable("tripdetail/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { TripDetailsScreen(navController) }
+        composable("trip/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { TripScreen(navController) }
 //        composable("ItineraryScreen"){ ItineraryScreen(navController, 1, viewModel)}
-//        composable("stop/{stopId}") { backStackEntry ->
-//            val stop = backStackEntry.arguments?.getInt("stopId") ?: 0
-//            StopScreen(navController, stop)
-//        }
+       composable("stop/{stopId}") { backStackEntry ->
+           val stop = backStackEntry.arguments?.getInt("stopId") ?: 0
+           StopScreen(navController, stop)
+       }
     }
 }
 

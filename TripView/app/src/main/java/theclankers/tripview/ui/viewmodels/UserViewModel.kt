@@ -27,16 +27,7 @@ class UserViewModel(private val token: String) : ViewModel() {
             isLoading.value = true
             errorMessage.value = null
             try {
-                val responseString = ApiClient.getUser(token, userId)
-                val json = JSONObject(responseString)
-                val user = User(
-                    userId = json.getInt("user_id"),
-                    username = json.getString("username"),
-                    firstName = json.getString("firstname"),
-                    lastName = json.getString("lastname"),
-                    likes = json.optString("likes", null),
-                    dislikes = json.optString("dislikes", null)
-                )
+                val user = ApiClient.getUser(token, userId)
                 userState.value = user
             } catch (e: Exception) {
                 errorMessage.value = e.message

@@ -86,21 +86,222 @@ with app.app_context():
     ])
 
     # --- TRIPS ---
-    trip1 = Trip(owner_id=alice.user_id, status="ongoing", driving_polyline="c|lsoArmcv~CVvbA`dB}@h@tkArrCeC~TxOdzVmtXbsMwlIt`KqxHzyDm}HoH_uG}b@xD|b@yDBtxGi}C`eH{sKfmIytLjuHvAt~H_X|_BqqAn~DuxArzI_Tl{B^z~DisA|@oyHgHkqF_kAmwJeTy@xy@",
-                 driving_polyline_timestamp=datetime.now(timezone.utc))
-    trip2 = Trip(owner_id=bob.user_id, status="ongoing", driving_polyline="",
-                 driving_polyline_timestamp=datetime.now(timezone.utc))
-    trip3 = Trip(owner_id=charlie.user_id, status="archived", driving_polyline="",
-                 driving_polyline_timestamp=datetime.now(timezone.utc))
-    db.session.add_all([trip1, trip2, trip3])
+    trip1 = Trip(
+        trip_id=1, 
+        owner_id=alice.user_id, 
+        status="ongoing", 
+        name="Weekend Getaway",
+        description="A fun weekend trip with friends.",
+        driving_polyline="c|lsoArmcv~CVvbA`dB}@h@tkArrCeC~TxOdzVmtXbsMwlIt`KqxHzyDm}HoH_uG}b@xD|b@yDBtxGi}C`eH{sKfmIytLjuHvAt~H_X|_BqqAn~DuxArzI_Tl{B^z~DisA|@oyHgHkqF_kAmwJeTy@xy@",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip2 = Trip(
+        trip_id=2, 
+        owner_id=bob.user_id, 
+        status="ongoing", 
+        name="City Exploration",
+        description="Exploring the city's hidden gems.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip3 = Trip(
+        trip_id=3, 
+        owner_id=charlie.user_id, 
+        status="archived", 
+        name="Mountain Hike",
+        description="Hiking trip to the mountains last summer.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip4 = Trip(
+        trip_id=4, 
+        owner_id=david.user_id, 
+        status="completed", 
+        name="Beach Day",
+        description="A relaxing day at the beach.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip5 = Trip(
+        trip_id=5,
+        owner_id=emily.user_id,
+        status="planned",
+        name="Desert Adventure",
+        description="Exploring the desert landscapes.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip6 = Trip(
+        trip_id=6,
+        owner_id=frank.user_id,
+        status="planned",
+        name="Forest Retreat",
+        description="A peaceful retreat in the forest.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip7 = Trip(
+        trip_id=7,
+        owner_id=grace.user_id,
+        status="planned",
+        name="City Lights",
+        description="Night tour of the city.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip8 = Trip(
+        trip_id=8,
+        owner_id=harry.user_id,
+        status="planned",
+        name="Lake House",
+        description="Weekend at the lake house.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip9 = Trip(
+        trip_id=9,
+        owner_id=irene.user_id,
+        status="planned",
+        name="Countryside Escape",
+        description="A quiet escape to the countryside.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip10 = Trip(
+        trip_id=10, 
+        owner_id=james.user_id, 
+        status="completed", 
+        name="Cultural Tour",
+        description="Visiting historical sites and museums.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip11 = Trip(
+        trip_id=11, 
+        owner_id=karen.user_id, 
+        status="archived", 
+        name="Foodie Trip",
+        description="Exploring the best food spots in town.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip12 = Trip(
+        trip_id=12, 
+        owner_id=lucas.user_id, 
+        status="ongoing", 
+        name="Cycling Tour",
+        description="A long-distance cycling adventure.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip13 = Trip(
+        trip_id=13, 
+        owner_id=mia.user_id, 
+        status="planned", 
+        name="Yoga Retreat",
+        description="A week of yoga and relaxation.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip14 = Trip(
+        trip_id=14, 
+        owner_id=noah.user_id, 
+        status="archived", 
+        name="Music Festival",
+        description="Attending a weekend music festival.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip15 = Trip(
+        trip_id=15, 
+        owner_id=alice.user_id, 
+        status="completed", 
+        name="Road Trip",
+        description="Cross-country road trip with friends.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip16 = Trip(
+        trip_id=16, 
+        owner_id=bob.user_id, 
+        status="archived", 
+        name="Ski Vacation",
+        description="Skiing in the mountains during winter.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip17 = Trip(
+        trip_id=17, 
+        owner_id=alice.user_id,
+        status="planned", 
+        name="Spring Break",
+        description="Beach vacation for spring break.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip18 = Trip(
+        trip_id=18, 
+        owner_id=charlie.user_id,
+        status="completed", 
+        name="Canyon Hike",
+        description="Hiking through the grand canyon.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip19 = Trip(
+        trip_id=19, 
+        owner_id=alice.user_id,
+        status="archived", 
+        name="City Marathon",
+        description="Participating in the annual city marathon.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip20 = Trip(
+        trip_id=20, 
+        owner_id=alice.user_id,
+        status="completed", 
+        name="Family Reunion",
+        description="Trip to visit family members.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip21 = Trip(
+        trip_id=21, 
+        owner_id=bob.user_id,
+        status="planned", 
+        name="Island Hopping",
+        description="Exploring various islands over a week.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip22 = Trip(
+        trip_id=22, 
+        owner_id=alice.user_id,
+        status="ongoing", 
+        name="Business Trip",
+        description="Attending conferences and meetings.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    trip23 = Trip(
+        trip_id=23, 
+        owner_id=charlie.user_id,
+        status="planned", 
+        name="Art Tour",
+        description="Visiting art galleries and exhibitions.",
+        driving_polyline="",
+        driving_polyline_timestamp=datetime.now(timezone.utc)
+    )
+    db.session.add_all([trip1, trip2, trip3, trip4, trip5, trip6, trip7, trip8, trip9, trip10, trip11, trip12, trip13, trip14, trip15, trip16, trip17, trip18, trip19, trip20, trip21, trip22, trip23])
     db.session.commit()
 
     # --- STOPS ---
     stops = [
-        Stop(trip_id=trip1.trip_id, stop_type="pickup", latitude="42.2656", longitude="-83.7487", description="Start point 2", stop_order=3),
-        Stop(trip_id=trip1.trip_id, stop_type="dropoff", latitude="42.2804", longitude="-83.7495", description="Destination 2", stop_order=4),
-        Stop(trip_id=trip1.trip_id, stop_type="pickup", latitude="42.2776", longitude="-83.7409", description="Start point", stop_order=1),
-        Stop(trip_id=trip1.trip_id, stop_type="dropoff", latitude="42.2456", longitude="-83.7106", description="Destination", stop_order=2),
+        Stop(trip_id=trip1.trip_id, stop_type="pickup", latitude="42.2656", longitude="-83.7487", name="Start point 2", order=3),
+        Stop(trip_id=trip1.trip_id, stop_type="dropoff", latitude="42.2804", longitude="-83.7495", name="Destination 2", order=4),
+        Stop(trip_id=trip1.trip_id, stop_type="pickup", latitude="42.2776", longitude="-83.7409", name="Start point", order=1),
+        Stop(trip_id=trip1.trip_id, stop_type="dropoff", latitude="42.2456", longitude="-83.7106", name="Destination", order=2),
     ]
     db.session.add_all(stops)
 
