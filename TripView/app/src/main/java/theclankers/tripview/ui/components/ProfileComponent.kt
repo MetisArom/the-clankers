@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import theclankers.tripview.R
-import theclankers.tripview.ui.navigation.navigateTo
+import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.useUser
 
 // Input: user_id
@@ -50,7 +50,7 @@ fun ProfilePageComponent( userId: Int, navController: NavController, modifier: M
 
             //Edit profile button
             Button(
-                onClick = { navigateTo(navController, "editProfile") },
+                onClick = { navigateToDetail(navController, "editProfile") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)))
             { Text("Edit Profile")  }
         }

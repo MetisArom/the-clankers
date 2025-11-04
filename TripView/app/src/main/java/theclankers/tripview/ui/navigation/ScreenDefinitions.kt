@@ -20,10 +20,9 @@ import theclankers.tripview.ui.components.ProfilePageComponent
 import theclankers.tripview.ui.components.TripItem
 import theclankers.tripview.ui.viewmodels.getAuthedUser
 
-
 @Composable
 fun CameraScreen(navController: NavHostController) { Button(onClick = {
-    navigateTo(navController, "camera2")
+    navigateToDetail(navController, "camera2")
 }) { Text("Go to Camera 2 Screen")  } }
 @Composable
 fun FriendsScreen() { Text("Friends Screen") }

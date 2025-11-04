@@ -43,7 +43,6 @@ import kotlinx.serialization.json.Json
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.navigation.goBack
-import theclankers.tripview.ui.navigation.navigateTo
 import theclankers.tripview.ui.viewmodels.AppViewModel
 import theclankers.tripview.ui.viewmodels.useTrip
 import theclankers.tripview.utils.decodePolyline

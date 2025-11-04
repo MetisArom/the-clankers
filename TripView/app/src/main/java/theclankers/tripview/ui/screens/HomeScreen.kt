@@ -8,7 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import theclankers.tripview.ui.navigation.navigateTo
+import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.AppViewModel
 
 @Composable
@@ -18,7 +18,7 @@ fun DebugScreen(navController: NavHostController) {
     val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
     Column {
         Button(onClick = {
-            navigateTo(navController, "navigation")
+            navigateToDetail(navController, "navigation")
         })
         { Text("Go to Navigation Screen")  }
         Button(onClick = {
@@ -29,16 +29,16 @@ fun DebugScreen(navController: NavHostController) {
         //this is just temporary until we make authentication
         //after you authenticate, that will directly take you to trips.kt
         Button(onClick = {
-            navigateTo(navController, "trips")
+            navigateToDetail(navController, "trips")
         })
         { Text("Go to TripCreation")  }
 
         Button(onClick = {
-            navigateTo(navController, route = "sampleTrip")
+            navigateToDetail(navController, route = "sampleTrip")
         })
         { Text(text="Sample Itinerary Debug") }
         Button(onClick = {
-            navigateTo(navController, route = "EditItinerary")
+            navigateToDetail(navController, route = "EditItinerary")
         })
         { Text(text="Edit Itinerary Debug") }
 

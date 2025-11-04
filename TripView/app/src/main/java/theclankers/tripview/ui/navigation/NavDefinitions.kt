@@ -1,5 +1,6 @@
 package theclankers.tripview.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -63,8 +64,19 @@ fun TripViewNavGraph(navController: NavHostController) {
     }
 }
 
-fun navigateTo(navController: NavController, route: String) {
+fun navigateToDetail(navController: NavController, route: String) {
     navController.navigate(route)
+}
+
+fun navigateToRoot(navController: NavHostController, route: String) {
+    navController.navigate(route) {
+        // Pop everything up to the start destination (so no back arrow)
+        popUpTo(navController.graph.startDestinationId) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
 }
 
 fun goBack(navController: NavController) {
