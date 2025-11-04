@@ -62,7 +62,6 @@ fun EditItinerary(navController: NavHostController, tripId: Int?, viewModel: Tri
                 actions = {
                     Button(onClick = { println("Navigation clicked") }) { Text("Navigation") }
                     Button(onClick = { println("Chat clicked") }) { Text("Chat") }
-                    Button(onClick = { println("Edit clicked") }) { Text("Edit") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
