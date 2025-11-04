@@ -529,6 +529,7 @@ def get_stop(stop_id):
 @app.route('/trip/<int:trip_id>', methods=['GET'])
 def get_trip(trip_id):
     trip = Trip.query.get_or_404(trip_id)
+    sorted_stops = sorted(trip.stops, key=lambda stop: stop.order)
     return jsonify({
         "trip_id": trip.trip_id,
         "owner_id": trip.owner_id,
@@ -537,7 +538,7 @@ def get_trip(trip_id):
         "description": trip.description,
         "driving_polyline": str(trip.driving_polyline),
         "driving_polyline_timestamp": trip.driving_polyline_timestamp,
-        "stop_ids": [stop.stop_id for stop in trip.stops]
+        "stop_ids": [stop.stop_id for stop in sorted_stops]
     })
     
 @app.route('/update_stop_completed/<int:stop_id>', methods=['PUT'])
