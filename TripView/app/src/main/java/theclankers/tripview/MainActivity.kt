@@ -67,10 +67,7 @@ fun MainScreen() {
 
     Scaffold(
         topBar = {
-            Header(
-                showBackButton = showBack,
-                onBackClick = { navController.popBackStack() }
-            )
+            Header(navController = navController)
         },
         bottomBar = {
             if (activityVM.showNavbar) {

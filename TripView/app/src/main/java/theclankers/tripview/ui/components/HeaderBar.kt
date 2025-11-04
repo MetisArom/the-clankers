@@ -2,38 +2,34 @@ package theclankers.tripview.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
-
-// This component needs to somehow be fully integrated with the Navigation stack
-// It needs to always show the name of the screen at the top
-// It also will conditionally show a back arrow depending on
-// 1: if there is a screen to go back to
-// 2: if you are allowed to go back from the current screen
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
-fun Header(
-    showBackButton: Boolean = true,
-    onBackClick: () -> Unit = {}
-) {
+fun Header(navController: NavController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    val currentTitle = currentDestination?.route?.substringBefore("?") ?: "TripView"
+
+    val canGoBack = navController.previousBackStackEntry != null
+
     TopAppBar(
-        title = {"_" },
+        title = { Text(currentTitle) },
         navigationIcon = {
-            if (showBackButton) {
-                IconButton(onClick = onBackClick) {
+            if (canGoBack) {
+                IconButton(onClick = { navController.navigateUp() }) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back"
                     )
                 }
-            } else null
+            }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color(0xFFF7F6F8)
-        ),
+        )
     )
 }
