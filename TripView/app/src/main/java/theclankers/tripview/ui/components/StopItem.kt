@@ -4,31 +4,20 @@ import android.R.attr.checked
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +26,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import theclankers.tripview.data.api.ApiClient
 import theclankers.tripview.data.models.Stop
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import theclankers.tripview.ui.viewmodels.StopViewModel
+import theclankers.tripview.ui.viewmodels.useAppContext
+import theclankers.tripview.ui.viewmodels.useStop
 
 // For reference, look at the Trip 1 Screen, these are each of the stops
 
@@ -50,21 +47,36 @@ import theclankers.tripview.data.models.Stop
 
 // Clicking this stop opens up the Stop in its own screen
 @Composable
-fun StopItem(
-    stop: Stop,
-    onStopClick: (Stop) -> Unit,
-    onCompletedChange: (Stop, Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    editMode: Boolean = false
-) {
+fun StopItem(navController: NavController, stopId: Int) {
+    val appVM = useAppContext()
+    val token = appVM.accessTokenState.value
+
+    if (token == null) return
+
+    val stopVM = useStop(token, stopId)
+    val completed = stopVM.completedState.value
+    val name = stopVM.nameState.value
+
+    if (completed == null || name == null) return
+    //stop: Stop,
+    //onStopClick: (Stop) -> Unit,
+    //onCompletedChange: (Stop, Boolean) -> Unit,
+    //modifier: Modifier = Modifier,
+    //onDeleteStop: suspend (Stop) -> Unit? = {},
+    //editMode: Boolean = false,
+    //trailingContent: @Composable (() -> Unit)? = null
+    //val scope = rememberCoroutineScope()
+
     Card(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
-            .clickable { onStopClick(stop) },
+            .clickable {
+                navController.navigate("stop/${stopId}")
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (stop.completed)
+            containerColor = if (completed) // editMode
                 MaterialTheme.colorScheme.surfaceVariant
             else
                 MaterialTheme.colorScheme.surface
@@ -81,7 +93,7 @@ fun StopItem(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = stop.name,
+                    text = name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
@@ -89,21 +101,31 @@ fun StopItem(
                 )
             }
 
-            if (editMode) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Drag handle",
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            } else {
-                Checkbox(
-                    checked = stop.completed,
-                    onCheckedChange = {
-                        onCompletedChange(stop, !stop.completed)
-                    }
+            //if (editMode) {
+            //    Row(
+            //        verticalAlignment = Alignment.CenterVertically,
+            //        horizontalArrangement = Arrangement.spacedBy(4.dp)
+            //    ) {
+            //        IconButton(onClick = {
+            //            scope.launch {
+            //                onDeleteStop(stop)
+            //            }
+            //        }) {
+            //            Icon(
+            //                imageVector = Icons.Filled.Delete,
+            //                contentDescription = "Delete stop"
+            //            )
+            //        }
 
-                )
-            }
+            //        trailingContent?.invoke()
+            //    }
+            //} else {}
+            Checkbox(
+                checked = completed,
+                onCheckedChange = { checked ->
+                    stopVM.toggleCompleted(stopId, checked)
+                }
+            )
         }
     }
 }

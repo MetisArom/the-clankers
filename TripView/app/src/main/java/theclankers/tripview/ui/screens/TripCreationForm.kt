@@ -101,7 +101,7 @@ fun TripCreationForm(navController: NavController) {
                 modifier = Modifier.padding(vertical = 16.dp)
             ) {
                 Button(
-                    onClick = { navController.navigate("TripFormPt2") },
+                    onClick = { navController.navigate("tripcreationform1") }, // TripFormPt2
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)

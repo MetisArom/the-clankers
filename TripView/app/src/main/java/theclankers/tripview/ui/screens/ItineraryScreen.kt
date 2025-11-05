@@ -24,6 +24,9 @@ import androidx.navigation.NavHostController
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.StopItem
 import kotlin.collections.map
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import theclankers.tripview.data.api.ApiClient
 
 @Composable
 fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: ItineraryViewModel) {
@@ -61,15 +64,7 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: It
                     .padding(16.dp)
             ) {
                 items(stops, key = { it.stopId }) { stop ->
-                    StopItem(
-                        stop = stop,
-                        onStopClick = { clickedStop -> // add function to go to stop screen
-                            println("clicked stop ${clickedStop.name}")
-                        },
-                        onCompletedChange = { stop, _ ->
-                            viewModel.toggleCompleted(stop)
-                        }
-                    )
+                    StopItem(navController, stop.stopId)
                 }
             }
 
