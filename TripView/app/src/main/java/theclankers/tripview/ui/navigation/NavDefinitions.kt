@@ -1,18 +1,15 @@
 package theclankers.tripview.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import kotlinx.serialization.json.Json
-import theclankers.tripview.data.models.Stop
-import theclankers.tripview.ui.viewmodels.TripViewModel
 import theclankers.tripview.ui.screens.*
+import theclankers.tripview.ui.screens.auth.LoginScreen
+import theclankers.tripview.ui.screens.auth.SignupScreen
 
 /**
  * Main Navigation Graph for the TripView app
@@ -159,6 +156,18 @@ fun TripViewNavGraph(navController: NavHostController) {
         //       val stop = backStackEntry.arguments?.getInt("stopId") ?: 0
         //       StopScreen(navController, stop)
         //   }
+    }
+}
+
+@Composable
+fun AuthNavGraph(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = "login") {
+        composable("login") {
+            LoginScreen(navController)
+        }
+        composable("signup") {
+            SignupScreen(navController)
+        }
     }
 }
 
