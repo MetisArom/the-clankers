@@ -125,9 +125,15 @@ object ApiClient {
         return emptyList()
     }
 
-    // TODO: Implement getInvites, call the back-end route get_invites<int:user_id>
+    // TODO: Implement getInvites, call the back-end route get_invites/<int:user_id>
     suspend fun getInvites(token: String, userId: Int): List<Int> {
         return emptyList()
+    }
+
+    // TODO: Implement getRelationship, call the back-end route get_relationship/<int:user_id1>/<int:user_id2>
+    // get_relationship returns a status string: "friends", "pending_incoming", "pending_outgoing", "none", "self"
+    suspend fun getRelationship(token: String, user_id1: Int, user_id2: Int): String {
+        return ""
     }
 
     // -------------------------------

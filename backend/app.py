@@ -122,6 +122,12 @@ def get_friends():
 def get_invites(user_id):
     pass
 
+# TODO: Implement /get_relationship/<int:user_id1>/<int:user_id2> endpoint
+# Should return one of the following statuses: "friends", "pending_incoming", "pending_outgoing", "none", "self"
+@app.route('/get_relationship/<int:user_id1>/<int:user_id2>', methods=['GET'])
+def get_relationship(user_id1, user_id2):
+    pass
+
 # Sending a Friend Request
 @app.route('/friends/request', methods=['POST'])
 @jwt_required()
