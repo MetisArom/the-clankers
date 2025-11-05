@@ -126,10 +126,13 @@ fun NavigationScreen(navController: NavHostController, tripId: Int) {
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Button(onClick = {
-            showDirectPolyline = !showDirectPolyline
-            if (showDrivingPolyline) showDrivingPolyline = false
-        }) {
+        Button(
+            onClick = {
+                showDirectPolyline = !showDirectPolyline
+                if (showDrivingPolyline) showDrivingPolyline = false
+            },
+            enabled = stopPositions.isNotEmpty()
+        ) {
             Text(if (!showDirectPolyline) "Show Direct Route" else "Hide Direct Route")
         }
 

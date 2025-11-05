@@ -274,7 +274,7 @@ object ApiClient {
             .build()
 
         val response = HttpHelper.get(request)
-        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code} ${response.message}")
         val responseBody = response.body?.string() ?: throw IOException("Empty response")
 
         var trip: Trip? = null
@@ -318,6 +318,7 @@ object ApiClient {
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
         val responseBody = response.body?.string() ?: throw IOException("Empty response")
         var stop: Stop? = null
+        print(responseBody)
         try {
             val json = JSONObject(responseBody)
             stop = Stop(

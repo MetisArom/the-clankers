@@ -27,9 +27,11 @@ def regenerate_driving_polyline(trip_id, debug):
             db.session.commit()
         else:
             if OSRMresponse["code"] == "NoRoute":
+                #If no route between the stops is possible (e.g, from Ann Arbor to Mackinac Island, set polyline to blank)
                 trip.driving_polyline = ""
                 db.session.commit()
     
+    #If debug, return some additional information.
     if debug:
         debug_response["after_polyline"] = trip.driving_polyline
         debug_response["OSRM"] = OSRMresponse

@@ -532,7 +532,7 @@ def get_stop(stop_id):
 @app.route('/trip/<int:trip_id>', methods=['GET'])
 def get_trip(trip_id):
     trip = Trip.query.get_or_404(trip_id)
-    sorted_stops = sorted(trip.stops, key=lambda stop: stop.order)
+    sorted_stops = db.session.query(Stop).filter_by(trip_id=trip_id).order_by(Stop.order.asc()).all()
     return jsonify({
         "trip_id": trip.trip_id,
         "owner_id": trip.owner_id,
@@ -676,6 +676,8 @@ def save_trip():
                 db.session.add(new_stop)
         
         db.session.commit()
+
+        regenerate_driving_polyline(new_trip.trip_id, True)
         
         return jsonify({
             "message": "Trip saved successfully",
