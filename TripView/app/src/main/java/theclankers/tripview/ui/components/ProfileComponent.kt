@@ -15,44 +15,41 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import theclankers.tripview.R
-import theclankers.tripview.ui.navigation.navigateTo
+import theclankers.tripview.ui.navigation.navigateToDetail
+import theclankers.tripview.ui.viewmodels.AppViewModel
+import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.ui.viewmodels.useUser
 
-// Input: user_id
-
-// Displays the generic avatar, first name, last name, username stylishly
-
-// for friends list
 @Composable
-fun FriendProfileComponent( userId: Int, navController: NavController, modifier: Modifier = Modifier){
-    Row(Modifier.padding(20.dp)) {
-        SimpleImage(R.drawable.profile_picture, modifier= Modifier.size(150.dp))
-        Column(Modifier.padding(15.dp) ){
-            // change to input based on the user ID from the backend
-            HeaderText("Friend Name Last Name")
-            Text( text="Username",  fontSize=20.sp)
-        }
-    }
-}
+fun ProfileComponent(navController: NavController, userId: Int){
+    val appVM: AppViewModel = useAppContext()
+    val loggedInUserId = appVM.userIdState.value
+    val token = appVM.accessTokenState.value
 
-//for the profile page
-@Composable
-fun ProfilePageComponent( userId: Int, navController: NavController, modifier: Modifier = Modifier){
-    val userState = useUser("not implemented yet", userId)
-    val user = userState.value
+    if (loggedInUserId == null || token == null) return
+
+    val userViewModel = useUser(token, userId)
+    val firstName = userViewModel.firstNameState.value
+    val lastName = userViewModel.lastNameState.value
+    val username = userViewModel.usernameState.value
+
+    if (firstName == null || lastName == null || username == null) return
 
     Row(Modifier.padding(20.dp)) {
         SimpleImage(R.drawable.profile_picture, modifier= Modifier.size(150.dp))
         Column(Modifier.padding(15.dp) ){
-            // change to input based on the user ID from the backend
-            HeaderText("${user?.firstName ?: ""} ${user?.lastName ?: ""}")
-            Text( text= user?.username ?: "",  fontSize=20.sp, modifier= Modifier.padding(bottom=10.dp))
+            HeaderText("$firstName $lastName")
+            Text( text= username,  fontSize=20.sp, modifier= Modifier.padding(bottom=10.dp))
 
-            //Edit profile button
-            Button(
-                onClick = { navigateTo(navController, "editProfile") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)))
-            { Text("Edit Profile")  }
+            // Only show Edit Profile if this is the logged-in user's profile
+            if (userId == loggedInUserId) {
+                Button(
+                    onClick = { navigateToDetail(navController, "editProfile") },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))
+                ) {
+                    Text("Edit Profile")
+                }
+            }
         }
     }
 }

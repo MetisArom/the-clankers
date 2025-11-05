@@ -47,7 +47,7 @@ fun TripViewNavigationBar(navController: NavHostController) {
                 selected = currentRoute == item.route,
                 onClick = {
                     if (currentRoute != item.route) {
-                        navigateTo(navController, item.route)
+                        navigateToRoot(navController, item.route)
                     }
                 }
             )

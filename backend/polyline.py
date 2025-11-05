@@ -5,7 +5,7 @@ from database import db, Trip, Stop
 def regenerate_driving_polyline(trip_id, debug):
     trip = Trip.query.get_or_404(trip_id)
     trip = db.session.get(Trip, trip_id)
-    stops = db.session.query(Stop).filter_by(trip_id=trip_id).order_by(Stop.stop_order.asc()).all()
+    stops = db.session.query(Stop).filter_by(trip_id=trip_id).order_by(Stop.order.asc()).all()
     
     debug_response = {}
     if debug:

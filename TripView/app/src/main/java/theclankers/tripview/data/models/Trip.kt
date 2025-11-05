@@ -10,5 +10,8 @@ data class Trip(
     val ownerId: Int,
     val status: String,
     val drivingPolyline: String,
-    val stops: List<Stop>
+    val drivingPolylineTimestamp: String,
+    val name: String,
+    val description: String,
+    val stopIds: List<Int>
 )

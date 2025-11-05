@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import theclankers.tripview.ui.components.FriendItem
-import theclankers.tripview.ui.components.HeaderText1
+import theclankers.tripview.ui.components.TitleText
 
 @Composable
 fun FriendsListScreen(navController: NavController) {
@@ -23,7 +23,7 @@ fun FriendsListScreen(navController: NavController) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        HeaderText1("Your Friends")
+        TitleText("Your Friends")
 
         FriendItem(username = "janesmith67", displayName = "Jane Smith", onClick = { navController.navigate("friendProfile") })
         FriendItem(username = "ozzy67", displayName = "Ozzy Osbourne", onClick = { navController.navigate("friendProfile")})
