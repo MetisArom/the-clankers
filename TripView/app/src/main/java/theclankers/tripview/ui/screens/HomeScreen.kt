@@ -18,7 +18,7 @@ fun DebugScreen(navController: NavHostController) {
 
     Column {
         Button(onClick = {
-            navigateToDetail(navController, "navigation")
+            navigateToDetail(navController, "navigation/1")
         })
         { Text("Go to Navigation Screen")  }
         Button(onClick = {
