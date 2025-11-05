@@ -105,8 +105,9 @@ object ApiClient {
 
     // TODO: Implement signup API function
     // Calls endpoint /signup
-    suspend fun signup(username: String, email: String, password: String, firstName: String, lastName: String, likes: String, dislikes: String) {
-
+    // returns a LoginResult object
+    suspend fun signup(username: String, email: String, password: String, firstName: String, lastName: String, likes: String, dislikes: String): LoginResult {
+        return LoginResult(0, "") // to prevent compile errors
     }
 
     // -------------------------------
