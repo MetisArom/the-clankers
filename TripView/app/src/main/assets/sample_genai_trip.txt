@@ -1,0 +1,178 @@
+{
+    "trips": [
+        {
+            "destination": "California",
+            "duration_days": 4,
+            "stops": [
+                {
+                    "coordinates": {
+                        "lat": 37.4853,
+                        "lng": -122.0799
+                    },
+                    "description": "Dive into the origins of computing with a quiet, immersive exploration of hardware and software evolution. Expect to spend 2-3 hours absorbing the history that paved the way for modern coding.",
+                    "name": "Computer History Museum",
+                    "stop_type": "Museum"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.4275,
+                        "lng": -122.1697
+                    },
+                    "description": "Enjoy a contemplative walk through the serene, intellectually stimulating campus, perfect for quiet reflection and inspiration. Allocate 1-2 hours to explore the architecture and peaceful courtyards.",
+                    "name": "Stanford University Campus",
+                    "stop_type": "University"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.3,
+                        "lng": -122.0177
+                    },
+                    "description": "Observe the innovative design and technology at Apple's campus from the dedicated visitor center, a generally calm environment for tech enthusiasts. This visit typically takes about 1 hour.",
+                    "name": "Apple Park Visitor Center",
+                    "stop_type": "Tech Campus"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.4287,
+                        "lng": -122.0838
+                    },
+                    "description": "Find tranquility by the lake, an ideal quiet spot for a coding break or to simply gather thoughts amidst natural beauty. Plan for 1-2 hours of peaceful solitude.",
+                    "name": "Shoreline Lake",
+                    "stop_type": "Park"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.422,
+                        "lng": -122.0841
+                    },
+                    "description": "A quick, quiet drive-by or exterior view of Google's iconic campus, offering a glimpse into one of the world's leading tech environments without the noise of a bustling interior tour. This is a brief stop, around 30 minutes.",
+                    "name": "Googleplex (Exterior View)",
+                    "stop_type": "Tech Campus"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.3861,
+                        "lng": -122.0838
+                    },
+                    "description": "Settle into a quiet corner with a coffee, perfect for a focused coding session or brainstorming new project ideas. Allow 1-2 hours for a relaxed, productive stop.",
+                    "name": "Red Rock Coffee",
+                    "stop_type": "Cafe"
+                }
+            ],
+            "version": 1
+        },
+        {
+            "destination": "California",
+            "duration_days": 4,
+            "stops": [
+                {
+                    "coordinates": {
+                        "lat": 37.7699,
+                        "lng": -122.4661
+                    },
+                    "description": "Explore the wonders of nature and science in a largely calm environment, with exhibits like the rainforest dome and aquarium inspiring quiet contemplation. Dedicate 2-3 hours to fully appreciate the varied collections.",
+                    "name": "California Academy of Sciences",
+                    "stop_type": "Museum"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.9063,
+                        "lng": -122.5714
+                    },
+                    "description": "Immerse yourself in the profound quiet of ancient redwood forests, an unparalleled setting for clearing the mind and finding natural inspiration. Plan for 2-3 hours to hike and absorb the majestic scenery.",
+                    "name": "Muir Woods National Monument",
+                    "stop_type": "National Monument"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.8199,
+                        "lng": -122.4783
+                    },
+                    "description": "Enjoy a contemplative walk across the engineering marvel of the Golden Gate Bridge, focusing on the expansive views and the serene sounds of the bay (best during off-peak hours). This walk usually takes 1.5-2 hours.",
+                    "name": "Golden Gate Bridge Walk",
+                    "stop_type": "Landmark"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.8716,
+                        "lng": -122.2585
+                    },
+                    "description": "Stroll through the historic and academically rich campus, finding quiet spots for reflection or to draw inspiration from its innovative spirit. Allow 1-2 hours for a peaceful exploration.",
+                    "name": "University of California, Berkeley Campus",
+                    "stop_type": "University"
+                },
+                {
+                    "coordinates": {
+                        "lat": 37.871,
+                        "lng": -122.26
+                    },
+                    "description": "Discover a quiet independent bookstore in Berkeley, a perfect sanctuary for browsing technical books or jotting down coding ideas in a peaceful setting. Spend 1-2 hours enjoying the calm atmosphere.",
+                    "name": "North Light Books (Quiet Bookstore)",
+                    "stop_type": "Bookstore"
+                }
+            ],
+            "version": 2
+        },
+        {
+            "destination": "California",
+            "duration_days": 5,
+            "stops": [
+                {
+                    "coordinates": {
+                        "lat": 34.1185,
+                        "lng": -118.3004
+                    },
+                    "description": "Explore celestial exhibits and enjoy expansive, relatively quiet views of the city and cosmos, particularly during off-peak hours. This scientific exploration typically takes 2-3 hours.",
+                    "name": "Griffith Observatory",
+                    "stop_type": "Observatory"
+                },
+                {
+                    "coordinates": {
+                        "lat": 34.1989,
+                        "lng": -118.1738
+                    },
+                    "description": "Delve into space exploration and robotics at this intellectually stimulating and often quiet environment (check for public tour availability). A visit usually lasts 1-2 hours.",
+                    "name": "Jet Propulsion Laboratory (JPL) Visitor Center",
+                    "stop_type": "Science Center"
+                },
+                {
+                    "coordinates": {
+                        "lat": 34.1278,
+                        "lng": -118.1147
+                    },
+                    "description": "Wander through diverse, tranquil gardens and quiet library exhibits, offering abundant opportunities for peaceful contemplation and inspiration. Plan 3-4 hours to fully experience the extensive grounds.",
+                    "name": "The Huntington Library, Art Museum, and Botanical Gardens",
+                    "stop_type": "Botanical Garden"
+                },
+                {
+                    "coordinates": {
+                        "lat": 34.0089,
+                        "lng": -118.497
+                    },
+                    "description": "Enjoy a contemplative walk along the quiet Santa Monica beach during the early morning hours, observing the ocean and gathering thoughts without the typical crowds and noise. Dedicate 1-2 hours to this serene experience.",
+                    "name": "Santa Monica Beach (Early Morning)",
+                    "stop_type": "Beach"
+                },
+                {
+                    "coordinates": {
+                        "lat": 34.0689,
+                        "lng": -118.4452
+                    },
+                    "description": "Stroll through the beautiful and architecturally inspiring campus, soaking in the academic atmosphere and finding quiet spots for reflection. A peaceful exploration takes about 1-2 hours.",
+                    "name": "University of California, Los Angeles (UCLA) Campus",
+                    "stop_type": "University"
+                },
+                {
+                    "coordinates": {
+                        "lat": 34.085,
+                        "lng": -118.252
+                    },
+                    "description": "Find a quiet, elevated spot with city views within Elysian Park, perfect for contemplation, light reading, or simply enjoying the peaceful expanse. Allocate 1-2 hours for relaxation.",
+                    "name": "Elysian Park",
+                    "stop_type": "Park"
+                }
+            ],
+            "version": 3
+        }
+    ]
+}
