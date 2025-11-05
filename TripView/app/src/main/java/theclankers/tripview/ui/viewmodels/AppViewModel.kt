@@ -53,6 +53,11 @@ class AppViewModel : ViewModel() {
         Log.d("AppViewModel", "🔒 Logged out")
     }
 
+    // TODO: Implement signup function, which is called from the SignupScreen and calls ApiService.signup
+    fun signup(username: String, email: String, password: String, firstName: String, lastName: String, likes: String, dislikes: String) {
+
+    }
+
     fun toggleNavbar() {
         showNavbarState.value = !showNavbarState.value
     }
