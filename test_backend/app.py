@@ -7,7 +7,7 @@ app = Flask(__name__)
 # -------------------------------
 fake_users = [
     {
-        "id": 1,
+        "user_id": 1,
         "username": "alice",
         "firstname": "Alice",
         "lastname": "Anderson",
@@ -15,7 +15,7 @@ fake_users = [
         "dislikes": "crowds"
     },
     {
-        "id": 2,
+        "user_id": 2,
         "username": "bob",
         "firstname": "Bob",
         "lastname": "Brown",
@@ -29,23 +29,19 @@ fake_trips = [
         "trip_id": 1,
         "owner_id": 1,
         "status": "planned",
-        "destination": "Paris",
-        "stops": [
-            {
-                "stop_id": 1,
-                "coordinates": [48.8566, 2.3522],
-                "name": "Eiffel Tower",
-                "description": "Visit the Eiffel Tower",
-                "order": 0
-            },
-            {
-                "stop_id": 2,
-                "coordinates": [48.8606, 2.3376],
-                "name": "Louvre Museum",
-                "description": "See the Mona Lisa",
-                "order": 1
-            }
-        ]
+        "stops": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    },
+    {
+        "trip_id": 2,
+        "owner_id": 2,
+        "status": "completed",
+        "stops": [11, 12, 13, 14, 15]
+    },
+    {
+        "trip_id": 3,
+        "owner_id": 1,
+        "status": "planned",
+        "stops": [16, 17, 18]
     }
 ]
 
@@ -152,6 +148,17 @@ def search_users():
 # -------------------------------
 # TRIP ENDPOINTS
 # -------------------------------
+
+@app.route("/trips/<int:trip_id>", methods=["GET"])
+def get_trip(trip_id):
+    # Can you make this function return 3 separate lists:
+    # List 1 is your trips (where you are the owner)
+    # List 2 is invited trips (where you are not the owner but are a member)
+    # List 3 is past trips (trips that have status "completed")
+    trip = next((t for t in fake_trips if t["trip_id"] == trip_id), None)
+    if trip:
+        return jsonify(trip)
+    return jsonify({"message": "Trip not found"}), 404
 
 @app.route("/trips/create", methods=["POST"])
 def create_trip():

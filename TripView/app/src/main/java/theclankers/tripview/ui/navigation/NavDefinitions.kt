@@ -11,91 +11,125 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import kotlinx.serialization.json.Json
 import theclankers.tripview.data.models.Stop
-import theclankers.tripview.ui.screens.DebugScreen
-import theclankers.tripview.ui.screens.EditItinerary
-import theclankers.tripview.ui.screens.EditProfileScreen
-import theclankers.tripview.ui.screens.FriendProfileScreen
-import theclankers.tripview.ui.screens.FriendsListScreen
-import theclankers.tripview.ui.screens.ItineraryScreen
-import theclankers.tripview.ui.screens.NavigationScreen
-import theclankers.tripview.ui.screens.SampleTrip
-import theclankers.tripview.ui.screens.StopScreen
-import theclankers.tripview.ui.screens.TripCreationForm
-import theclankers.tripview.ui.screens.TripsScreen
 import theclankers.tripview.ui.viewmodels.TripViewModel
+import theclankers.tripview.ui.screens.*
 
+/**
+ * Main Navigation Graph for the TripView app
+ * All screens/routes should be declared here.
+ * Any screen that needs a resource (Trip, Stop, User) will just receive its ID.
+ */
 @Composable
 fun TripViewNavGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = "trips") {
-        //Create an entry here for each route following the format
-        //composable([route]]) { [composable] }
-        //if you need navigation other than the nav bar on that route,
-        //you must pass in navController to use navigateTo on that page.
-        //composable("home") { HomeScreen(navController) }
+    NavHost(
+        navController = navController,
+        startDestination = "trips" // Default screen
+    ) {
+
+        // Camera screen (no arguments)
         composable("camera") { CameraScreen(navController) }
-        //composable("friends") { FriendsScreen() }
+
+        // Friends list screen
         composable("friends") { FriendsListScreen(navController) }
+
+        // Profile screen
         composable("profile") { ProfileScreen(navController) }
+
+        // Edit profile screen
         composable("editProfile") { EditProfileScreen(navController) }
-        composable("friendProfile") { FriendProfileScreen(navController) }
-        composable("camera2") { Camera2Screen() }
-        composable("navigation/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { NavigationScreen(navController) }
-        composable("stops/{stop}", arguments = listOf(navArgument("stop") { type = NavType.StringType })) {
-            backStackEntry ->
-                val stopJson = backStackEntry.arguments?.getString("stop")
-                if (stopJson != null) {
-                    val stop = Json.decodeFromString<Stop>(stopJson)
-                    StopScreen(navController, stop)
-                } else {
-                    goBack(navController)
-                }
-            }
-        composable("trips") { TripsScreen(navController) }
-        composable("tripcreationform") {
-            TripCreationForm(navController = navController)
-        }
-        composable("debug") { DebugScreen(navController) }
-        composable("sampleTrip"){ SampleTrip(navController) }
+
+        // Navigation screen for a specific trip
         composable(
-            route = "EditItinerary/{tripId}"
-        ) { backStackEntry ->
-            val debugToken = "user_jwt_token"
-            val tripId = backStackEntry.arguments?.getString("tripId")?.toInt()
-            val tripViewModel = remember { TripViewModel(debugToken) }
-            EditItinerary(navController, tripId, tripViewModel)
-        }
-//        composable("tripdetail/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { TripDetailsScreen(navController) }
-//        composable("ItineraryScreen"){ ItineraryScreen(navController, 1, viewModel)}
-        composable(
-            route = "ItineraryScreen/{tripId}",
+            "navigation/{tripId}",
             arguments = listOf(navArgument("tripId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val tripId = backStackEntry.arguments?.getInt("tripId") ?: return@composable
-            val tripViewModel: TripViewModel = viewModel()
-
-            ItineraryScreen(
-                navController = navController,
-                tripId = tripId,
-                viewModel = tripViewModel
-            )
+            val tripId = backStackEntry.arguments?.getInt("tripId") ?: 0
+            if (tripId != 0) NavigationScreen(navController, tripId) else goBack(navController)
         }
-        composable("ItineraryScreen/1") {
-            val debugToken = "user_jwt_token"
 
-            val tripViewModel = remember { TripViewModel(debugToken) }
-            ItineraryScreen(navController, 1, tripViewModel)
+        // Trip screen for a specific trip
+        composable(
+            "trip/{tripId}",
+            arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getInt("tripId") ?: 0
+            if (tripId != 0) TripScreen(navController, tripId) else goBack(navController)
         }
-//        composable("stop/{stopId}") { backStackEntry ->
-//            val stop = backStackEntry.arguments?.getInt("stopId") ?: 0
-//            StopScreen(navController, stop)
-//        }
+
+        // Stop screen for a specific stop
+        composable(
+            "stop/{stopId}",
+            arguments = listOf(navArgument("stopId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val stopId = backStackEntry.arguments?.getInt("stopId") ?: 0
+            if (stopId != 0) StopScreen(navController, stopId) else goBack(navController)
+        }
+
+        // Trips list screen
+        composable("trips") { TripsScreen(navController) }
+
+        // Trip creation form
+        composable("tripcreationform") { TripCreationForm(navController) }
+
+        // Debug screen
+        composable("debug") { DebugScreen(navController) }
+        // Sample trip screen
+        composable("sampleTrip") { SampleTrip(navController) }
+
+        // Edit itinerary screen
+        composable("editItinerary") { EditItinerary(navController) }
+        
+        // composable(
+        //     route = "EditItinerary/{tripId}"
+        // ) { backStackEntry ->
+        //     val debugToken = "user_jwt_token"
+        //     val tripId = backStackEntry.arguments?.getString("tripId")?.toInt()
+        //     val tripViewModel = remember { TripViewModel(debugToken) }
+        //     EditItinerary(navController, tripId, tripViewModel)
+        // }
+        //   composable("tripdetail/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { TripDetailsScreen(navController) }
+        //   composable("ItineraryScreen"){ ItineraryScreen(navController, 1, viewModel)}
+        // composable(
+        //     route = "ItineraryScreen/{tripId}",
+        //     arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+        // ) { backStackEntry ->
+        //     val tripId = backStackEntry.arguments?.getInt("tripId") ?: return@composable
+        //     val tripViewModel: TripViewModel = viewModel()
+   
+        //     ItineraryScreen(
+        //         navController = navController,
+        //         tripId = tripId,
+        //         viewModel = tripViewModel
+        //     )
+        // }
+        // composable("ItineraryScreen/1") {
+        //     val debugToken = "user_jwt_token"
+   
+        //     val tripViewModel = remember { TripViewModel(debugToken) }
+        //     ItineraryScreen(navController, 1, tripViewModel)
+        // }
+        //   composable("stop/{stopId}") { backStackEntry ->
+        //       val stop = backStackEntry.arguments?.getInt("stopId") ?: 0
+        //       StopScreen(navController, stop)
+        //   }
     }
 }
 
-fun navigateTo(navController: NavController, route: String) {
+/** Navigate to a specific detail route */
+fun navigateToDetail(navController: NavController, route: String) {
     navController.navigate(route)
 }
 
+/** Navigate to a root route and clear back stack */
+fun navigateToRoot(navController: NavHostController, route: String) {
+    navController.navigate(route) {
+        popUpTo(navController.graph.startDestinationId) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
+/** Go back to the previous screen */
 fun goBack(navController: NavController) {
     navController.popBackStack()
 }

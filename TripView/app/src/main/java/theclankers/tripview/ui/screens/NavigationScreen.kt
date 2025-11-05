@@ -1,33 +1,18 @@
 package theclankers.tripview.ui.screens
 
-import android.net.Uri
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.RoundCap
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -39,28 +24,36 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.HeaderText
-import theclankers.tripview.ui.navigation.goBack
-import theclankers.tripview.ui.navigation.navigateTo
 import theclankers.tripview.ui.viewmodels.AppViewModel
+import theclankers.tripview.ui.viewmodels.StopViewModel
+import theclankers.tripview.ui.viewmodels.TripViewModel
+import theclankers.tripview.ui.viewmodels.useAppContext
+import theclankers.tripview.ui.viewmodels.useStop
 import theclankers.tripview.ui.viewmodels.useTrip
 import theclankers.tripview.utils.decodePolyline
 
 @Composable
-fun NavigationScreen(navController: NavHostController) {
-    //returns 0 if no argument, bounce back
-    val tripId = navController.currentBackStackEntry?.arguments?.getInt("tripId") ?: 0
-    if (tripId == 0) {
-        goBack(navController)
-        return
+fun NavigationScreen(navController: NavHostController, tripId: Int) {
+    val appVM: AppViewModel = useAppContext()
+    val token = appVM.accessTokenState.value
+
+    if (token == null) return
+
+    val tripVM: TripViewModel = useTrip("token", tripId)
+    val stopIds = tripVM.stopIdsState.value ?: emptyList()
+    val drivingPolyline = tripVM.drivingPolylineState.value ?: ""
+
+    // Create StopViewModels for each stopId
+    val stopVMs: Map<Int, StopViewModel> = stopIds.associateWith { stopId ->
+        useStop(token, stopId)
     }
 
-    val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
-
-    val tripState = useTrip(activityVM.authAccessToken.value, tripId)
-    val trip = tripState.value
+    val stopPositions = stopVMs.values.mapNotNull { stopVM ->
+        val lat = stopVM.latitudeState.value
+        val lng = stopVM.longitudeState.value
+        if (lat != null && lng != null) LatLng(lat, lng) else null
+    }
 
     val cameraPositionState = rememberCameraPositionState()
     var mapLoaded by remember { mutableStateOf(false) }
@@ -68,13 +61,11 @@ fun NavigationScreen(navController: NavHostController) {
     var showDirectPolyline by remember { mutableStateOf(false) }
     var showDrivingPolyline by remember { mutableStateOf(false) }
 
-    val drivingPoints by produceState(initialValue = emptyList(), trip?.drivingPolyline) {
+    val drivingPoints by produceState(initialValue = emptyList(), drivingPolyline) {
         withContext(Dispatchers.Default) {
-            value = decodePolyline(trip?.drivingPolyline ?: "")
+            value = decodePolyline(drivingPolyline)
         }
     }
-
-    val stops = trip?.stops
 
     Row(
         modifier = Modifier.fillMaxHeight().fillMaxWidth(),
@@ -84,102 +75,72 @@ fun NavigationScreen(navController: NavHostController) {
         HeaderText("Map Loading...")
     }
 
-
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         properties = MapProperties(mapType = MapType.NORMAL, isMyLocationEnabled = false),
         uiSettings = MapUiSettings(compassEnabled = true, mapToolbarEnabled = false),
         cameraPositionState = cameraPositionState,
-        onMapLoaded = { mapLoaded = true } // Run Launched Effect at this point
+        onMapLoaded = { mapLoaded = true }
     ) {
-        // Add markers for each waypoint
-        stops?.forEachIndexed { index, stop ->
+        stopPositions.forEachIndexed { index, latLng ->
             Marker(
-                state = MarkerState(position = LatLng(stop.latitude, stop.longitude)),
-                title = "Waypoint ${index + 1}",
-                snippet = "Lat: ${stop.latitude}, Lng: ${stop.longitude}, stop id: ${stop.stopId}",
-                onClick = {
-                    val stopJson = Uri.encode(Json.encodeToString(stop))
-                    navigateTo(navController, "stops/$stopJson")
-                    true
-                }
+                state = MarkerState(position = latLng),
+                title = "Waypoint ${index + 1}"
             )
         }
 
-        //Direct Route Polyline
         if (showDirectPolyline) {
             Polyline(
-                points = stops?.map { LatLng(it.latitude, it.longitude) } ?: emptyList(),
-                color = Color(0xFF0F53FF), // Google Maps Blue
-                width = 16f,                   // Thicker line
-                jointType = JointType.ROUND,   // Rounded joins
+                points = stopPositions,
+                color = Color(0xFF0F53FF),
+                width = 16f,
+                jointType = JointType.ROUND,
                 startCap = RoundCap(),
                 endCap = RoundCap()
             )
         }
 
-        //Driving Route Polyline
         if (showDrivingPolyline) {
             Polyline(
                 points = drivingPoints,
-                color = Color(0xFF0F53FF), // Google Maps Blue
-                width = 16f,                   // Thicker line
-                jointType = JointType.ROUND,   // Rounded joins
+                color = Color(0xFF0F53FF),
+                width = 16f,
+                jointType = JointType.ROUND,
                 startCap = RoundCap(),
                 endCap = RoundCap()
             )
         }
 
-        // Zoom map view into stops bounding box
-        LaunchedEffect(mapLoaded, stops) {
-            if (mapLoaded && stops != null && stops.isNotEmpty()) {
-                //Compute bounding box
+        LaunchedEffect(mapLoaded, stopPositions) {
+            if (mapLoaded && stopPositions.isNotEmpty()) {
                 val boundsBuilder = LatLngBounds.builder()
-                stops.forEach { boundsBuilder.include(LatLng(it.latitude, it.longitude)) }
+                stopPositions.forEach { boundsBuilder.include(it) }
                 val bounds = boundsBuilder.build()
-
-                // Zoom to bounding box, use padding for spacing (in pixels)
-                cameraPositionState.animate(
-                    update = CameraUpdateFactory.newLatLngBounds(bounds, 150)
-                )
+                cameraPositionState.animate(CameraUpdateFactory.newLatLngBounds(bounds, 150))
             }
         }
     }
 
     Row(
-        modifier = Modifier.fillMaxHeight().fillMaxWidth(0.88F).padding(bottom = 16.dp),
+        modifier = Modifier.fillMaxHeight().fillMaxWidth(0.88f).padding(bottom = 16.dp),
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.SpaceEvenly
-    )
-    {
-        Button(
-            onClick = {
-                showDirectPolyline = !showDirectPolyline
-                if (showDrivingPolyline) {
-                    showDrivingPolyline = false
-                }
-            }
-        ) {
-            if (!showDirectPolyline) {
-                Text("Show Direct Route")
-            } else {
-                Text("Hide Direct Route")
-            }
+    ) {
+        Button(onClick = {
+            showDirectPolyline = !showDirectPolyline
+            if (showDrivingPolyline) showDrivingPolyline = false
+        }) {
+            Text(if (!showDirectPolyline) "Show Direct Route" else "Hide Direct Route")
         }
+
         Button(
             onClick = {
                 showDrivingPolyline = !showDrivingPolyline
-                if (showDirectPolyline) {
-                    showDirectPolyline = false
-                }
+                if (showDirectPolyline) showDirectPolyline = false
             },
-            enabled = drivingPoints.isNotEmpty() //Don't let user click if driving route not decoded yet
+            enabled = drivingPoints.isNotEmpty()
         ) {
-            if (!showDrivingPolyline) {
-                Text("Show Driving Route")
-            } else {
-                Text("Hide Driving Route")
-            }
+            Text(if (!showDrivingPolyline) "Show Driving Route" else "Hide Driving Route")
         }
     }
 }
