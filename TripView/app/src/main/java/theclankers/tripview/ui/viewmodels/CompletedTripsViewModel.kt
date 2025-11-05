@@ -8,7 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import theclankers.tripview.data.api.ApiClient
 
 class CompletedTripsViewModel(private val token: String) : ViewModel() {
@@ -21,7 +23,9 @@ class CompletedTripsViewModel(private val token: String) : ViewModel() {
             isLoading.value = true
             errorMessage.value = null
             try {
-                val trips = ApiClient.getCompletedTrips(token, userId)
+                val trips = withContext(Dispatchers.IO) {
+                    ApiClient.getCompletedTrips(token, userId)
+                }
                 activeTripsState.value = trips
             } catch (e: Exception) {
                 errorMessage.value = "Error loading active trips: ${e.message}"

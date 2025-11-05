@@ -11,6 +11,8 @@ import kotlinx.coroutines.launch
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.api.ApiClient
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class StopViewModel(private val token: String) : ViewModel() {
     // Individual fields
@@ -32,7 +34,9 @@ class StopViewModel(private val token: String) : ViewModel() {
             isLoading.value = true
             errorMessage.value = null
             try {
-                val stop = ApiClient.getStop(token, stopId)
+                val stop = withContext(Dispatchers.IO) {
+                    ApiClient.getStop(token, stopId)
+                }
 
                 // ✅ Update each state field from the Stop model
                 stopIdState.value = stop.stopId
@@ -59,7 +63,9 @@ class StopViewModel(private val token: String) : ViewModel() {
         viewModelScope.launch {
             try {
                 // 🔹 Send the update to the backend
-                ApiClient.updateStopCompleted(token, stopId, newValue)
+                withContext(Dispatchers.IO) {
+                    ApiClient.updateStopCompleted(token, stopId, newValue)
+                }
 
                 // 🔹 Update local state values
                 completedState.value = newValue

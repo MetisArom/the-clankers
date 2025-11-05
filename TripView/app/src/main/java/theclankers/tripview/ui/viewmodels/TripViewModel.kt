@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.api.ApiClient
 
@@ -152,7 +153,9 @@ class TripViewModel(private val token: String) : ViewModel() {
             isLoading.value = true
             errorMessage.value = null
             try {
-                val trip = ApiClient.getTrip(token, tripId)
+                val trip = withContext(Dispatchers.IO) {
+                    ApiClient.getTrip(token, tripId)
+                }
 
                 // ✅ Update each field from the loaded Trip
                 tripIdState.value = trip.tripId
