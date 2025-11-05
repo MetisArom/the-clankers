@@ -1,13 +1,21 @@
 package theclankers.tripview.data.network
 
+import android.R.attr.password
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import theclankers.tripview.core.Constants.BASE_URL
 import theclankers.tripview.utils.HttpHelper
+import java.io.File
 import java.io.IOException
+import java.net.URLConnection
 
 object ApiClient {
 
@@ -227,6 +235,40 @@ object ApiClient {
         val response = HttpHelper.get(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
         return response.body?.string() ?: throw IOException("Empty response")
+    }
+
+    // -------------------------------
+    // CAMERA ENDPOINTS
+    // -------------------------------
+
+    suspend fun landmarkContext(
+        imagePath: String
+    ): String = withContext(Dispatchers.IO) {
+        val url = "$BASE_URL/landmark_context"
+
+        val file = File(imagePath)
+        if(!file.exists() || !file.isFile) {
+            throw IOException("Image file not found: $imagePath")
+        }
+
+        val guess = URLConnection.guessContentTypeFromName(file.name)
+        val mimeType = guess?: "image/jpeg"
+
+        val fileRequestBody = file.asRequestBody(mimeType.toMediaTypeOrNull())
+
+        val multipartBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("image", file.name, fileRequestBody)
+            .build()
+
+        val request = Request.Builder()
+            .url(url)
+            .post(multipartBody)
+            .build()
+
+        val response = HttpHelper.post(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
 
     // -------------------------------
