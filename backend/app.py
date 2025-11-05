@@ -52,39 +52,6 @@ def home():
 # USER ENDPOINTS
 # ============================================================
 
-# Edit user info. Allowed fields are firstname, lastname, user likes and user dislikes.
-@app.route('/edit_user/', methods=['POST'])
-@jwt_required()   # 👈 requires valid token in header "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
-def edit_user():
-    # Get the current logged-in user ID from the token
-    current_user_id = int(get_jwt_identity())
-
-    # Fetch full user object from DB
-    user = db.session.get(User, current_user_id)
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-
-    data = request.get_json()
-    allowed_fields = ['firstname', "lastname" , 'likes', 'dislikes']
-
-    for field in allowed_fields:
-        if field in data:
-            setattr(user, field, data[field])
-
-    db.session.commit()
-    return jsonify({
-        "message": "User updated successfully",
-        "user": {
-            "id": user.user_id,
-            "username": user.username,
-            "firstname": user.firstname,
-            "lastname": user.lastname,
-            "likes": user.likes,
-            "dislikes": user.dislikes
-        }
-    }), 200
-
-
 # ============================================================
 # FRIENDSHIP ENDPOINTS
 # ============================================================
@@ -493,6 +460,40 @@ def get_user(user_id):
         "likes": user.likes,
         "dislikes": user.dislikes
     })
+    
+# TODO: Fix /edit_user endpoint
+# Adjust the route to accept parameter /edit_user/<int:user_id>
+# Make sure it accepts firstName, lastName, username, likes, and dislikes
+@app.route('/edit_user', methods=['POST'])
+@jwt_required()   # 👈 requires valid token in header "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+def edit_user():
+    # Get the current logged-in user ID from the token
+    current_user_id = int(get_jwt_identity())
+
+    # Fetch full user object from DB
+    user = db.session.get(User, current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    data = request.get_json()
+    allowed_fields = ['firstname', "lastname" , 'likes', 'dislikes']
+
+    for field in allowed_fields:
+        if field in data:
+            setattr(user, field, data[field])
+
+    db.session.commit()
+    return jsonify({
+        "message": "User updated successfully",
+        "user": {
+            "id": user.user_id,
+            "username": user.username,
+            "firstname": user.firstname,
+            "lastname": user.lastname,
+            "likes": user.likes,
+            "dislikes": user.dislikes
+        }
+    }), 200
 
 @app.route('/get_active_trips/<int:user_id>', methods=['GET'])
 def get_active_trips(user_id):

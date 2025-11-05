@@ -32,13 +32,21 @@ fun EditProfileScreen(navController: NavController) {
     val initialFirstName = userVM.firstNameState.value
     val initialLastName = userVM.lastNameState.value
     val initialUsername = userVM.usernameState.value
+    // TODO: Get initial variables for likes and dislikes
 
     if (initialFirstName == null || initialLastName == null || initialUsername == null) return
 
     // Local states stored as MutableState
-    val firstName = remember { mutableStateOf("") }
-    val lastName = remember { mutableStateOf("") }
-    val username = remember { mutableStateOf("") }
+    val firstName = remember { mutableStateOf(initialFirstName) }
+    val lastName = remember { mutableStateOf(initialLastName) }
+    val username = remember { mutableStateOf(initialUsername) }
+    // TODO: Create state for likes and dislikes
+    // TODO: Create state for loading
+
+    // TODO: Implement onSubmit, disables all buttons on the screen using a new loading state, then calls userVM.editUser(...), then navigates to ProfileScreen
+    fun onSubmit() {
+
+    }
 
     Scaffold(containerColor = Color(0xFFF7F6F8)) { innerPadding ->
         Column(
@@ -67,6 +75,15 @@ fun EditProfileScreen(navController: NavController) {
                     Text("Error: ${userVM.errorMessageState.value}", color = Color.Red)
                 } else {
                     FormInput(
+                        value = username.value,
+                        onValueChange = { username.value = it },
+                        label = "Username:",
+                        placeholder = "JaneDoe123",
+                        imeAction = ImeAction.Done,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    FormInput(
                         value = firstName.value,
                         onValueChange = { firstName.value = it },
                         label = "First Name:",
@@ -84,22 +101,16 @@ fun EditProfileScreen(navController: NavController) {
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
-                    FormInput(
-                        value = username.value,
-                        onValueChange = { username.value = it },
-                        label = "Username:",
-                        placeholder = "JaneDoe123",
-                        imeAction = ImeAction.Done,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+                    // TODO: Create form inputs for likes and dislikes
                 }
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(vertical = 16.dp)
                 ) {
+                    // TODO: Make this button disabled when loading
                     Button(
-                        onClick = { navController.navigate("profile") },
+                        onClick = { onSubmit() },
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)

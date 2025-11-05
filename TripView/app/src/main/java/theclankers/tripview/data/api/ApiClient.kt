@@ -110,6 +110,12 @@ object ApiClient {
         return LoginResult(0, "") // to prevent compile errors
     }
 
+    // TODO: Implement editUser API function, calls endpoint /edit_user/<int:user_id>
+    // returns nothing
+    suspend fun editUser(username: String, firstName: String, lastName: String, likes: String, dislikes: String) {
+
+    }
+
     // -------------------------------
     // FRIENDSHIP ENDPOINTS
     // -------------------------------
