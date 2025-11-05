@@ -61,7 +61,7 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: It
                     .padding(16.dp)
             ) {
                 items(stops, key = { it.stopId }) { stop ->
-                    StopItem(stopId = stop.stopId, navController = navController)
+                    StopItem(navController, stop.stopId)
                 }
             }
 

@@ -8,6 +8,8 @@ package theclankers.tripview.ui.components
 
 // Clicking this component ALWAYS opens up the trip screen
 
+import android.R.attr.description
+import android.R.attr.name
 import android.R.attr.onClick
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -19,20 +21,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import theclankers.tripview.ui.theme.Purple4
+import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.ui.viewmodels.useTrip
 
 
 @Composable
-fun TripItem(
-    tripId: Int,
-    navController: NavController
-) {
-    val viewModel = useTrip("token", tripId)
-    val trip = viewModel.tripState.value
+fun TripItem(navController: NavController, tripId: Int) {
+    val appVM = useAppContext()
+    val token = appVM.accessTokenState.value
 
-    Log.d("TripItem", "Rendering TripItem for trip: $trip")
+    if (token == null) return
+
+    val tripVM = useTrip(token, tripId)
+    val name = tripVM.nameState.value
+    val description = tripVM.descriptionState.value
+
+    if (name == null || description == null) return
+
+    Log.d("TripItem", "Rendering TripItem for trip: $tripId")
 
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -50,12 +59,12 @@ fun TripItem(
             horizontalAlignment = Alignment.Start
         ) {
             HelperText2(
-                text = trip?.name ?: "",
+                text = name,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
 
             HelperText(
-                text = trip?.description ?: ""
+                text = description
             )
         }
     }

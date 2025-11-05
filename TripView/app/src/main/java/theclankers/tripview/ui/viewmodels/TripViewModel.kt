@@ -1,29 +1,27 @@
 package theclankers.tripview.ui.viewmodels
 
-import android.R.attr.description
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONObject
-import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.models.Trip
-import theclankers.tripview.data.models.User
 import theclankers.tripview.data.network.ApiClient
 
-// Use this ViewModel for a specific individual Trip.
-// It will take as input a "trip_id" and return state variables defined in the ER diagram
-
 class TripViewModel(private val token: String) : ViewModel() {
+    val tripIdState: MutableState<Int?> = mutableStateOf(null)
+    val ownerIdState: MutableState<Int?> = mutableStateOf(null)
+    val statusState: MutableState<String?> = mutableStateOf(null)
+    val drivingPolylineState: MutableState<String?> = mutableStateOf(null)
+    val drivingPolylineTimestampState: MutableState<String?> = mutableStateOf(null)
+    val nameState: MutableState<String?> = mutableStateOf(null)
+    val descriptionState: MutableState<String?> = mutableStateOf(null)
+    val stopIdsState: MutableState<List<Int>?> = mutableStateOf(null)
 
-    val tripState: MutableState<Trip?> = mutableStateOf(null)
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
     val errorMessage: MutableState<String?> = mutableStateOf(null)
 
@@ -33,8 +31,21 @@ class TripViewModel(private val token: String) : ViewModel() {
             errorMessage.value = null
             try {
                 val trip = ApiClient.getTrip(token, tripId)
-                tripState.value = trip
+
+                // ✅ Update each field from the loaded Trip
+                tripIdState.value = trip.tripId
+                ownerIdState.value = trip.ownerId
+                statusState.value = trip.status
+                drivingPolylineState.value = trip.drivingPolyline
+                drivingPolylineTimestampState.value = trip.drivingPolylineTimestamp
+                nameState.value = trip.name
+                descriptionState.value = trip.description
+                stopIdsState.value = trip.stopIds
+
+                Log.d("TripViewModel", "✅ Trip loaded: ${trip.name}")
+
             } catch (e: Exception) {
+                Log.e("TripViewModel", "❌ Failed to load trip", e)
                 errorMessage.value = e.message
             } finally {
                 isLoading.value = false

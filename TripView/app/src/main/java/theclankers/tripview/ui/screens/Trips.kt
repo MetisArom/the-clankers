@@ -14,18 +14,25 @@ import theclankers.tripview.ui.components.TitleText
 import theclankers.tripview.ui.components.ListComponent
 import theclankers.tripview.ui.components.TripItem
 import theclankers.tripview.ui.viewmodels.useActiveTrips
+import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.ui.viewmodels.useCompletedTrips
 import theclankers.tripview.ui.viewmodels.useFriendsTrips
 
 @Composable
 fun TripsScreen(navController: NavController) {
-    val activeTripsState = useActiveTrips("token", 1)
+    val appVM = useAppContext()
+    val token = appVM.accessTokenState.value
+    val userId = appVM.userIdState.value
+
+    if (token == null || userId == null) return
+
+    val activeTripsState = useActiveTrips(token, userId)
     val activeTrips: List<Int>? = activeTripsState.value
 
-    val friendsTripsState = useFriendsTrips("token", 1)
+    val friendsTripsState = useFriendsTrips(token, userId)
     val friendsTrips: List<Int>? = friendsTripsState.value
 
-    val completedTripsState = useCompletedTrips("token", 1)
+    val completedTripsState = useCompletedTrips(token, userId)
     val completedTrips: List<Int>? = completedTripsState.value
 
     Column(

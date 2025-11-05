@@ -2,35 +2,44 @@ package theclankers.tripview.ui.viewmodels
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import theclankers.tripview.data.models.User
 import theclankers.tripview.data.network.ApiClient
 
-// Use this ViewModel for grabbing state relevant to a specific user.
-// For example, pass as input "user_id" and it will return variables like "first_name", "last_name", and "username"
-
 class UserViewModel(private val token: String) : ViewModel() {
+    // Expose individual states
+    val firstNameState = mutableStateOf<String?>(null)
+    val lastNameState = mutableStateOf<String?>(null)
+    val usernameState = mutableStateOf<String?>(null)
+    val emailState = mutableStateOf<String?>(null)
+    val likesState = mutableStateOf<String?>(null)
+    val dislikesState = mutableStateOf<String?>(null)
 
-    val userState: MutableState<User?> = mutableStateOf(null)
-    val isLoading: MutableState<Boolean> = mutableStateOf(false)
-    val errorMessage: MutableState<String?> = mutableStateOf(null)
+    val isLoadingState = mutableStateOf(false)
+    val errorMessageState = mutableStateOf<String?>(null)
 
     fun loadUser(userId: Int) {
         viewModelScope.launch {
-            isLoading.value = true
-            errorMessage.value = null
+            isLoadingState.value = true
+            errorMessageState.value = null
             try {
                 val user = ApiClient.getUser(token, userId)
-                userState.value = user
+
+                // Assign to individual fields
+                firstNameState.value = user.firstName
+                lastNameState.value = user.lastName
+                usernameState.value = user.username
+                emailState.value = user.email
+                likesState.value = user.likes
+                dislikesState.value = user.dislikes
+
             } catch (e: Exception) {
-                errorMessage.value = e.message
+                errorMessageState.value = e.message
             } finally {
-                isLoading.value = false
+                isLoadingState.value = false
             }
         }
     }

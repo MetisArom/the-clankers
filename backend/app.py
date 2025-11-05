@@ -100,33 +100,7 @@ def user_create():
         }
     }), 201
 
-# Login Route. Checks username and password and generates JWT access token.
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
 
-    if not username or not password:
-        return jsonify({"error": "Missing username or password"}), 400
-
-    user = User.query.filter_by(username=username.lower()).first()
-    if not user or not check_password_hash(user.password, password):
-        return jsonify({"error": "Invalid username or password"}), 401
-
-    access_token = create_access_token(identity=str(user.user_id))
-    return jsonify({
-        "message": "Login successful",
-        "access_token": access_token,
-        "user": {
-            "id": user.user_id,
-            "username": user.username,
-            "firstname": user.firstname,
-            "lastname": user.lastname,
-            "likes": user.likes,
-            "dislikes": user.dislikes
-        }
-    }), 200
 
 # Edit user info. Allowed fields are firstname, lastname, user likes and user dislikes.
 @app.route('/edit_user/', methods=['POST'])
@@ -478,6 +452,27 @@ def get_trips():
 # ============================================================
 # Ethan added these routes
 # ============================================================
+# Login Route. Checks username and password and generates JWT access token.
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({"error": "Missing username or password"}), 400
+
+    user = User.query.filter_by(username=username.lower()).first()
+    if not user or not check_password_hash(user.password, password):
+        return jsonify({"error": "Invalid username or password"}), 401
+
+    access_token = create_access_token(identity=str(user.user_id))
+    return jsonify({
+        "message": "Login successful",
+        "access_token": access_token,
+        "user_id": user.user_id
+    }), 200
+    
 @app.route('/user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     user = User.query.get_or_404(user_id)

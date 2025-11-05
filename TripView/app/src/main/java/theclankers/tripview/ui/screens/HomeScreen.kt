@@ -10,21 +10,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.AppViewModel
+import theclankers.tripview.ui.viewmodels.useAppContext
 
 @Composable
 fun DebugScreen(navController: NavHostController) {
-    //LocalActivity.current as ComponentActivity is for basically global state shared across screens.
-    //You can have additional view models for each screen with navBackStackEntry.viewModel()!
-    val activityVM: AppViewModel = viewModel(LocalActivity.current as ComponentActivity)
+    val appVM = useAppContext()
+
     Column {
         Button(onClick = {
             navigateToDetail(navController, "navigation")
         })
         { Text("Go to Navigation Screen")  }
         Button(onClick = {
-            activityVM.toggleNavbar()
+            appVM.toggleNavbar()
         })
-        { Text("Toggle navbar (current val: ${activityVM.showNavbar})")  }
+        { Text("Toggle navbar (current val: ${appVM.showNavbarState.value})")  }
 
         //this is just temporary until we make authentication
         //after you authenticate, that will directly take you to trips.kt
