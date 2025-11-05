@@ -21,10 +21,7 @@ import theclankers.tripview.ui.screens.*
  */
 @Composable
 fun TripViewNavGraph(navController: NavHostController) {
-    NavHost(
-        navController = navController,
-        startDestination = "trips" // Default screen
-    ) {
+    NavHost(navController = navController, startDestination = "trips") {
 
         // Camera screen (no arguments)
         composable("camera") { CameraScreen(navController) }
@@ -38,14 +35,61 @@ fun TripViewNavGraph(navController: NavHostController) {
         // Edit profile screen
         composable("editProfile") { EditProfileScreen(navController) }
 
+        // BELOW HERE WAS NOT IN MAIN
+        
+        // Friend Profile Screen
+        composable("friendProfile") { FriendProfileScreen(navController) }
+        
         // Navigation screen for a specific trip
-        composable(
-            "navigation/{tripId}",
-            arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+        composable("navigation/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })
         ) { backStackEntry ->
             val tripId = backStackEntry.arguments?.getInt("tripId") ?: 0
             if (tripId != 0) NavigationScreen(navController, tripId) else goBack(navController)
         }
+
+        // Main camera screen
+        composable("camera") { CameraScreen(navController)}
+        
+        // Camera confirmation screem
+        composable(
+            "cameraConfirmScreen/{photoPath}",
+            arguments = listOf(navArgument("photoPath") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val photoPath = backStackEntry.arguments?.getString("photoPath")
+            CameraConfirmScreen(photoPath,navController)
+        }
+
+        // Landmark Context Screen
+        composable(
+            "landmarkContext/{photoPath}",
+            arguments = listOf(navArgument("photoPath") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val photoPath = backStackEntry.arguments?.getString("photoPath")
+            LandmarkContextScreen(photoPath,navController)
+        }
+
+        // unknown navigation screen
+        composable("navigation") { NavigationScreen(navController) }
+
+        // Screen for a stop of some kind
+        composable(
+            "stops/{stop}",
+            arguments = listOf(navArgument("stop") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val stopJson = backStackEntry.arguments?.getString("stop")
+            if (stopJson != null) {
+                val stop = Json.decodeFromString<Stop>(stopJson)
+                StopScreen(navController, stop)
+            } else {
+                goBack(navController)
+            }
+        }
+        composable("trips") { TripsScreen(navController) }
+        composable("tripcreationform") {
+            TripCreationForm(navController = navController)
+        }
+
+        // ABOVE HERE WAS NOT IN MAIN
 
         // Trip screen for a specific trip
         composable(

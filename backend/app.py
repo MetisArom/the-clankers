@@ -10,6 +10,7 @@ import os
 import json
 from polyline import regenerate_driving_polyline
 from dotenv import load_dotenv
+import base64
 
 # -------------------------
 # Flask App Config
@@ -448,7 +449,7 @@ def get_trips():
         "driving_polyline": str(t.driving_polyline),
         "driving_polyline_timestamp": t.driving_polyline_timestamp
     } for t in trips])
-    
+
 # ============================================================
 # Ethan added these routes
 # ============================================================
@@ -548,21 +549,32 @@ def update_stop_completed(stop_id):
 # Ethan added these routes
 # ============================================================
 
-# @app.route('/trips/<int:trip_id>', methods=['GET'])
-# def display_itinerary(trip_id):
-#     stops = Stop.query.filter_by(trip_id=trip_id).order_by(Stop.order).all()
-#     return jsonify([
-#         {
-#             "stop_id": s.stop_id,
-#             "stop_type": s.stop_type,
-#             "latitude": s.latitude,
-#             "longitude": s.longitude,
-#             "description": s.description,
-#             "completed": s.completed,
-#             "order": s.order
-#         }
-#         for s in stops
-#     ])
+@app.route('/trips/<int:trip_id>', methods=['GET'])
+def display_itinerary(trip_id):
+    stops = Stop.query.filter_by(trip_id=trip_id).order_by(Stop.stop_order).all()
+    return jsonify([
+        {
+            "stop_id": s.stop_id,
+            "stop_type": s.stop_type,
+            "latitude": s.latitude,
+            "longitude": s.longitude,
+            "description": s.description,
+            "completed": s.completed,
+            "stop_order": s.stop_order
+        }
+        for s in stops
+    ])
+
+@app.route('/trips/<int:trip_id>/info', methods=['GET'])
+def get_trip(trip_id):
+    trip = Trip.query.get_or_404(trip_id)
+    return jsonify({
+        "trip_id": trip.trip_id,
+        "owner_id": trip.owner_id,
+        "status": str(trip.status),
+        "driving_polyline": str(trip.driving_polyline),
+        "driving_polyline_timestamp": trip.driving_polyline_timestamp
+    })
 
 @app.route('/trips/<int:trip_id>', methods=['PATCH'])
 def modify_itinerary(trip_id):
@@ -617,6 +629,49 @@ def delete_trip(trip_id):
 def debug_regenerate_polyline(trip_id):
     return regenerate_driving_polyline(trip_id, True)
 
+
+# ===========================================================
+# CAMERA ENDPOINTS
+# ===========================================================
+
+# Send a photo to landmark context generator.
+@app.route('/landmark_context', methods=['POST'])
+def landmark_context():
+    if "image" not in request.files:
+        return jsonify({"error": "Missing image multipart form data"}), 400
+
+    image = request.files.get('image')
+
+    image.stream.seek(0, os.SEEK_END)
+    size = image.stream.tell()
+    image.stream.seek(0)
+
+    if size == 0:
+        return jsonify({"error": "Empty file uploaded"}), 400
+
+    MAX_INLINE_BYTES = 10*1024*1024 # 10 MB
+    if size > MAX_INLINE_BYTES:
+        return jsonify({ "error": "Image too large for inline request."}), 413
+
+    image_bytes = image.read()
+
+    mime_type = image.mimetype or "image/jpeg"
+
+    prompt_text = f"A user took this photo of a landmark. " \
+        "Identify the landmark and provide short contextual information: " \
+        "- name of landmark\n" \
+        "- city/country\n" \
+        "- brief historical or contextual description\n" \
+        "- confidence level or 'unknown' if uncertain.\n" \
+        "Return the result as a plain text paragraph in the tone of a tour guide."
+    prompt_image = { "mime_type": mime_type, "data": image_bytes}
+
+    inputs = [prompt_text, prompt_image]
+
+    response = model.generate_content(inputs)
+    text_response = response.text.strip() if response.text else "No response from model."
+
+    return jsonify({"context": text_response}), 201
 
 # ============================================================
 # PARTY MANAGEMENT (Owner Controlled)

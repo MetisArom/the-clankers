@@ -1,8 +1,14 @@
 package theclankers.tripview.data.api
 
+import android.R.attr.password
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
@@ -11,7 +17,9 @@ import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.models.User
 import theclankers.tripview.utils.HttpHelper
+import java.io.File
 import java.io.IOException
+import java.net.URLConnection
 
 object ApiClient {
 
@@ -136,6 +144,74 @@ object ApiClient {
         return completedTripsList
     }
 
+    // -------------------------------
+    // CAMERA ENDPOINTS
+    // -------------------------------
+
+    suspend fun landmarkContext(
+        imagePath: String
+    ): String = withContext(Dispatchers.IO) {
+        val url = "$BASE_URL/landmark_context"
+
+        val file = File(imagePath)
+        if(!file.exists() || !file.isFile) {
+            throw IOException("Image file not found: $imagePath")
+        }
+
+        val guess = URLConnection.guessContentTypeFromName(file.name)
+        val mimeType = guess?: "image/jpeg"
+
+        val fileRequestBody = file.asRequestBody(mimeType.toMediaTypeOrNull())
+
+        val multipartBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("image", file.name, fileRequestBody)
+            .build()
+
+        val request = Request.Builder()
+            .url(url)
+            .post(multipartBody)
+            .build()
+
+        val response = HttpHelper.post(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        return@withContext response.body?.string() ?: throw IOException("Empty response")
+    }
+
+    // -------------------------------
+    // PARTY MANAGEMENT ENDPOINTS
+    // -------------------------------
+
+    suspend fun inviteMember(token: String, friendId: Int, tripId: Int): String {
+        val url = "$BASE_URL/party/invite"
+        val bodyJson = JSONObject().apply {
+            put("friend_id", friendId)
+            put("trip_id", tripId)
+        }.toString()
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+        val response = HttpHelper.get(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        val responseBody = response.body?.string() ?: throw IOException("Empty response")
+        val friendsTripsList = mutableListOf<Int>()
+        try {
+            val friendsTripsArray = JSONArray(responseBody)
+            for (i in 0 until friendsTripsArray.length()) {
+                friendsTripsList.add(friendsTripsArray.getInt(i))
+            }
+        } catch (e: Exception) {
+            Log.e("ApiClient", "Error parsing friends trips JSON: ${e.message}")
+        }
+
+        Log.d("ApiClient", "Fetched friends trips: $friendsTripsList")
+
+        return friendsTripsList
+    }
+
     suspend fun getFriendsTrips(token: String, userId: Int): List<Int> {
         val url = "$BASE_URL/get_friends_trips/$userId"
         val request = Request.Builder()
@@ -160,6 +236,7 @@ object ApiClient {
 
         return friendsTripsList
     }
+
 
     suspend fun getTrip(token: String, tripId: Int): Trip {
         val url = "$BASE_URL/trip/$tripId"
