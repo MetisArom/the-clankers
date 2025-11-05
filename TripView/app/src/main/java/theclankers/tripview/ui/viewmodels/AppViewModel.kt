@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import theclankers.tripview.data.models.User
 import theclankers.tripview.data.api.ApiClient
+import theclankers.tripview.data.models.LoginResult
 
 class AppViewModel : ViewModel() {
     // Explicit MutableState variables with consistent naming
@@ -29,18 +30,13 @@ class AppViewModel : ViewModel() {
         viewModelScope.launch {
             authErrorMessageState.value = null
             try {
-                val responseString = ApiClient.loginUser(username, password)
-                val json = JSONObject(responseString)
+                val loginResult: LoginResult = ApiClient.login(username, password)
 
-                // Parse user_id and access_token from backend response
-                val returnedUserId = json.getInt("user_id")
-                val returnedAccessToken = json.getString("access_token")
-
-                userIdState.value = returnedUserId
-                accessTokenState.value = returnedAccessToken
+                userIdState.value = loginResult.userId
+                accessTokenState.value = loginResult.accessToken
                 isAuthedState.value = true
 
-                Log.d("AppViewModel", "✅ Login success, user_id=$returnedUserId")
+                Log.d("AppViewModel", "✅ Login success, user_id=$loginResult.userId")
 
             } catch (e: Exception) {
                 authErrorMessageState.value = e.message

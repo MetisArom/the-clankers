@@ -52,57 +52,6 @@ def home():
 # USER ENDPOINTS
 # ============================================================
 
-# Create new user (with password hashing & unique check). Generates the JWT access token as well.
-@app.route('/create_user', methods=['POST'])
-def user_create():
-    data = request.get_json()
-    required_fields = ['username', 'password', "fullname"]
-    if not data or not all(field in data for field in required_fields):
-        return jsonify({"error": "Missing required fields"}), 400
-
-    username = data['username'].strip().lower()
-    password = data['password']
-    fullname = data.get('fullname')
-    likes = data.get('likes')
-    dislikes = data.get('dislikes')
-
-    if User.query.filter_by(username=username).first():
-        return jsonify({"error": "Username already taken"}), 409
-
-    hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
-    print("Hashed Password:", hashed_password)
-    new_user = User(
-        username=username,
-        password=hashed_password,
-        fullname=fullname,
-        likes=likes,
-        dislikes=dislikes
-    )
-    try:
-        db.session.add(new_user)
-        db.session.commit()
-    except IntegrityError:
-        db.session.rollback()
-        return jsonify({"error": "Database integrity error"}), 500
-
-    # ✅ Create JWT access token for this new user
-    access_token = create_access_token(identity=str(new_user.user_id))
-
-    return jsonify({
-        "message": "User created successfully",
-        "access_token": access_token,
-        "user": {
-            "id": new_user.user_id,
-            "username": new_user.username,
-            "firstname": new_user.firstname,
-            "lastname": new_user.lastname,
-            "likes": new_user.likes,
-            "dislikes": new_user.dislikes
-        }
-    }), 201
-
-
-
 # Edit user info. Allowed fields are firstname, lastname, user likes and user dislikes.
 @app.route('/edit_user/', methods=['POST'])
 @jwt_required()   # 👈 requires valid token in header "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
@@ -453,6 +402,64 @@ def get_trips():
 # ============================================================
 # Ethan added these routes
 # ============================================================
+# TODO: Fix /create_user endpoint
+# Rename it to /signup (consistent with login)
+# Make sure it collects "firstname", "lastname", "email", "username", "password", "likes", "dislikes"
+# Change "fullname" to "firstname" and "lastname" separately
+# Collect "email" as well
+
+# Create new user (with password hashing & unique check). Generates the JWT access token as well.
+@app.route('/create_user', methods=['POST'])
+def user_create():
+    data = request.get_json()
+    required_fields = ['username', 'password', "fullname"]
+    if not data or not all(field in data for field in required_fields):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    username = data['username'].strip().lower()
+    password = data['password']
+    fullname = data.get('fullname')
+    likes = data.get('likes')
+    dislikes = data.get('dislikes')
+
+    if User.query.filter_by(username=username).first():
+        return jsonify({"error": "Username already taken"}), 409
+
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
+    print("Hashed Password:", hashed_password)
+    new_user = User(
+        username=username,
+        password=hashed_password,
+        fullname=fullname,
+        likes=likes,
+        dislikes=dislikes
+    )
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"error": "Database integrity error"}), 500
+
+    # ✅ Create JWT access token for this new user
+    access_token = create_access_token(identity=str(new_user.user_id))
+
+    return jsonify({
+        "message": "User created successfully",
+        "access_token": access_token,
+        "user": {
+            "id": new_user.user_id,
+            "username": new_user.username,
+            "firstname": new_user.firstname,
+            "lastname": new_user.lastname,
+            "likes": new_user.likes,
+            "dislikes": new_user.dislikes
+        }
+    }), 201
+
+# TODO: Fix /login endpoint
+# The username parameter should also accept email for login
+
 # Login Route. Checks username and password and generates JWT access token.
 @app.route('/login', methods=['POST'])
 def login():

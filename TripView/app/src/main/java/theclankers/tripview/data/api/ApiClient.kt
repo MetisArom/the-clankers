@@ -13,6 +13,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import theclankers.tripview.core.Constants.BASE_URL
+import theclankers.tripview.data.models.LoginResult
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.models.User
@@ -65,7 +66,7 @@ object ApiClient {
         return user
     }
 
-    suspend fun loginUser(username: String, password: String): String {
+    suspend fun login(username: String, password: String): LoginResult {
         val url = "$BASE_URL/login"
         val bodyJson = JSONObject().apply {
             put("username", username)
@@ -79,7 +80,33 @@ object ApiClient {
 
         val response = HttpHelper.post(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
-        return response.body?.string() ?: throw IOException("Empty response")
+
+        val responseBody = response.body?.string() ?: throw IOException("Empty response")
+
+        var userId: Int? = null
+        var accessToken: String? = null
+        try {
+            val json = JSONObject(responseBody)
+            userId = json.getInt("user_id")
+            accessToken = json.getString("access_token")
+        } catch (e: Exception) {
+            Log.e("ApiClient", "Error parsing login JSON: ${e.message}")
+        }
+
+        if (userId == null || accessToken == null) {
+            throw IOException("Failed to parse login data")
+        }
+
+        Log.d("ApiClient", "Login successful: user_id=$userId")
+
+        // This will return both userId and accessToken as a LoginResult object
+        return LoginResult(userId, accessToken)
+    }
+
+    // TODO: Implement signup API function
+    // Calls endpoint /signup
+    suspend fun signup(username: String, email: String, password: String, firstName: String, lastName: String, likes: String, dislikes: String) {
+
     }
 
     // -------------------------------
@@ -116,6 +143,31 @@ object ApiClient {
         Log.d("ApiClient", "Fetched active trips: $activeTripsList")
 
         return activeTripsList
+    }
+
+    suspend fun getFriendsTrips(token: String, userId: Int): List<Int> {
+        val url = "$BASE_URL/get_friends_trips/$userId"
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+        val response = HttpHelper.get(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        val responseBody = response.body?.string() ?: throw IOException("Empty response")
+        val friendsTripsList = mutableListOf<Int>()
+        try {
+            val friendsTripsArray = JSONArray(responseBody)
+            for (i in 0 until friendsTripsArray.length()) {
+                friendsTripsList.add(friendsTripsArray.getInt(i))
+            }
+        } catch (e: Exception) {
+            Log.e("ApiClient", "Error parsing friends trips JSON: ${e.message}")
+        }
+
+        Log.d("ApiClient", "Fetched friends trips: $friendsTripsList")
+
+        return friendsTripsList
     }
 
     suspend fun getCompletedTrips(token: String, userId: Int): List<Int> {
@@ -211,32 +263,6 @@ object ApiClient {
 //
 //        return friendsTripsList
 //    }
-
-    suspend fun getFriendsTrips(token: String, userId: Int): List<Int> {
-        val url = "$BASE_URL/get_friends_trips/$userId"
-        val request = Request.Builder()
-            .url(url)
-            .get()
-            .addHeader("Authorization", "Bearer $token")
-            .build()
-        val response = HttpHelper.get(request)
-        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
-        val responseBody = response.body?.string() ?: throw IOException("Empty response")
-        val friendsTripsList = mutableListOf<Int>()
-        try {
-            val friendsTripsArray = JSONArray(responseBody)
-            for (i in 0 until friendsTripsArray.length()) {
-                friendsTripsList.add(friendsTripsArray.getInt(i))
-            }
-        } catch (e: Exception) {
-            Log.e("ApiClient", "Error parsing friends trips JSON: ${e.message}")
-        }
-
-        Log.d("ApiClient", "Fetched friends trips: $friendsTripsList")
-
-        return friendsTripsList
-    }
-
 
     suspend fun getTrip(token: String, tripId: Int): Trip {
         val url = "$BASE_URL/trip/$tripId"
