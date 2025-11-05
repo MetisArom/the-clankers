@@ -120,6 +120,16 @@ object ApiClient {
     // FRIENDSHIP ENDPOINTS
     // -------------------------------
 
+    // TODO: Implement getFriends, call the back-end route get_friends/<int:user_id>
+    suspend fun getFriends(token: String, userId: Int): List<Int> {
+        return emptyList()
+    }
+
+    // TODO: Implement getInvites, call the back-end route get_invites<int:user_id>
+    suspend fun getInvites(token: String, userId: Int): List<Int> {
+        return emptyList()
+    }
+
     // -------------------------------
     // TRIP ENDPOINTS
     // -------------------------------

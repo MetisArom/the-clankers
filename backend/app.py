@@ -56,6 +56,11 @@ def home():
 # FRIENDSHIP ENDPOINTS
 # ============================================================
 
+# TODO: Fix /friends endpoint
+# Change the name to /get_friends/<int:user_id>
+# Make sure it returns a list of friend ids
+# Change this so it ONLY returns friends, not pending requests
+
 # Get list of friends and pending requests
 @app.route('/friends', methods=['GET'])
 @jwt_required()
@@ -110,6 +115,12 @@ def get_friends():
         "incoming_requests": incoming_requests,
         "outgoing_requests": outgoing_requests
     }), 200
+    
+# TODO: Implement /invites/<int:user_id> endpoint to see a list of incoming friend requests
+# This endpoint should return a list of user ids who have sent friend requests to the given user_id
+@app.route('/invites/<int:user_id>', methods=['GET'])
+def get_invites(user_id):
+    pass
 
 # Sending a Friend Request
 @app.route('/friends/request', methods=['POST'])
