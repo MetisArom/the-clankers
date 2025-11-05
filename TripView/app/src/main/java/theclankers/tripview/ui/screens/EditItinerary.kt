@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.DragHandle
+//import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,8 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import sh.calvin.reorderable.ReorderableItem
-import sh.calvin.reorderable.rememberReorderableLazyListState
+//import sh.calvin.reorderable.ReorderableItem
+//import sh.calvin.reorderable.rememberReorderableLazyListState
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.api.ApiClient
 import theclankers.tripview.ui.components.StopItem
@@ -164,5 +164,4 @@ fun EditItinerary(navController: NavHostController) { // , tripId: Int?, viewMod
             }
         }
     }
-}
 }

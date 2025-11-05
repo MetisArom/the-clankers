@@ -1,5 +1,6 @@
 package theclankers.tripview.data.api
 
+import android.util.Log
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody

@@ -52,20 +52,6 @@ class TripViewModel(private val token: String) : ViewModel() {
             }
         }
     }
-
-    fun toggleCompleted(stop: Stop) {
-        val currentTrip = tripState.value ?: return
-
-        // Create an updated list of stops
-        val updatedStops = currentTrip.stops.map { currentStop ->
-            if (currentStop.stopId == stop.stopId) {
-                currentStop.copy(completed = !currentStop.completed)
-            } else currentStop
-        }
-
-        tripState.value = currentTrip.copy(stops = updatedStops)
-    }
-
 }
 
 @Composable
