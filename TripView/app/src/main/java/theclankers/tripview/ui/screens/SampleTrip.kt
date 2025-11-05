@@ -72,6 +72,17 @@ fun SampleTrip(navController: NavHostController) {
                 items(stops) { stop ->
                     StopItem(stopId = stop.stopId, navController = navController)
                 }
+                // items(stops, key = { it.stopId }) { stop ->
+                //     StopItem(
+                //         stop = stop,
+                //         onStopClick = { println("Hello") },
+                //         onCompletedChange = { stop, completed ->
+                //             stops = stops.map {
+                //                 if (it.stopId == stop.stopId) it.copy(completed = completed) else it
+                //             }
+                //         }
+                //     )
+                // }
             }
 
             Button(

@@ -24,6 +24,9 @@ import androidx.navigation.NavHostController
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.StopItem
 import kotlin.collections.map
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import theclankers.tripview.data.api.ApiClient
 
 @Composable
 fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: ItineraryViewModel) {
