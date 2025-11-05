@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import theclankers.tripview.data.network.ApiClient
+import theclankers.tripview.data.api.ApiClient
 import java.io.File
 import java.io.IOException
 

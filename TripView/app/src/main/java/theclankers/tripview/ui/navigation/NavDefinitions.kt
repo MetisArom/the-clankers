@@ -38,7 +38,7 @@ fun TripViewNavGraph(navController: NavHostController) {
         // BELOW HERE WAS NOT IN MAIN
         
         // Friend Profile Screen
-        composable("friendProfile") { FriendProfileScreen(navController) }
+        // composable("friendProfile") { FriendProfileScreen(navController) }
         
         // Navigation screen for a specific trip
         composable("navigation/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })
@@ -69,21 +69,21 @@ fun TripViewNavGraph(navController: NavHostController) {
         }
 
         // unknown navigation screen
-        composable("navigation") { NavigationScreen(navController) }
+        // composable("navigation") { NavigationScreen(navController) }
 
         // Screen for a stop of some kind
-        composable(
-            "stops/{stop}",
-            arguments = listOf(navArgument("stop") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val stopJson = backStackEntry.arguments?.getString("stop")
-            if (stopJson != null) {
-                val stop = Json.decodeFromString<Stop>(stopJson)
-                StopScreen(navController, stop)
-            } else {
-                goBack(navController)
-            }
-        }
+//        composable(
+//            "stops/{stop}",
+//            arguments = listOf(navArgument("stop") { type = NavType.StringType })
+//        ) { backStackEntry ->
+//            val stopJson = backStackEntry.arguments?.getString("stop")
+//            if (stopJson != null) {
+//                val stop = Json.decodeFromString<Stop>(stopJson)
+//                StopScreen(navController, stop)
+//            } else {
+//                goBack(navController)
+//            }
+//        }
         composable("trips") { TripsScreen(navController) }
         composable("tripcreationform") {
             TripCreationForm(navController = navController)

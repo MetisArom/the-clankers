@@ -27,8 +27,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import theclankers.tripview.ui.components.HeaderText1
-import theclankers.tripview.ui.navigation.navigateTo
+import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.viewmodels.LandmarkViewModel
 
 @Composable
@@ -56,9 +55,9 @@ fun LandmarkContextScreen (photoPath: String?,
         horizontalAlignment  = Alignment.Start
     ) {
         Row() {
-            HeaderText1("Camera")
+            HeaderText("Camera")
             Button(
-                onClick = { navigateTo(navController, "camera") },
+                onClick = { navController.navigate("camera") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
                 modifier= Modifier.padding(start=20.dp))
 

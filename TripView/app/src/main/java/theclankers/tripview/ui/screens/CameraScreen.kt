@@ -41,7 +41,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import theclankers.tripview.R
-import theclankers.tripview.ui.components.HeaderText1
+import theclankers.tripview.ui.components.HeaderText
 import java.io.File
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -91,7 +91,7 @@ fun CameraPreviewContent(
                 .fillMaxWidth()
                 .align(Alignment.TopStart)
         ) {
-            HeaderText1("Camera")
+            HeaderText("Camera")
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Take a picture of a landmark to get more information.",
