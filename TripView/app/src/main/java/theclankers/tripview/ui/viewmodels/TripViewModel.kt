@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import theclankers.tripview.data.models.Trip
-import theclankers.tripview.data.network.ApiClient
+import theclankers.tripview.data.api.ApiClient
 
 class TripViewModel(private val token: String) : ViewModel() {
     val tripIdState: MutableState<Int?> = mutableStateOf(null)
@@ -52,6 +52,20 @@ class TripViewModel(private val token: String) : ViewModel() {
             }
         }
     }
+
+    fun toggleCompleted(stop: Stop) {
+        val currentTrip = tripState.value ?: return
+
+        // Create an updated list of stops
+        val updatedStops = currentTrip.stops.map { currentStop ->
+            if (currentStop.stopId == stop.stopId) {
+                currentStop.copy(completed = !currentStop.completed)
+            } else currentStop
+        }
+
+        tripState.value = currentTrip.copy(stops = updatedStops)
+    }
+
 }
 
 @Composable
