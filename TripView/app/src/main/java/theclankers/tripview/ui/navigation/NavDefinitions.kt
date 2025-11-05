@@ -88,6 +88,9 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("tripcreationform") {
             TripCreationForm(navController = navController)
         }
+//        composable(route="TripFormPt2") {
+//            TripFormPt2(navController = navController)
+//        }
 
         // ABOVE HERE WAS NOT IN MAIN
 
