@@ -606,6 +606,90 @@ def modify_itinerary(trip_id):
 
     return jsonify({"message": "Stops updated successfully"}), 200
 
+@app.route('/trips/save', methods=['POST'])
+@jwt_required()
+def save_trip():
+    """
+    Save a trip to the database with its stops
+    
+    Expected JSON:
+    {
+        "name": "Tokyo Adventure",
+        "description": "A week exploring Tokyo",
+        "status": "planned",
+        "stops": [
+            {
+                "name": "Senso-ji Temple",
+                "latitude": "35.7148",
+                "longitude": "139.7967",
+                "stop_type": "attraction",
+                "order": 1
+            }
+        ]
+    }
+    """
+    try:
+        current_user_id = int(get_jwt_identity())
+        
+        user = db.session.get(User, current_user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+        data = request.get_json()
+        
+        if not data.get("name"):
+            return jsonify({"error": "Trip name is required"}), 400
+        
+        # Create new trip
+        new_trip = Trip(
+            owner_id=current_user_id,
+            name=data.get("name").strip(),
+            description=data.get("description", "").strip(),
+            status=data.get("status", "planned"),
+            driving_polyline="",
+            driving_polyline_timestamp=None
+        )
+        
+        db.session.add(new_trip)
+        db.session.flush()  # Get trip_id before adding stops
+        
+        # Add stops if provided
+        stops_data = data.get("stops", [])
+        if stops_data:
+            for stop_info in stops_data:
+                new_stop = Stop(
+                    trip_id=new_trip.trip_id,
+                    name=stop_info.get("name", "").strip(),
+                    latitude=str(stop_info.get("latitude", "")),
+                    longitude=str(stop_info.get("longitude", "")),
+                    stop_type=stop_info.get("stop_type", "attraction"),
+                    order=stop_info.get("order", 0),
+                    completed=False
+                )
+                db.session.add(new_stop)
+        
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Trip saved successfully",
+            "trip_id": new_trip.trip_id,
+            "trip": {
+                "trip_id": new_trip.trip_id,
+                "owner_id": new_trip.owner_id,
+                "name": new_trip.name,
+                "description": new_trip.description,
+                "status": new_trip.status,
+                "stop_count": len(stops_data)
+            }
+        }), 201
+        
+    except ValueError as e:
+        db.session.rollback()
+        return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Failed to save trip: {str(e)}"}), 500
+    
 @app.route('/trips/<int:trip_id>', methods=['DELETE'])
 def delete_trip(trip_id):
     trip = Trip.query.get_or_404(trip_id)
