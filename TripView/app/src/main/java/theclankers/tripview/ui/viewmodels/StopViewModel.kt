@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import theclankers.tripview.data.models.Stop
-import theclankers.tripview.data.network.ApiClient
+import theclankers.tripview.data.api.ApiClient
 import android.util.Log
 
 class StopViewModel(private val token: String) : ViewModel() {

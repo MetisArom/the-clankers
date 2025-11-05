@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import theclankers.tripview.data.network.ApiClient
+import theclankers.tripview.data.api.ApiClient
 
 class CompletedTripsViewModel(private val token: String) : ViewModel() {
     val activeTripsState: MutableState<List<Int>?> = mutableStateOf(null)
