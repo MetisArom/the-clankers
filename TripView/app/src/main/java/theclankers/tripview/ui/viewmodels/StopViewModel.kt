@@ -56,6 +56,36 @@ class StopViewModel(private val token: String) : ViewModel() {
         }
     }
 
+    fun loadStopById(stopId: Int) {
+        viewModelScope.launch {
+            isLoading.value = true
+            errorMessage.value = null
+            try {
+                val stop = withContext(Dispatchers.IO) {
+                    ApiClient.getStop(token, stopId)
+                }
+
+                // ✅ Update each state field from the Stop model
+                stopIdState.value = stop.stopId
+                tripIdState.value = stop.tripId
+                stopTypeState.value = stop.stopType
+                latitudeState.value = stop.latitude
+                longitudeState.value = stop.longitude
+                nameState.value = stop.name
+                completedState.value = stop.completed
+                orderState.value = stop.order
+
+                Log.d("StopViewModel", "✅ Stop loaded: ${stop.name}")
+
+            } catch (e: Exception) {
+                Log.e("StopViewModel", "❌ Failed to load stop", e)
+                errorMessage.value = e.message
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
     fun toggleCompleted(stopId: Int, newValue: Boolean) {
         viewModelScope.launch {
             try {
@@ -99,6 +129,17 @@ fun useStop(token: String, stop: Stop): StopViewModel {
 
     LaunchedEffect(stop.stopId) {
         viewModel.loadStop(stop)
+    }
+
+    return viewModel
+}
+
+@Composable
+fun useStopById(token: String, stopId: Int): StopViewModel {
+    val viewModel = remember { StopViewModel(token) }
+
+    LaunchedEffect(stopId) {
+        viewModel.loadStopById(stopId)
     }
 
     return viewModel
