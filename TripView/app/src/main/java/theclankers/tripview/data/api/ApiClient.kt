@@ -120,14 +120,128 @@ object ApiClient {
     // FRIENDSHIP ENDPOINTS
     // -------------------------------
 
-    // TODO: Implement getFriends, call the back-end route get_friends/<int:user_id>
+    suspend fun sendFriendRequest(token: String, userId: Int) {
+        val url = "$BASE_URL/send_friend_request/$userId"
+        val request = Request.Builder()
+            .url(url)
+            .post("".toRequestBody()) // Empty body
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.post(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+
+        Log.d("ApiClient", "Sent friend request to user_id=$userId")
+    }
+
+    suspend fun acceptFriendRequest(token: String, userId: Int) {
+        val url = "$BASE_URL/accept_friend_request/$userId"
+        val request = Request.Builder()
+            .url(url)
+            .post("".toRequestBody()) // Empty body
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.post(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+
+        Log.d("ApiClient", "Accepted friend request from user_id=$userId")
+    }
+
+    suspend fun declineFriendRequest(token: String, userId: Int) {
+        val url = "$BASE_URL/decline_friend_request/$userId"
+        val request = Request.Builder()
+            .url(url)
+            .post("".toRequestBody()) // Empty body
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.post(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+
+        Log.d("ApiClient", "Declined friend request from user_id=$userId")
+    }
+
+    suspend fun removeFriend(token: String, userId: Int) {
+        val url = "$BASE_URL/remove_friend/$userId"
+        val request = Request.Builder()
+            .url(url)
+            .post("".toRequestBody()) // Empty body
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.post(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+
+        Log.d("ApiClient", "Removed friend user_id=$userId")
+    }
+
+    suspend fun revokeFriendRequest(token: String, userId: Int) {
+        val url = "$BASE_URL/revoke_friend_request/$userId"
+        val request = Request.Builder()
+            .url(url)
+            .post("".toRequestBody()) // Empty body
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.post(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+
+        Log.d("ApiClient", "Revoked friend request to user_id=$userId")
+    }
+
     suspend fun getFriends(token: String, userId: Int): List<Int> {
-        return emptyList()
+        val url = "$BASE_URL/get_friends/$userId"
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+        val response = HttpHelper.get(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        val responseBody = response.body?.string() ?: throw IOException("Empty response")
+
+        val friendsList = mutableListOf<Int>()
+        try {
+            val friendsArray = JSONArray(responseBody)
+            for (i in 0 until friendsArray.length()) {
+                friendsList.add(friendsArray.getInt(i))
+            }
+        } catch (e: Exception) {
+            Log.e("ApiClient", "Error parsing friends JSON: ${e.message}")
+        }
+
+        Log.d("ApiClient", "Fetched friends: $friendsList")
+
+        return friendsList
     }
 
     // TODO: Implement getInvites, call the back-end route get_invites/<int:user_id>
     suspend fun getInvites(token: String, userId: Int): List<Int> {
-        return emptyList()
+        val url = "$BASE_URL/get_invites/$userId"
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.get(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        val responseBody = response.body?.string() ?: throw IOException("Empty response")
+
+        val invitesList = mutableListOf<Int>()
+        try {
+            val invitesArray = JSONArray(responseBody)
+            for (i in 0 until invitesArray.length()) {
+                invitesList.add(invitesArray.getInt(i))
+            }
+        } catch (e: Exception) {
+            Log.e("ApiClient", "Error parsing invites JSON: ${e.message}")
+        }
+
+        Log.d("ApiClient", "Fetched invites: $invitesList")
+
+        return invitesList
     }
 
     // TODO: Implement getRelationship, call the back-end route get_relationship/<int:user_id1>/<int:user_id2>

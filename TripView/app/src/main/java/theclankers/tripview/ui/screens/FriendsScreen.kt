@@ -1,5 +1,6 @@
 package theclankers.tripview.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import theclankers.tripview.ui.components.FriendItem
+import theclankers.tripview.ui.components.ListComponent
 import theclankers.tripview.ui.components.TitleText
+import theclankers.tripview.ui.components.UserItem
 import theclankers.tripview.ui.viewmodels.AppViewModel
 import theclankers.tripview.ui.viewmodels.FriendsViewModel
 import theclankers.tripview.ui.viewmodels.InvitesViewModel
@@ -32,8 +34,12 @@ fun FriendsScreen(navController: NavController) {
     val friendsVM: FriendsViewModel = useFriends(token, userId)
     val friends = friendsVM.friendsState.value
 
+    Log.d("FriendsScreen", "Friends: $friends")
+
     val invitesVM: InvitesViewModel = useInvites(token, userId)
     val invites = invitesVM.invitesState.value
+
+    Log.d("FriendsScreen", "Invites: $invites")
 
     // TODO: Make sure the below line makes sense... Might not need it?
     if (friends == null || invites == null) return
@@ -46,19 +52,15 @@ fun FriendsScreen(navController: NavController) {
     ) {
         TitleText("Your Friends")
 
-        FriendItem(username = "janesmith67", displayName = "Jane Smith", onClick = { navController.navigate("friendProfile") })
-        FriendItem(username = "ozzy67", displayName = "Ozzy Osbourne", onClick = { navController.navigate("friendProfile")})
+        ListComponent(friends) { friendId ->
+            UserItem(friendId)
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
         Text("Invite Requests", style = MaterialTheme.typography.titleLarge)
 
-        FriendItem(
-            username = "andrew45",
-            displayName = "Andrew",
-            showActions = true,
-            onAccept = { /* handle accept */ },
-            onDecline = { /* handle decline */ },
-            onClick = { navController.navigate("friendProfile")}
-        )
+        ListComponent(invites) { inviteId ->
+            UserItem(inviteId)
+        }
     }
 }
