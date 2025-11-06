@@ -81,7 +81,7 @@ fun EditItinerary(navController: NavHostController, tripId: Int) { // , tripId: 
                 // should be based on whatever trip object is passed into this
                 title = { Text(viewModel.nameState.value?: "Trip #$tripId") },
                 actions = {
-                    Button(onClick = { navigateToDetail(navController, "addStop/$tripId ") }) { Text("Add Stop") }
+                    Button(onClick = { navigateToDetail(navController, "addStop/$tripId") }) { Text("Add Stop") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer

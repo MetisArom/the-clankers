@@ -67,8 +67,6 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp)
             ) {
                 items(stops ?: emptyList(), key = { it.stopId }) { stop ->
                     StopItem(navController = navController, stop)
