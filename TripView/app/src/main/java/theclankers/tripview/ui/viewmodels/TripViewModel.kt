@@ -150,8 +150,7 @@ class TripViewModel(private val token: String) : ViewModel() {
     val stopIdsState: MutableState<List<Int>?> = mutableStateOf(null)
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
     val errorMessage: MutableState<String?> = mutableStateOf(null)
-//    val stops: MutableState<List<Stop>> = mutableStateOf(emptyList())
-    val stops = mutableStateListOf<Stop>()
+    val stops: MutableState<List<Stop>> = mutableStateOf(emptyList())
 
 
     fun loadTrip(tripId: Int) {
@@ -195,8 +194,7 @@ class TripViewModel(private val token: String) : ViewModel() {
                     )
                 }
 
-                stops.clear()
-                stops.addAll(s)
+                stops.value = s
 
                 Log.d("TripViewModel", "✅ Trip loaded: ${trip.name}")
 
@@ -227,7 +225,6 @@ class TripViewModel(private val token: String) : ViewModel() {
 
     fun deleteStop(stopId: Int) {
 
-        stops.removeAll { it.stopId == stopId }
         viewModelScope.launch {
             try {
                 // 🔹 Send the update to the backend

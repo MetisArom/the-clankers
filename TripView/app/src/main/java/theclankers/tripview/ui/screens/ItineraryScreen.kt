@@ -38,7 +38,7 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
     val stopIds by viewModel.stopIdsState
     val isLoading by viewModel.isLoading
     val errorMessage by viewModel.errorMessage
-    val stops = viewModel.stops
+    val stops by viewModel.stops
 
     Scaffold(
         topBar = {
