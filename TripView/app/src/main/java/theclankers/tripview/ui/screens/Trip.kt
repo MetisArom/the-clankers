@@ -22,6 +22,7 @@ fun TripScreen(navController: NavHostController, tripId: Int) {
 
     val tripVM = useTrip(token, tripId)
     val stopIds = tripVM.stopIdsState.value
+    val stops = tripVM.stops
 
     if (stopIds == null) return
 
@@ -34,9 +35,9 @@ fun TripScreen(navController: NavHostController, tripId: Int) {
             Button(onClick = { println("Edit clicked") }) { Text("Edit") }
         }
 
-        ListComponent(stopIds) { stopId ->
-            StopItem(stopId = stopId, navController = navController)
-        }
+//        ListComponent(stopIds) { stopId ->
+//            StopItem(stopId = stopId, navController = navController)
+//        }
     }
 
 }

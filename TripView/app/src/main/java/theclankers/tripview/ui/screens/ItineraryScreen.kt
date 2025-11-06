@@ -27,14 +27,18 @@ import kotlin.collections.map
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import theclankers.tripview.data.api.ApiClient
+import theclankers.tripview.ui.viewmodels.TripViewModel
+import theclankers.tripview.ui.viewmodels.useTrip
 
 @Composable
-fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: ItineraryViewModel) {
-    LaunchedEffect(tripId) {
-        viewModel.loadStops(tripId)
-    }
-
-    val stops by viewModel.stops.collectAsState()
+fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String) {
+    val viewModel = useTrip(token, tripId)
+    val tripIdState by viewModel.tripIdState
+    val nameState by viewModel.nameState
+    val stopIds by viewModel.stopIdsState
+    val isLoading by viewModel.isLoading
+    val errorMessage by viewModel.errorMessage
+    val stops by viewModel.stops
 
     Scaffold(
         topBar = {
@@ -63,8 +67,8 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, viewModel: It
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                items(stops, key = { it.stopId }) { stop ->
-                    StopItem(navController, stop.stopId)
+                items(stops ?: emptyList(), key = { it.stopId }) { stop ->
+                    StopItem(navController = navController, stop)
                 }
             }
 
