@@ -56,85 +56,82 @@ def home():
 # FRIENDSHIP ENDPOINTS
 # ============================================================
 
-# TODO: Fix /friends endpoint
-# Change the name to /get_friends/<int:user_id>
-# Make sure it returns a list of friend ids
-# Change this so it ONLY returns friends, not pending requests
-
-# Get list of friends and pending requests
-@app.route('/friends', methods=['GET'])
+# Get list of friends of user_id, return a list of strings
+@app.route('/get_friends/<int:user_id>', methods=['GET'])
 @jwt_required()
-def get_friends():
-    current_user_id = int(get_jwt_identity())
-
-    # Fetch all friend relationships involving this user
+def get_friends(user_id):
     friendships = IsFriends.query.filter(
-        (IsFriends.friend1_id == current_user_id) | 
-        (IsFriends.friend2_id == current_user_id)
+        (
+            (IsFriends.friend1_id == user_id) | 
+            (IsFriends.friend2_id == user_id)
+        ) &
+        (IsFriends.relationship.is_(True))
     ).all()
 
-    friends = []
-    incoming_requests = []
-    outgoing_requests = []
+
+    friends_list = []
 
     for f in friendships:
         # Identify the other person
-        other_id = f.friend2_id if f.friend1_id == current_user_id else f.friend1_id
+        other_id = f.friend2_id if f.friend1_id == user_id else f.friend1_id
         other_user = db.session.get(User, other_id)
 
         if not other_user:
             continue
 
-        # Confirmed friendships
-        if f.relationship:
-            friends.append({
-                "user_id": other_user.user_id,
-                "username": other_user.username,
-                "firstname": other_user.firstname,
-                "lastname": other_user.lastname
-            })
-        else:
-            # Pending — check who initiated
-            if f.initiator_id == current_user_id:
-                outgoing_requests.append({
-                    "user_id": other_user.user_id,
-                    "username": other_user.username,
-                    "firstname": other_user.firstname,
-                    "lastname": other_user.lastname
-                })
-            else:
-                incoming_requests.append({
-                    "user_id": other_user.user_id,
-                    "username": other_user.username,
-                    "firstname": other_user.firstname,
-                    "lastname": other_user.lastname
-                })
+        friends_list.append(other_user.user_id)
 
-    return jsonify({
-        "friends": friends,
-        "incoming_requests": incoming_requests,
-        "outgoing_requests": outgoing_requests
-    }), 200
+    return jsonify(friends_list), 200
     
-# TODO: Implement /invites/<int:user_id> endpoint to see a list of incoming friend requests
-# This endpoint should return a list of user ids who have sent friend requests to the given user_id
-@app.route('/invites/<int:user_id>', methods=['GET'])
+@app.route('/get_invites/<int:user_id>', methods=['GET'])
 def get_invites(user_id):
-    pass
+    # Fetch all incoming friend requests for this user
+    friendships = IsFriends.query.filter(
+        ((IsFriends.friend1_id == user_id) | (IsFriends.friend2_id == user_id)) &
+        (IsFriends.relationship == False) &
+        (IsFriends.initiator_id != user_id)
+    ).all()
 
-# TODO: Implement /get_relationship/<int:user_id1>/<int:user_id2> endpoint
-# Should return one of the following statuses: "friends", "pending_incoming", "pending_outgoing", "none", "self"
+    incoming_requests = []
+
+    for f in friendships:
+        # Identify the other person (the sender)
+        other_id = f.friend2_id if f.friend1_id == user_id else f.friend1_id
+        other_user = db.session.get(User, other_id)
+
+        if not other_user:
+            continue
+
+        incoming_requests.append(other_user.user_id)
+
+    return jsonify(incoming_requests), 200
+
 @app.route('/get_relationship/<int:user_id1>/<int:user_id2>', methods=['GET'])
 def get_relationship(user_id1, user_id2):
-    pass
+    f1, f2 = sorted([user_id1, user_id2])
+
+    if user_id1 == user_id2:
+        return jsonify({"status": "self"}), 200
+
+    friendship = IsFriends.query.filter_by(friend1_id=f1, friend2_id=f2).first()
+
+    if not friendship:
+        return jsonify({"status": "none"}), 200
+
+    if friendship.relationship:
+        return jsonify({"status": "friends"}), 200
+    else:
+        if friendship.initiator_id == user_id1:
+            return jsonify({"status": "pending_outgoing"}), 200
+        else:
+            return jsonify({"status": "pending_incoming"}), 200
 
 # Sending a Friend Request
-@app.route('/friends/request', methods=['POST'])
+@app.route('/send_friend_request/<int:user_id>', methods=['POST'])
 @jwt_required()
-def send_friend_request():
+def send_friend_request(user_id):
     current_user_id = int(get_jwt_identity())
-    data = request.get_json()
-    receiver_id = data.get('user_id')
+    receiver_id = user_id
 
     if not receiver_id:
         return jsonify({"error": "Missing receiver user_id"}), 400
@@ -160,13 +157,12 @@ def send_friend_request():
 
     return jsonify({"message": "Friend request sent successfully"}), 201
 
-# Accept friend request
-@app.route('/friends/accept', methods=['POST'])
+# Accept friend request, the user_id provided in the params is the sender of the request
+@app.route('/accept_friend_request/<int:user_id>', methods=['POST'])
 @jwt_required()
-def accept_friend_request():
+def accept_friend_request(user_id):
     current_user_id = int(get_jwt_identity())
-    data = request.get_json()
-    sender_id = data.get('user_id')
+    sender_id = user_id
 
     if not sender_id:
         return jsonify({"error": "Missing sender user_id"}), 400
@@ -187,11 +183,11 @@ def accept_friend_request():
     return jsonify({"message": "Friend request accepted"}), 200
 
 # Decline an incoming Friend Request
-@app.route('/friends/decline', methods=['POST'])
+@app.route('/decline_friend_request/<int:user_id>', methods=['POST'])
 @jwt_required()
-def decline_friend_request():
+def decline_friend_request(user_id):
     current_user_id = int(get_jwt_identity())
-    data = request.get_json()
+    sender_id = user_id
     sender_id = data.get('user_id')
 
     if not sender_id:
@@ -212,14 +208,61 @@ def decline_friend_request():
 
     return jsonify({"message": "Friend request declined"}), 200
 
+# Revoke a sent Friend Request
+@app.route('/revoke_friend_request/<int:user_id>', methods=['POST'])
+@jwt_required()
+def revoke_friend_request(user_id):
+    current_user_id = int(get_jwt_identity())
+    receiver_id = user_id
+
+    if not receiver_id:
+        return jsonify({"error": "Missing receiver user_id"}), 400
+
+    f1, f2 = sorted([current_user_id, receiver_id])
+
+    friendship = IsFriends.query.filter_by(friend1_id=f1, friend2_id=f2, relationship=False).first()
+    if not friendship:
+        return jsonify({"error": "No pending friend request found"}), 404
+
+    # ✅ Only sender can revoke
+    if friendship.initiator_id != current_user_id:
+        return jsonify({"error": "You can only revoke your own sent requests"}), 403
+
+    db.session.delete(friendship)
+    db.session.commit()
+
+    return jsonify({"message": "Friend request revoked"}), 200
+
+# Remove an existing friend
+@app.route('/remove_friend/<int:user_id>', methods=['POST'])
+@jwt_required()
+def remove_friend(user_id):
+    current_user_id = int(get_jwt_identity())
+    friend_id = user_id
+
+    if not friend_id:
+        return jsonify({"error": "Missing friend user_id"}), 400
+
+    f1, f2 = sorted([current_user_id, friend_id])
+
+    friendship = IsFriends.query.filter_by(friend1_id=f1, friend2_id=f2, relationship=True).first()
+    if not friendship:
+        return jsonify({"error": "No existing friendship found"}), 404
+
+    db.session.delete(friendship)
+    db.session.commit()
+
+    return jsonify({"message": "Friend removed successfully"}), 200
+
 # Search for friends in the Add friends page by username. 
 # Use this endpoint for performing a Debounced Username Search or Real-time type-ahead user search.
-@app.route('/friends/search', methods=['GET'])
+# Use ?query=${query}
+@app.route('/search_friends', methods=['GET'])
 @jwt_required()
 def search_users():
     current_user_id = int(get_jwt_identity())
-    query = request.args.get('q', '').strip().lower()
-
+    query = request.args.get('query', '').strip().lower()
+    
     if not query:
         return jsonify([]), 200
 
@@ -247,13 +290,7 @@ def search_users():
         else:
             status = "none"
 
-        results.append({
-            "user_id": user.user_id,
-            "username": user.username,
-            "firstname": user.firstname,
-            "lastname": user.lastname,
-            "status": status
-        })
+        results.append(user.user_id)
 
     return jsonify(results), 200
 

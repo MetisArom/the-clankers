@@ -71,6 +71,58 @@ class UserViewModel(private val token: String) : ViewModel() {
             }
         }
     }
+
+    
+
+     fun accept(userId: Int) {
+         viewModelScope.launch {
+             try {
+                 ApiClient.acceptFriendRequest(token, userId)
+             } catch (e: Exception) {
+                 errorMessageState.value = e.message
+             }
+         }
+     }
+
+     fun decline(userId: Int) {
+         viewModelScope.launch {
+             try {
+                 ApiClient.declineFriendRequest(token, userId)
+             } catch (e: Exception) {
+                 errorMessageState.value = e.message
+             }
+         }
+     }
+
+     fun remove(userId: Int) {
+         viewModelScope.launch {
+             try {
+                 ApiClient.removeFriend(token, userId)
+             } catch (e: Exception) {
+                 errorMessageState.value = e.message
+             }
+         }
+     }
+
+     fun invite(userId: Int) {
+         viewModelScope.launch {
+             try {
+                 ApiClient.sendFriendRequest(token, userId)
+             } catch (e: Exception) {
+                 errorMessageState.value = e.message
+             }
+         }
+     }
+
+     fun revoke(userId: Int) {
+         viewModelScope.launch {
+             try {
+                 ApiClient.revokeFriendRequest(token, userId)
+             } catch (e: Exception) {
+                 errorMessageState.value = e.message
+             }
+         }
+     }
 }
 
 @Composable

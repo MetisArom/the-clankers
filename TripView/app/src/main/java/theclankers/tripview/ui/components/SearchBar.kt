@@ -1,29 +1,25 @@
 package theclankers.tripview.ui.components
 
-// All text capture and stuff is implemented within this component
-
-// Inputs:
-// onQuery = (string) => void
-// prefill string
-
-// Also implement the magnifying glass icon
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Text
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun SearchBar(
@@ -32,6 +28,7 @@ fun SearchBar(
     modifier: Modifier = Modifier
 ) {
     var query by remember { mutableStateOf(prefill) }
+    val focusManager = LocalFocusManager.current
 
     Row(
         modifier = modifier
@@ -62,6 +59,14 @@ fun SearchBar(
             textStyle = TextStyle(
                 color = Color.Black,
                 fontSize = MaterialTheme.typography.bodyMedium.fontSize
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done  // shows "Done" on keyboard
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus() // ✅ hides keyboard when Done pressed
+                }
             ),
             decorationBox = { innerTextField ->
                 if (query.isEmpty()) {

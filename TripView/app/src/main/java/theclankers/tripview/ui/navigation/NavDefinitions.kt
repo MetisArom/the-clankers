@@ -29,6 +29,10 @@ fun TripViewNavGraph(navController: NavHostController) {
         // Friends list screen
         composable("friends") { FriendsScreen(navController) }
 
+        // Search Friends Screen
+
+        composable("searchFriends") { SearchFriendsScreen(navController)}
+
         // Profile screen
         composable("profile") { ProfileScreen(navController) }
 
