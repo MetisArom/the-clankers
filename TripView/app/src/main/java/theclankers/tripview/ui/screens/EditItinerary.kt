@@ -61,11 +61,11 @@ fun EditItinerary(navController: NavHostController, tripId: Int, token: String) 
     val lazyListState = rememberLazyListState()
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
         stops.value = stops.value.toMutableList().apply {
-        // Update the list
-        forEachIndexed { index, stop ->
-            this[index] = stop.copy(order = index + 1) // assuming order starts at 1
-            }
+            add(to.index, removeAt(from.index))
+        }.mapIndexed { index, stop ->
+            stop.copy(order = index + 1)
         }
+
 
     }
 
@@ -75,8 +75,6 @@ fun EditItinerary(navController: NavHostController, tripId: Int, token: String) 
                 // should be based on whatever trip object is passed into this
                 title = { Text(viewModel.nameState.value?: "Trip #$tripId") },
                 actions = {
-                    Button(onClick = { println("Navigation clicked") }) { Text("Navigation") }
-                    Button(onClick = { println("Chat clicked") }) { Text("Chat") }
                     Button(onClick = { navigateToDetail(navController, "addStop/$tripId") }) { Text("Add Stop") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
