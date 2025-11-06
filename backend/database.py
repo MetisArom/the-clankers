@@ -36,7 +36,6 @@ class Trip(db.Model):
     driving_polyline_timestamp = db.Column(db.DateTime)
     name = db.Column(db.String(255))
     description = db.Column(db.Text)
-
     stops = db.relationship('Stop', backref='trip', cascade="all, delete")
     chats = db.relationship('Chat', backref='trip', cascade="all, delete")
     participants = db.relationship('User', secondary='partof', backref='joined_trips')

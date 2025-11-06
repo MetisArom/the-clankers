@@ -21,9 +21,7 @@ fun TripScreen(navController: NavHostController, tripId: Int) {
     if (token == null) return
 
     val tripVM = useTrip(token, tripId)
-    val stopIds = tripVM.stopIdsState.value
-
-    if (stopIds == null) return
+    val stops = tripVM.stops.value
 
     Column {
         Row {
@@ -34,8 +32,8 @@ fun TripScreen(navController: NavHostController, tripId: Int) {
             Button(onClick = { println("Edit clicked") }) { Text("Edit") }
         }
 
-        ListComponent(stopIds) { stopId ->
-            StopItem(stopId = stopId, navController = navController)
+        for (stop in stops) {
+            StopItem(navController, stop)
         }
     }
 

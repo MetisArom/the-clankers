@@ -11,15 +11,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import theclankers.tripview.ui.components.ListComponent
 import theclankers.tripview.ui.components.ProfileComponent
+import theclankers.tripview.ui.components.TripItem
+import theclankers.tripview.ui.viewmodels.useActiveTrips
 import theclankers.tripview.ui.viewmodels.useAppContext
 
 @Composable
 fun ProfileScreen(navController: NavController) {
     val appVM = useAppContext()
+    val token = appVM.accessTokenState.value
     val userId = appVM.userIdState.value
 
-    if (userId == null) return
+    if (token == null || userId == null) return
+
+    val activeTripsState = useActiveTrips(token, userId)
+    val activeTrips: List<Int>? = activeTripsState.value
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -28,6 +35,10 @@ fun ProfileScreen(navController: NavController) {
         .verticalScroll(rememberScrollState())){
 
         ProfileComponent(navController, userId)
+
+        ListComponent(itemIds = activeTrips ?: emptyList()) { tripId ->
+            TripItem(tripId = tripId, navController = navController)
+        }
     }
 
 }

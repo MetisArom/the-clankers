@@ -25,6 +25,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import theclankers.tripview.ui.components.HeaderText
+import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.AppViewModel
 import theclankers.tripview.ui.viewmodels.StopViewModel
 import theclankers.tripview.ui.viewmodels.TripViewModel
@@ -35,25 +36,8 @@ import theclankers.tripview.utils.decodePolyline
 
 @Composable
 fun NavigationScreen(navController: NavHostController, tripId: Int) {
-    val appVM: AppViewModel = useAppContext()
-    val token = appVM.accessTokenState.value
-
-    if (token == null) return
-
     val tripVM: TripViewModel = useTrip("token", tripId)
-    val stopIds = tripVM.stopIdsState.value ?: emptyList()
     val drivingPolyline = tripVM.drivingPolylineState.value ?: ""
-
-    // Create StopViewModels for each stopId
-    val stopVMs: Map<Int, StopViewModel> = stopIds.associateWith { stopId ->
-        useStop(token, stopId)
-    }
-
-    val stopPositions = stopVMs.values.mapNotNull { stopVM ->
-        val lat = stopVM.latitudeState.value
-        val lng = stopVM.longitudeState.value
-        if (lat != null && lng != null) LatLng(lat, lng) else null
-    }
 
     val cameraPositionState = rememberCameraPositionState()
     var mapLoaded by remember { mutableStateOf(false) }
@@ -61,12 +45,19 @@ fun NavigationScreen(navController: NavHostController, tripId: Int) {
     var showDirectPolyline by remember { mutableStateOf(false) }
     var showDrivingPolyline by remember { mutableStateOf(false) }
 
+    // Get LatLng pairs of all stops on route for direct polyline
+    val directPoints = tripVM.stops.value.map {
+        LatLng(it.latitude, it.longitude)
+    }
+
+    // Decode encoded polyline string to LatLng pairs for driving polyline. Offload to separate thread.
     val drivingPoints by produceState(initialValue = emptyList(), drivingPolyline) {
         withContext(Dispatchers.Default) {
             value = decodePolyline(drivingPolyline)
         }
     }
 
+    // Placeholder loading text for when map is not done loading
     Row(
         modifier = Modifier.fillMaxHeight().fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -82,16 +73,21 @@ fun NavigationScreen(navController: NavHostController, tripId: Int) {
         cameraPositionState = cameraPositionState,
         onMapLoaded = { mapLoaded = true }
     ) {
-        stopPositions.forEachIndexed { index, latLng ->
+        tripVM.stops.value.forEachIndexed { index, stop ->
             Marker(
-                state = MarkerState(position = latLng),
-                title = "Waypoint ${index + 1}"
+                state = MarkerState(position = LatLng(stop.latitude, stop.longitude)),
+                title = "Waypoint ${index + 1}",
+                // Navigate to detail page for the stop you click on
+                onClick = {
+                    navigateToDetail(navController, "stop/${stop.stopId}")
+                    true
+                }
             )
         }
 
         if (showDirectPolyline) {
             Polyline(
-                points = stopPositions,
+                points = directPoints,
                 color = Color(0xFF0F53FF),
                 width = 16f,
                 jointType = JointType.ROUND,
@@ -111,10 +107,10 @@ fun NavigationScreen(navController: NavHostController, tripId: Int) {
             )
         }
 
-        LaunchedEffect(mapLoaded, stopPositions) {
-            if (mapLoaded && stopPositions.isNotEmpty()) {
+        LaunchedEffect(mapLoaded, directPoints) {
+            if (mapLoaded && directPoints.isNotEmpty()) {
                 val boundsBuilder = LatLngBounds.builder()
-                stopPositions.forEach { boundsBuilder.include(it) }
+                directPoints.forEach { boundsBuilder.include(it) }
                 val bounds = boundsBuilder.build()
                 cameraPositionState.animate(CameraUpdateFactory.newLatLngBounds(bounds, 150))
             }
@@ -131,7 +127,7 @@ fun NavigationScreen(navController: NavHostController, tripId: Int) {
                 showDirectPolyline = !showDirectPolyline
                 if (showDrivingPolyline) showDrivingPolyline = false
             },
-            enabled = stopPositions.isNotEmpty()
+            enabled = directPoints.isNotEmpty()
         ) {
             Text(if (!showDirectPolyline) "Show Direct Route" else "Hide Direct Route")
         }

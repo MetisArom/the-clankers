@@ -29,7 +29,34 @@ class StopViewModel(private val token: String) : ViewModel() {
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
     val errorMessage: MutableState<String?> = mutableStateOf(null)
 
-    fun loadStop(stopId: Int) {
+    fun loadStop(stop: Stop) {
+        viewModelScope.launch {
+            isLoading.value = true
+            errorMessage.value = null
+            try {
+
+                // ✅ Update each state field from the Stop model
+                stopIdState.value = stop.stopId
+                tripIdState.value = stop.tripId
+                stopTypeState.value = stop.stopType
+                latitudeState.value = stop.latitude
+                longitudeState.value = stop.longitude
+                nameState.value = stop.name
+                completedState.value = stop.completed
+                orderState.value = stop.order
+
+                Log.d("StopViewModel", "✅ Stop loaded: ${stop.name}")
+
+            } catch (e: Exception) {
+                Log.e("StopViewModel", "❌ Failed to load stop", e)
+                errorMessage.value = e.message
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun loadStopById(stopId: Int) {
         viewModelScope.launch {
             isLoading.value = true
             errorMessage.value = null
@@ -77,14 +104,42 @@ class StopViewModel(private val token: String) : ViewModel() {
             }
         }
     }
+
+    fun deleteStop(stopId: Int) {
+        viewModelScope.launch {
+            try {
+                // 🔹 Send the update to the backend
+                withContext(Dispatchers.IO) {
+                    ApiClient.deleteStop(token, stopId)
+                }
+
+
+                Log.d("StopViewModel", "✅ Stop deleted ")
+            } catch (e: Exception) {
+                Log.e("StopViewModel", "❌ Failed to delete stop", e)
+                e.printStackTrace()
+            }
+        }
+    }
 }
 
 @Composable
-fun useStop(token: String, stopId: Int): StopViewModel {
+fun useStop(token: String, stop: Stop): StopViewModel {
+    val viewModel = remember { StopViewModel(token) }
+
+    LaunchedEffect(stop.stopId) {
+        viewModel.loadStop(stop)
+    }
+
+    return viewModel
+}
+
+@Composable
+fun useStopById(token: String, stopId: Int): StopViewModel {
     val viewModel = remember { StopViewModel(token) }
 
     LaunchedEffect(stopId) {
-        viewModel.loadStop(stopId)
+        viewModel.loadStopById(stopId)
     }
 
     return viewModel

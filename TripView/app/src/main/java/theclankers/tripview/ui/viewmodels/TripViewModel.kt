@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.api.ApiClient
 
@@ -147,6 +148,8 @@ class TripViewModel(private val token: String) : ViewModel() {
     val stopIdsState: MutableState<List<Int>?> = mutableStateOf(null)
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
     val errorMessage: MutableState<String?> = mutableStateOf(null)
+    val stops: MutableState<List<Stop>> = mutableStateOf(emptyList())
+
 
     fun loadTrip(tripId: Int) {
         viewModelScope.launch {
@@ -167,6 +170,30 @@ class TripViewModel(private val token: String) : ViewModel() {
                 descriptionState.value = trip.description
                 stopIdsState.value = trip.stopIds
 
+                val stopResponse = withContext(Dispatchers.IO) {
+                    ApiClient.getTripStops(token, tripId)
+                }
+                val stopjson = JSONArray(stopResponse)
+                val s = mutableListOf<Stop>()
+
+                for (i in 0 until stopjson.length()) {
+                    val stopObject = stopjson.getJSONObject(i)
+                    s.add(
+                        Stop(
+                            stopId = stopObject.getInt("stop_id"),
+                            latitude = stopObject.getDouble("latitude"),
+                            longitude = stopObject.getDouble("longitude"),
+                            order = stopObject.getInt("order"),
+                            completed = stopObject.getBoolean("completed"),
+                            stopType = stopObject.getString("stop_type"),
+                            name = stopObject.getString("name"),
+                            tripId = tripId
+                        )
+                    )
+                }
+
+                stops.value = s
+
                 Log.d("TripViewModel", "✅ Trip loaded: ${trip.name}")
 
             } catch (e: Exception) {
@@ -174,6 +201,22 @@ class TripViewModel(private val token: String) : ViewModel() {
                 errorMessage.value = e.message
             } finally {
                 isLoading.value = false
+            }
+        }
+    }
+
+    fun updateTrip(tripId: Int, stops: List<Stop>) {
+        viewModelScope.launch {
+            try {
+                // 🔹 Send the update to the backend
+                withContext(Dispatchers.IO) {
+                    ApiClient.updateStops(token, tripId, stops)
+                }
+
+                Log.d("StopViewModel", "✅ Stops updated  ")
+            } catch (e: Exception) {
+                Log.e("StopViewModel", "❌ Failed to update stops", e)
+                e.printStackTrace()
             }
         }
     }

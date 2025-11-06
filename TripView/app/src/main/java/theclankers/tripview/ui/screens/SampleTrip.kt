@@ -70,7 +70,7 @@ fun SampleTrip(navController: NavHostController) {
                     .padding(16.dp)
             ) {
                 items(stops) { stop ->
-                    StopItem(stopId = stop.stopId, navController = navController)
+                    StopItem(stop = stop, navController = navController)
                 }
                 // items(stops, key = { it.stopId }) { stop ->
                 //     StopItem(

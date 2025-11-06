@@ -530,7 +530,7 @@ def edit_user():
         return jsonify({"error": "User not found"}), 404
 
     data = request.get_json()
-    allowed_fields = ['firstname', "lastname" , 'likes', 'dislikes']
+    allowed_fields = ['firstname', "lastname", "username" , "likes", "dislikes"]
 
     for field in allowed_fields:
         if field in data:
@@ -607,27 +607,37 @@ def update_stop_completed(stop_id):
     db.session.commit()
     return jsonify({"message": f"Stop {stop_id} updated successfully!"})
 
+@app.route('/stops/<int:stop_id>', methods=['DELETE'], endpoint="delete_stop")
+# @jwt_required
+def delete_stop(trip_id, stop_id):
+    stop = Stop.query.filter_by(trip_id=trip_id, stop_id=stop_id).first()
+    if not stop:
+        return jsonify({"ERROR": f"Stop with trip_id {trip_id} and stop_id {stop_id} not found"})
+    db.session.delete(stop)
+    db.session.commit()
+    return jsonify({"message": f"Stop with trip_id {trip_id} and stop_id {stop_id} successfully deleted"})
+
 # ============================================================
 # Ethan added these routes
 # ============================================================
 
-@app.route('/trips/<int:trip_id>', methods=['GET'])
+@app.route('/trips/<int:trip_id>/stops', methods=['GET'])
 def display_itinerary(trip_id):
-    stops = Stop.query.filter_by(trip_id=trip_id).order_by(Stop.stop_order).all()
+    stops = Stop.query.filter_by(trip_id=trip_id).order_by(Stop.order).all()
     return jsonify([
         {
             "stop_id": s.stop_id,
             "stop_type": s.stop_type,
             "latitude": s.latitude,
             "longitude": s.longitude,
-            "description": s.description,
+            "name": s.name,
             "completed": s.completed,
-            "stop_order": s.stop_order
+            "order": s.order
         }
         for s in stops
     ])
 
-@app.route('/trips/<int:trip_id>', methods=['PATCH'])
+@app.route('/trips/<int:trip_id>/stops', methods=['PATCH'])
 def modify_itinerary(trip_id):
     data = request.get_json()
 
@@ -639,12 +649,12 @@ def modify_itinerary(trip_id):
     # if there is a new stop created, initial stop_id should be null (sent by app)
     for s in stops_data:
         stop_id = s.get('stop_id')
-        order = s.get('order')
+        stop_order = s.get('order')
 
         # checking if existing stop's order changed
         if stop_id and stop_id in existing_dict:
-            stop = existing_stops['stop_id']
-            stop.order = order
+            stop = existing_dict[stop_id]
+            stop.order = stop_order
 
         # adding newly added stop
         elif not stop_id:
@@ -653,9 +663,9 @@ def modify_itinerary(trip_id):
                 stop_type=s.get('stop_type', ''),
                 latitude=s['latitude'],
                 longitude=s['longitude'],
-                name=s.get('description', ''),
+                description=s.get('description', ''),
                 completed=s.get('completed', False),
-                order=order
+                stop_order=stop_order
             )
             db.session.add(new_stop)
         

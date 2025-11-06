@@ -13,6 +13,7 @@ import theclankers.tripview.ui.navigation.goBack
 import androidx.core.net.toUri
 import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.ui.viewmodels.useStop
+import theclankers.tripview.ui.viewmodels.useStopById
 
 @Composable
 fun StopScreen(navController: NavHostController, stopId: Int) {
@@ -23,7 +24,7 @@ fun StopScreen(navController: NavHostController, stopId: Int) {
 
     if (token == null) return
 
-    val stopVM = useStop(token, stopId)
+    val stopVM = useStopById(token, stopId)
     val latitude = stopVM.latitudeState.value
     val longitude = stopVM.longitudeState.value
 
