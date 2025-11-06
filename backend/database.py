@@ -29,7 +29,7 @@ class IsFriends(db.Model):
 
 class Trip(db.Model):
     __tablename__ = 'trips'
-    trip_id = db.Column(db.Integer, primary_key=True)
+    trip_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.user_id', ondelete="CASCADE"), nullable=False)
     status = db.Column(db.String(20), default='ongoing')
     driving_polyline = db.Column(db.Text)
