@@ -580,7 +580,7 @@ object ApiClient {
             .build()
 
         val response = HttpHelper.get(request)
-        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        //if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
         val responseBody = response.body?.string() ?: throw IOException("Empty response")
         var stop: Stop? = null
         print(responseBody)

@@ -26,7 +26,7 @@ sealed class BottomNavItem(val route: String, val label: String, val icon: Image
     object Camera : BottomNavItem("camera", "Camera", Icons.Default.CameraAlt)
     object Friends : BottomNavItem("friends", "Friends", Icons.Default.Search)
     object Profile : BottomNavItem("profile", "Profile", Icons.Default.Person)
-    object Debug : BottomNavItem("debug", "Debug", Icons.Default.Build)
+    //object Debug : BottomNavItem("debug", "Debug", Icons.Default.Build)
 }
 
 @Composable
@@ -36,7 +36,7 @@ fun TripViewNavigationBar(navController: NavHostController) {
         BottomNavItem.Camera,
         BottomNavItem.Friends,
         BottomNavItem.Profile,
-        BottomNavItem.Debug
+        //BottomNavItem.Debug
     )
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
