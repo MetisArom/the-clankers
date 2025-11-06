@@ -3,6 +3,7 @@ package theclankers.tripview.data.api
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -29,7 +30,7 @@ object ApiClient {
     // -------------------------------
     // USER ENDPOINTS
     // -------------------------------
-    suspend fun getUser(token: String, userId: Int): User {
+    suspend fun getUser(token: String, userId: Int): User = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/user/$userId"
         val request = Request.Builder()
             .url(url)
@@ -63,10 +64,10 @@ object ApiClient {
 
         Log.d("ApiClient", "Fetched user: $user")
 
-        return user
+        return@withContext user
     }
 
-    suspend fun login(username: String, password: String): LoginResult {
+    suspend fun login(username: String, password: String): LoginResult = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/login"
         val bodyJson = JSONObject().apply {
             put("username", username)
@@ -100,7 +101,7 @@ object ApiClient {
         Log.d("ApiClient", "Login successful: user_id=$userId")
 
         // This will return both userId and accessToken as a LoginResult object
-        return LoginResult(userId, accessToken)
+        return@withContext LoginResult(userId, accessToken)
     }
 
     // TODO: Implement signup API function
@@ -111,7 +112,7 @@ object ApiClient {
     }
 
     // Calls endpoint /edit_user to update information about the currently logged in user
-    suspend fun editUser(token: String, username: String, firstName: String, lastName: String, likes: String, dislikes: String): String {
+    suspend fun editUser(token: String, username: String, firstName: String, lastName: String, likes: String, dislikes: String): String = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/edit_user"
 
         val bodyJson = JSONObject().apply {
@@ -134,14 +135,14 @@ object ApiClient {
 
         Log.d("ApiClient", "Updated currently logged in user!")
 
-        return responseBody
+        return@withContext responseBody
     }
 
     // -------------------------------
     // FRIENDSHIP ENDPOINTS
     // -------------------------------
 
-    suspend fun sendFriendRequest(token: String, userId: Int) {
+    suspend fun sendFriendRequest(token: String, userId: Int) = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/send_friend_request/$userId"
         val request = Request.Builder()
             .url(url)
@@ -155,7 +156,7 @@ object ApiClient {
         Log.d("ApiClient", "Sent friend request to user_id=$userId")
     }
 
-    suspend fun acceptFriendRequest(token: String, userId: Int) {
+    suspend fun acceptFriendRequest(token: String, userId: Int) = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/accept_friend_request/$userId"
         val request = Request.Builder()
             .url(url)
@@ -169,7 +170,7 @@ object ApiClient {
         Log.d("ApiClient", "Accepted friend request from user_id=$userId")
     }
 
-    suspend fun declineFriendRequest(token: String, userId: Int) {
+    suspend fun declineFriendRequest(token: String, userId: Int) = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/decline_friend_request/$userId"
         val request = Request.Builder()
             .url(url)
@@ -183,7 +184,7 @@ object ApiClient {
         Log.d("ApiClient", "Declined friend request from user_id=$userId")
     }
 
-    suspend fun removeFriend(token: String, userId: Int) {
+    suspend fun removeFriend(token: String, userId: Int) = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/remove_friend/$userId"
         val request = Request.Builder()
             .url(url)
@@ -197,7 +198,7 @@ object ApiClient {
         Log.d("ApiClient", "Removed friend user_id=$userId")
     }
 
-    suspend fun revokeFriendRequest(token: String, userId: Int) {
+    suspend fun revokeFriendRequest(token: String, userId: Int) = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/revoke_friend_request/$userId"
         val request = Request.Builder()
             .url(url)
@@ -211,7 +212,7 @@ object ApiClient {
         Log.d("ApiClient", "Revoked friend request to user_id=$userId")
     }
 
-    suspend fun getFriends(token: String, userId: Int): List<Int> {
+    suspend fun getFriends(token: String, userId: Int): List<Int> = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/get_friends/$userId"
         val request = Request.Builder()
             .url(url)
@@ -234,10 +235,10 @@ object ApiClient {
 
         Log.d("ApiClient", "Fetched friends: $friendsList")
 
-        return friendsList
+        return@withContext friendsList
     }
 
-    suspend fun searchFriends(token: String, query: String): List<Int> {
+    suspend fun searchFriends(token: String, query: String): List<Int> = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/search_friends?query=${query}"
         val request = Request.Builder()
             .url(url)
@@ -257,10 +258,10 @@ object ApiClient {
             Log.e("ApiClient", "Error parsing search friends JSON: ${e.message}")
         } 
         Log.d("ApiClient", "Search friends results: $resultsList")
-        return resultsList
+        return@withContext resultsList
     }
 
-    suspend fun getInvites(token: String, userId: Int): List<Int> {
+    suspend fun getInvites(token: String, userId: Int): List<Int> = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/get_invites/$userId"
         val request = Request.Builder()
             .url(url)
@@ -284,10 +285,10 @@ object ApiClient {
 
         Log.d("ApiClient", "Fetched invites: $invitesList")
 
-        return invitesList
+        return@withContext invitesList
     }
 
-    suspend fun getRelationship(token: String, user_id1: Int, user_id2: Int): String? {
+    suspend fun getRelationship(token: String, user_id1: Int, user_id2: Int): String? = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/get_relationship/$user_id1/$user_id2"
         val request = Request.Builder()
             .url(url)
@@ -306,14 +307,14 @@ object ApiClient {
         } catch (e: Exception) {
             Log.e("ApiClient", "Error parsing relationship JSON: ${e.message}")
         }
-        return relationship
+        return@withContext relationship
     }
 
     // -------------------------------
     // TRIP ENDPOINTS
     // -------------------------------
 
-    suspend fun getActiveTrips(token: String, userId: Int): List<Int> {
+    suspend fun getActiveTrips(token: String, userId: Int): List<Int> = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/get_active_trips/$userId"
         val request = Request.Builder()
             .url(url)
@@ -338,10 +339,10 @@ object ApiClient {
 
         Log.d("ApiClient", "Fetched active trips: $activeTripsList")
 
-        return activeTripsList
+        return@withContext activeTripsList
     }
 
-    suspend fun getFriendsTrips(token: String, userId: Int): List<Int> {
+    suspend fun getFriendsTrips(token: String, userId: Int): List<Int> = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/get_friends_trips/$userId"
         val request = Request.Builder()
             .url(url)
@@ -363,10 +364,10 @@ object ApiClient {
 
         Log.d("ApiClient", "Fetched friends trips: $friendsTripsList")
 
-        return friendsTripsList
+        return@withContext friendsTripsList
     }
 
-    suspend fun getCompletedTrips(token: String, userId: Int): List<Int> {
+    suspend fun getCompletedTrips(token: String, userId: Int): List<Int> = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/get_completed_trips/$userId"
         val request = Request.Builder()
             .url(url)
@@ -389,7 +390,7 @@ object ApiClient {
         }
 
         Log.d("ApiClient", "Fetched completed trips: $completedTripsList")
-        return completedTripsList
+        return@withContext completedTripsList
     }
 
     // This function calls the endpoint "$BASE_URL/trips/send_form" with the data
@@ -517,7 +518,7 @@ object ApiClient {
 //        return friendsTripsList
 //    }
 
-    suspend fun getTrip(token: String, tripId: Int): Trip {
+    suspend fun getTrip(token: String, tripId: Int): Trip = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/trip/$tripId"
         val request = Request.Builder()
             .url(url)
@@ -555,10 +556,10 @@ object ApiClient {
         
         Log.d("ApiClient", "Fetched trip: $trip")
 
-        return trip
+        return@withContext trip
     }
 
-    suspend fun getTripStops(token: String, tripId: Int): String {
+    suspend fun getTripStops(token: String, tripId: Int): String = withContext(Dispatchers.IO){
         val url = "$BASE_URL/trips/$tripId/stops"
         val request = Request.Builder()
             .url(url)
@@ -568,9 +569,9 @@ object ApiClient {
 
         val response = HttpHelper.get(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
-        return response.body?.string() ?: throw IOException("Empty response")
+        return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
-    suspend fun getStop(token: String, stopId: Int): Stop {
+    suspend fun getStop(token: String, stopId: Int): Stop = withContext(Dispatchers.IO){
         val url = "$BASE_URL/stop/$stopId"
         val request = Request.Builder()
             .url(url)
@@ -604,10 +605,10 @@ object ApiClient {
 
         Log.d("ApiClient", "Fetched stop: $stop")
 
-        return stop
+        return@withContext stop
     }
 
-    suspend fun updateStopCompleted(token: String, stopId: Int, completed: Boolean): String {
+    suspend fun updateStopCompleted(token: String, stopId: Int, completed: Boolean): String = withContext(Dispatchers.IO){
         val url = "$BASE_URL/update_stop_completed/$stopId"
         val bodyJson = JSONObject().apply {
             put("completed", completed)
@@ -621,10 +622,10 @@ object ApiClient {
 
         val response = HttpHelper.put(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
-        return response.body?.string() ?: throw IOException("Empty response")
+        return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
 
-    suspend fun addStop(token: String, tripId: Int, name: String, latitude: String, longitude:String): String {
+    suspend fun addStop(token: String, tripId: Int, name: String, latitude: String, longitude:String): String = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/trips/$tripId/stops"
         val stopArray = JSONArray().apply {
             put(
@@ -648,10 +649,10 @@ object ApiClient {
 
         val response = HttpHelper.put(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
-        return response.body?.string() ?: throw IOException("Empty response")
+        return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
 
-    suspend fun deleteStop(token: String, stopId: Int): String {
+    suspend fun deleteStop(token: String, stopId: Int): String = withContext(Dispatchers.IO){
         val url = "$BASE_URL/stops/$stopId"
         val request = Request.Builder()
             .url(url)
@@ -661,8 +662,7 @@ object ApiClient {
 
         val response = HttpHelper.delete(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
-        return response.body?.string() ?: throw IOException("Empty response")
-
+        return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
 
     suspend fun archiveTrip(token: String, tripId: Int): String {
@@ -705,7 +705,7 @@ object ApiClient {
 
 
     }
-    suspend fun updateStops(token: String, tripId: Int, stops: List<Stop>) {
+    suspend fun updateStops(token: String, tripId: Int, stops: List<Stop>) = withContext(Dispatchers.IO){
         val url = "$BASE_URL/trips/$tripId/stops"
 
         // Build JSON payload
