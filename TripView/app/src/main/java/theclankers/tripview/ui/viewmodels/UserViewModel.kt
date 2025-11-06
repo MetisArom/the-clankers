@@ -49,6 +49,11 @@ class UserViewModel(private val token: String) : ViewModel() {
             }
         }
     }
+
+    // TODO: Implement editUser, calls ApiService editUser
+    fun editUser(username: String, firstName: String, lastName: String, likes: String, dislikes: String) {
+
+    }
 }
 
 @Composable

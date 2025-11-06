@@ -14,9 +14,30 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import theclankers.tripview.ui.components.FriendItem
 import theclankers.tripview.ui.components.TitleText
+import theclankers.tripview.ui.viewmodels.AppViewModel
+import theclankers.tripview.ui.viewmodels.FriendsViewModel
+import theclankers.tripview.ui.viewmodels.InvitesViewModel
+import theclankers.tripview.ui.viewmodels.useAppContext
+import theclankers.tripview.ui.viewmodels.useFriends
+import theclankers.tripview.ui.viewmodels.useInvites
 
 @Composable
-fun FriendsListScreen(navController: NavController) {
+fun FriendsScreen(navController: NavController) {
+    val appVM: AppViewModel = useAppContext()
+    val userId = appVM.userIdState.value
+    val token = appVM.accessTokenState.value
+
+    if (userId == null || token == null) return
+
+    val friendsVM: FriendsViewModel = useFriends(token, userId)
+    val friends = friendsVM.friendsState.value
+
+    val invitesVM: InvitesViewModel = useInvites(token, userId)
+    val invites = invitesVM.invitesState.value
+
+    // TODO: Make sure the below line makes sense... Might not need it?
+    if (friends == null || invites == null) return
+
     Column(
         modifier = Modifier
             .fillMaxSize()
