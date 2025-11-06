@@ -18,12 +18,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.components.HelperText
 import theclankers.tripview.ui.viewmodels.useAppContext
+import theclankers.tripview.utils.toast
 
 
 @Composable
@@ -31,6 +33,20 @@ fun TripFormPt2(navController: NavHostController) {
     val appVM = useAppContext()
     val token = appVM.accessTokenState.value
     val tripSuggestions = appVM.tripSuggestionsState.value
+
+    val context = LocalContext.current
+
+    // Observe the toast message
+    val toastMsg by remember { derivedStateOf { appVM.toastMessage.value } }
+    LaunchedEffect(toastMsg) {
+        toastMsg?.let { msg ->
+            // call your existing extension:
+            context.toast(msg, short = true)
+
+            // Clear the message to avoid repeated toasts
+            appVM.clearToastMessage()
+        }
+    }
 
     if (token == null) return
 

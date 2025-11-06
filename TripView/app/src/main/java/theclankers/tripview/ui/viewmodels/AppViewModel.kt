@@ -20,6 +20,7 @@ import theclankers.tripview.data.models.User
 import theclankers.tripview.data.api.ApiClient
 import theclankers.tripview.data.models.LoginResult
 import theclankers.tripview.data.models.TripSuggestion
+import theclankers.tripview.ui.navigation.goBack
 import theclankers.tripview.ui.navigation.navigateToRoot
 
 class AppViewModel : ViewModel() {
@@ -36,6 +37,8 @@ class AppViewModel : ViewModel() {
     val stops = mutableStateOf("")
     val timeline = mutableStateOf("")
     val numChoices = mutableStateOf("3")
+
+    val toastMessage: MutableState<String?> = mutableStateOf(null)
     val isLoadingState = mutableStateOf(false)
     val errorMessageState = mutableStateOf<String?>(null)
 
@@ -84,12 +87,15 @@ class AppViewModel : ViewModel() {
                 }
 
                 ApiClient.chooseTrip(accessTokenState.value!!, tripJson)
+                toastMessage.value = "Trip '${trip.name}' created successfully."
             } catch (e: Exception) {
                 Log.e("AppViewModel", "chooseTrip failed", e)
+                toastMessage.value = "Failed to create trip: ${e.message ?: "unknown error"}"
                 errorMessageState.value = e.message
             } finally {
                 isLoadingState.value = false
-                navigateToRoot(navController, "trips")
+                goBack(navController)
+                goBack(navController)
             }
         }
     }
@@ -128,6 +134,10 @@ class AppViewModel : ViewModel() {
 
     fun toggleNavbar() {
         showNavbarState.value = !showNavbarState.value
+    }
+
+    fun clearToastMessage() {
+        toastMessage.value = null
     }
 }
 
