@@ -1,12 +1,8 @@
 package theclankers.tripview.data.api
 
-import android.R.attr.mimeType
-import android.R.attr.password
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.Contextual
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -21,7 +17,6 @@ import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.models.TripSuggestion
 import theclankers.tripview.data.models.User
-import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.utils.HttpHelper
 import java.io.File
 import java.io.IOException
@@ -397,7 +392,10 @@ object ApiClient {
         return completedTripsList
     }
 
-    suspend fun sendTripForm(
+    // This function calls the endpoint "$BASE_URL/trips/send_form" with the data
+    // It receives an object of the structure:
+    // { trips: [] }
+    suspend fun submitForm(
         token: String,
         destination: String,
         numDays: String,
@@ -405,7 +403,7 @@ object ApiClient {
         timeline: String,
         numChoices: String
     ): MutableList<TripSuggestion> = withContext(Dispatchers.IO) {
-        val url = "$BASE_URL/trips/send_form"
+        val url = "$BASE_URL/submit_form"
 
         val bodyJson = JSONObject().apply {
             put("destination", destination)
@@ -428,7 +426,6 @@ object ApiClient {
         }
 
         val responseBody = response.body?.string() ?: throw IOException("Empty response")
-        Log.d("ApiClient", "trip creation route response: $responseBody")
 
         val tripSuggestions = mutableListOf<TripSuggestion>()
 
@@ -740,4 +737,17 @@ object ApiClient {
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
     }
 
+    suspend fun chooseTrip(token: String, trip: JSONObject): String {
+        val url = "$BASE_URL/choose_trip"
+        
+        val request = Request.Builder()
+            .url(url)
+            .post(trip.toString().toRequestBody(JSON))
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.post(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code} ${response.message}")
+        return response.body?.string() ?: throw IOException("Empty response")
+    }
 }

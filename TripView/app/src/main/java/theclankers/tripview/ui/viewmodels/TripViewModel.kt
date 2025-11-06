@@ -215,6 +215,7 @@ class TripViewModel(private val token: String) : ViewModel() {
                     ApiClient.updateStops(token, tripId, stops)
                 }
 
+
                 Log.d("StopViewModel", "✅ Stops updated  ")
             } catch (e: Exception) {
                 Log.e("StopViewModel", "❌ Failed to update stops", e)
@@ -232,6 +233,7 @@ class TripViewModel(private val token: String) : ViewModel() {
                     ApiClient.deleteStop(token, stopId)
                 }
 
+                stops.value = stops.value.filter { it.stopId != stopId }
 
                 Log.d("StopViewModel", "✅ Stop deleted ")
             } catch (e: Exception) {

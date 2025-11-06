@@ -2,7 +2,10 @@ package theclankers.tripview.ui.screens
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
+import android.util.Size
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -42,7 +45,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import theclankers.tripview.R
 import theclankers.tripview.ui.components.HeaderText
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -56,7 +61,12 @@ fun CameraPreviewContent(
 
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val previewView = remember { PreviewView(context) }
-    val imageCapture = remember { ImageCapture.Builder().build() }
+    val imageCapture = remember {
+        ImageCapture.Builder()
+            .setTargetResolution(Size(1920, 1080))
+            .setJpegQuality(80)
+            .build()
+    }
 
     LaunchedEffect(cameraProviderFuture) {
         val cameraProvider = cameraProviderFuture.get()
@@ -182,7 +192,18 @@ fun CameraCaptureButton(
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                         //for debugging:
-                        Log.e("CameraPreview", "she worked")
+                        //Log.e("CameraPreview", "she worked")
+                        val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
+                        val stream = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+                        val compressedBytes = stream.toByteArray()
+
+                        val compressedFile = File(
+                            photoFile.parentFile,
+                            "compressed_${photoFile.name}"
+                        )
+                        FileOutputStream(compressedFile).use { it.write(compressedBytes) }
+
                         val encodedPath = URLEncoder.encode(photoFile.absolutePath, StandardCharsets.UTF_8.toString())
                         navController.navigate("cameraConfirmScreen/${encodedPath}")
                         /*val bitmap = BitmapFactory.decodeFile(photoFile.absolutePath)

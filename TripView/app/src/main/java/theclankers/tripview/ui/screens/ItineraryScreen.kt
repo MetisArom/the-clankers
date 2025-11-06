@@ -44,7 +44,7 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("San Francisco Itinerary") },
+                title = { Text(nameState ?: "") },
                 actions = {
                     Button(onClick = {
                         navigateToDetail(navController, "navigation/$tripId" )

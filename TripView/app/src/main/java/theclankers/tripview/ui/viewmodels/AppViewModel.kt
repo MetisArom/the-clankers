@@ -12,11 +12,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import theclankers.tripview.data.models.User
 import theclankers.tripview.data.api.ApiClient
 import theclankers.tripview.data.models.LoginResult
+import theclankers.tripview.data.models.TripSuggestion
+import theclankers.tripview.ui.navigation.navigateToRoot
 
 class AppViewModel : ViewModel() {
     // Explicit MutableState variables with consistent naming
@@ -25,6 +29,70 @@ class AppViewModel : ViewModel() {
     val isAuthedState = mutableStateOf(false)
     val authErrorMessageState = mutableStateOf<String?>(null)
     val showNavbarState = mutableStateOf(true)
+
+    val tripSuggestionsState = mutableStateOf<List<TripSuggestion>>(emptyList())
+    val destination = mutableStateOf("")
+    val numDays = mutableStateOf("1")
+    val stops = mutableStateOf("")
+    val timeline = mutableStateOf("")
+    val numChoices = mutableStateOf("3")
+    val isLoadingState = mutableStateOf(false)
+    val errorMessageState = mutableStateOf<String?>(null)
+
+    fun submitForm(navController: NavController) {
+        errorMessageState.value = null
+
+        if (accessTokenState.value == null) {
+            Log.e("AppViewModel", "submitForm failed: accessToken is null")
+            errorMessageState.value = "Access token is null"
+            return
+        }
+        
+        viewModelScope.launch {
+            try {
+                isLoadingState.value = true
+                tripSuggestionsState.value = ApiClient.submitForm(accessTokenState.value!!, destination.value, numDays.value, stops.value, timeline.value, numChoices.value)
+            } catch (e: Exception) {
+                Log.e("AppViewModel", "submitForm failed", e)
+                errorMessageState.value = e.message
+            } finally {
+                errorMessageState.value = null
+                Log.d("AppViewModel", "submitForm completed")
+                navController.navigate("TripFormPt2")
+                isLoadingState.value = false
+            }
+        }
+    }
+
+    fun chooseTrip(trip: TripSuggestion, navController: NavHostController) {
+        errorMessageState.value = null
+
+        if (accessTokenState.value == null) {
+            Log.e("AppViewModel", "chooseTrip failed: accessToken is null")
+            errorMessageState.value = "Access token is null"
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                isLoadingState.value = true
+                // Package the trip as a JSON object and send to the backend
+                val tripJson = JSONObject().apply {
+                    put("name", trip.name)
+                    put("description", trip.description)
+                    put("stops", trip.stopsJSONArray)
+                }
+
+                ApiClient.chooseTrip(accessTokenState.value!!, tripJson)
+            } catch (e: Exception) {
+                Log.e("AppViewModel", "chooseTrip failed", e)
+                errorMessageState.value = e.message
+            } finally {
+                isLoadingState.value = false
+                navigateToRoot(navController, "trips")
+            }
+        }
+    }
 
     fun login(username: String, password: String) {
         viewModelScope.launch {

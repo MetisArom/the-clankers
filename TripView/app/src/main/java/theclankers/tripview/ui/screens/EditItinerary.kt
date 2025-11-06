@@ -36,11 +36,17 @@ import theclankers.tripview.data.api.ApiClient
 import theclankers.tripview.ui.components.StopItem
 import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.TripViewModel
+import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.ui.viewmodels.useStop
 import theclankers.tripview.ui.viewmodels.useTrip
 
 @Composable
-fun EditItinerary(navController: NavHostController, tripId: Int, token: String) { // , tripId: Int?, viewModel: TripViewModel
+fun EditItinerary(navController: NavHostController, tripId: Int) { // , tripId: Int?, viewModel: TripViewModel
+    val appVM = useAppContext()
+    val token = appVM.accessTokenState.value
+
+    if (token == null) return
+
     val viewModel = useTrip(token, tripId)
     val tripIdState by viewModel.tripIdState
     val nameState by viewModel.nameState
@@ -75,7 +81,7 @@ fun EditItinerary(navController: NavHostController, tripId: Int, token: String) 
                 // should be based on whatever trip object is passed into this
                 title = { Text(viewModel.nameState.value?: "Trip #$tripId") },
                 actions = {
-                    Button(onClick = { navigateToDetail(navController, "addStop/$tripId") }) { Text("Add Stop") }
+                    Button(onClick = { navigateToDetail(navController, "addStop/$tripId ") }) { Text("Add Stop") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
