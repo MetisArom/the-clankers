@@ -220,6 +220,25 @@ class TripViewModel(private val token: String) : ViewModel() {
             }
         }
     }
+
+    val isAddingStopState: MutableState<Boolean> = mutableStateOf(false)
+    val addStopMessageState: MutableState<String?> = mutableStateOf(null)
+
+    fun addStop(tripId: Int, name: String, latitude: String, longitude: String) {
+        viewModelScope.launch {
+            isAddingStopState.value = true
+            try {
+                ApiClient.addStop(token, tripId, name, latitude, longitude)
+                addStopMessageState.value = "Successfully added stop"
+            } catch (e: Exception) {
+                Log.e("StopViewModel", "❌ Failed to add stop", e)
+                addStopMessageState.value = "Failed to add stop"
+                e.printStackTrace()
+            } finally {
+                isAddingStopState.value = false
+            }
+        }
+    }
 }
 
 

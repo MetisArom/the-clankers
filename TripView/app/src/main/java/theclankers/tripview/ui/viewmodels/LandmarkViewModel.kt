@@ -1,7 +1,10 @@
 package theclankers.tripview.ui.viewmodels
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -27,7 +30,7 @@ class LandmarkViewModel : ViewModel() {
             isLoading.value = true
             errorMessage.value = null
             try {
-                val responseString = ApiClient.landmarkContext(imagePath)
+                val responseString = ApiClient.getLandmarkContext(imagePath)
                 val json = JSONObject(responseString)
                 contextText.value = json.optString("context", "No context found.")
             } catch (e: IOException) {

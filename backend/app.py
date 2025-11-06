@@ -56,85 +56,82 @@ def home():
 # FRIENDSHIP ENDPOINTS
 # ============================================================
 
-# TODO: Fix /friends endpoint
-# Change the name to /get_friends/<int:user_id>
-# Make sure it returns a list of friend ids
-# Change this so it ONLY returns friends, not pending requests
-
-# Get list of friends and pending requests
-@app.route('/friends', methods=['GET'])
+# Get list of friends of user_id, return a list of strings
+@app.route('/get_friends/<int:user_id>', methods=['GET'])
 @jwt_required()
-def get_friends():
-    current_user_id = int(get_jwt_identity())
-
-    # Fetch all friend relationships involving this user
+def get_friends(user_id):
     friendships = IsFriends.query.filter(
-        (IsFriends.friend1_id == current_user_id) | 
-        (IsFriends.friend2_id == current_user_id)
+        (
+            (IsFriends.friend1_id == user_id) | 
+            (IsFriends.friend2_id == user_id)
+        ) &
+        (IsFriends.relationship.is_(True))
     ).all()
 
-    friends = []
-    incoming_requests = []
-    outgoing_requests = []
+
+    friends_list = []
 
     for f in friendships:
         # Identify the other person
-        other_id = f.friend2_id if f.friend1_id == current_user_id else f.friend1_id
+        other_id = f.friend2_id if f.friend1_id == user_id else f.friend1_id
         other_user = db.session.get(User, other_id)
 
         if not other_user:
             continue
 
-        # Confirmed friendships
-        if f.relationship:
-            friends.append({
-                "user_id": other_user.user_id,
-                "username": other_user.username,
-                "firstname": other_user.firstname,
-                "lastname": other_user.lastname
-            })
-        else:
-            # Pending — check who initiated
-            if f.initiator_id == current_user_id:
-                outgoing_requests.append({
-                    "user_id": other_user.user_id,
-                    "username": other_user.username,
-                    "firstname": other_user.firstname,
-                    "lastname": other_user.lastname
-                })
-            else:
-                incoming_requests.append({
-                    "user_id": other_user.user_id,
-                    "username": other_user.username,
-                    "firstname": other_user.firstname,
-                    "lastname": other_user.lastname
-                })
+        friends_list.append(other_user.user_id)
 
-    return jsonify({
-        "friends": friends,
-        "incoming_requests": incoming_requests,
-        "outgoing_requests": outgoing_requests
-    }), 200
+    return jsonify(friends_list), 200
     
-# TODO: Implement /invites/<int:user_id> endpoint to see a list of incoming friend requests
-# This endpoint should return a list of user ids who have sent friend requests to the given user_id
-@app.route('/invites/<int:user_id>', methods=['GET'])
+@app.route('/get_invites/<int:user_id>', methods=['GET'])
 def get_invites(user_id):
-    pass
+    # Fetch all incoming friend requests for this user
+    friendships = IsFriends.query.filter(
+        ((IsFriends.friend1_id == user_id) | (IsFriends.friend2_id == user_id)) &
+        (IsFriends.relationship == False) &
+        (IsFriends.initiator_id != user_id)
+    ).all()
 
-# TODO: Implement /get_relationship/<int:user_id1>/<int:user_id2> endpoint
-# Should return one of the following statuses: "friends", "pending_incoming", "pending_outgoing", "none", "self"
+    incoming_requests = []
+
+    for f in friendships:
+        # Identify the other person (the sender)
+        other_id = f.friend2_id if f.friend1_id == user_id else f.friend1_id
+        other_user = db.session.get(User, other_id)
+
+        if not other_user:
+            continue
+
+        incoming_requests.append(other_user.user_id)
+
+    return jsonify(incoming_requests), 200
+
 @app.route('/get_relationship/<int:user_id1>/<int:user_id2>', methods=['GET'])
 def get_relationship(user_id1, user_id2):
-    pass
+    f1, f2 = sorted([user_id1, user_id2])
+
+    if user_id1 == user_id2:
+        return jsonify({"status": "self"}), 200
+
+    friendship = IsFriends.query.filter_by(friend1_id=f1, friend2_id=f2).first()
+
+    if not friendship:
+        return jsonify({"status": "none"}), 200
+
+    if friendship.relationship:
+        return jsonify({"status": "friends"}), 200
+    else:
+        if friendship.initiator_id == user_id1:
+            return jsonify({"status": "pending_outgoing"}), 200
+        else:
+            return jsonify({"status": "pending_incoming"}), 200
 
 # Sending a Friend Request
-@app.route('/friends/request', methods=['POST'])
+@app.route('/send_friend_request/<int:user_id>', methods=['POST'])
 @jwt_required()
-def send_friend_request():
+def send_friend_request(user_id):
     current_user_id = int(get_jwt_identity())
-    data = request.get_json()
-    receiver_id = data.get('user_id')
+    receiver_id = user_id
 
     if not receiver_id:
         return jsonify({"error": "Missing receiver user_id"}), 400
@@ -160,13 +157,12 @@ def send_friend_request():
 
     return jsonify({"message": "Friend request sent successfully"}), 201
 
-# Accept friend request
-@app.route('/friends/accept', methods=['POST'])
+# Accept friend request, the user_id provided in the params is the sender of the request
+@app.route('/accept_friend_request/<int:user_id>', methods=['POST'])
 @jwt_required()
-def accept_friend_request():
+def accept_friend_request(user_id):
     current_user_id = int(get_jwt_identity())
-    data = request.get_json()
-    sender_id = data.get('user_id')
+    sender_id = user_id
 
     if not sender_id:
         return jsonify({"error": "Missing sender user_id"}), 400
@@ -187,11 +183,11 @@ def accept_friend_request():
     return jsonify({"message": "Friend request accepted"}), 200
 
 # Decline an incoming Friend Request
-@app.route('/friends/decline', methods=['POST'])
+@app.route('/decline_friend_request/<int:user_id>', methods=['POST'])
 @jwt_required()
-def decline_friend_request():
+def decline_friend_request(user_id):
     current_user_id = int(get_jwt_identity())
-    data = request.get_json()
+    sender_id = user_id
     sender_id = data.get('user_id')
 
     if not sender_id:
@@ -212,14 +208,61 @@ def decline_friend_request():
 
     return jsonify({"message": "Friend request declined"}), 200
 
+# Revoke a sent Friend Request
+@app.route('/revoke_friend_request/<int:user_id>', methods=['POST'])
+@jwt_required()
+def revoke_friend_request(user_id):
+    current_user_id = int(get_jwt_identity())
+    receiver_id = user_id
+
+    if not receiver_id:
+        return jsonify({"error": "Missing receiver user_id"}), 400
+
+    f1, f2 = sorted([current_user_id, receiver_id])
+
+    friendship = IsFriends.query.filter_by(friend1_id=f1, friend2_id=f2, relationship=False).first()
+    if not friendship:
+        return jsonify({"error": "No pending friend request found"}), 404
+
+    # ✅ Only sender can revoke
+    if friendship.initiator_id != current_user_id:
+        return jsonify({"error": "You can only revoke your own sent requests"}), 403
+
+    db.session.delete(friendship)
+    db.session.commit()
+
+    return jsonify({"message": "Friend request revoked"}), 200
+
+# Remove an existing friend
+@app.route('/remove_friend/<int:user_id>', methods=['POST'])
+@jwt_required()
+def remove_friend(user_id):
+    current_user_id = int(get_jwt_identity())
+    friend_id = user_id
+
+    if not friend_id:
+        return jsonify({"error": "Missing friend user_id"}), 400
+
+    f1, f2 = sorted([current_user_id, friend_id])
+
+    friendship = IsFriends.query.filter_by(friend1_id=f1, friend2_id=f2, relationship=True).first()
+    if not friendship:
+        return jsonify({"error": "No existing friendship found"}), 404
+
+    db.session.delete(friendship)
+    db.session.commit()
+
+    return jsonify({"message": "Friend removed successfully"}), 200
+
 # Search for friends in the Add friends page by username. 
 # Use this endpoint for performing a Debounced Username Search or Real-time type-ahead user search.
-@app.route('/friends/search', methods=['GET'])
+# Use ?query=${query}
+@app.route('/search_friends', methods=['GET'])
 @jwt_required()
 def search_users():
     current_user_id = int(get_jwt_identity())
-    query = request.args.get('q', '').strip().lower()
-
+    query = request.args.get('query', '').strip().lower()
+    
     if not query:
         return jsonify([]), 200
 
@@ -247,13 +290,7 @@ def search_users():
         else:
             status = "none"
 
-        results.append({
-            "user_id": user.user_id,
-            "username": user.username,
-            "firstname": user.firstname,
-            "lastname": user.lastname,
-            "status": status
-        })
+        results.append(user.user_id)
 
     return jsonify(results), 200
 
@@ -262,115 +299,105 @@ def search_users():
 # TRIPS CRUD (Base)
 # ============================================================
 
-@app.route('/trips/create', methods=['POST'])
+@app.route('/trips/send_form', methods=['POST'])
 @jwt_required()
 def generate_ai_trip():
     """AI-powered Trip Generator using Gemini"""
-    try:
-        current_user_id = int(get_jwt_identity())
-        user = db.session.get(User, current_user_id)
-        if not user:
-            return jsonify({"error": "User not found"}), 404
+    current_user_id = int(get_jwt_identity())
+    user = db.session.get(User, current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
 
-        data = request.get_json()
-        destination = data.get("destination", "").strip()
-        num_versions = int(data.get("num_versions", 1))
-        trip_likes = data.get("likes", "")
-        trip_dislikes = data.get("dislikes", "")
+    data = request.get_json()
+    destination = data.get("destination", "").strip()
+    num_versions = int(data.get("num_versions", 1))
+    num_days = data.get("num_days", 1)
+    hotels = data.get("hotels", "")
+    timeline = data.get("timeline", "")
 
-        if not destination:
-            return jsonify({"error": "Destination is required"}), 400
+    if not destination:
+        return jsonify({"error": "Destination is required"}), 400
 
-        user_likes = user.likes or ""
-        user_dislikes = user.dislikes or ""
+    prompt = f"""
+    You are TripView AI — an expert travel planner that generates realistic, structured trip itineraries.
 
-        # 🧠 Gemini Prompt with ... markers for repetition clarity
-        prompt = f"""
-        You are TripView AI — an expert travel planner that generates realistic, structured trip itineraries.
+    ---
 
-        ---
+    ### INPUT DETAILS
+    Destination: {destination}
+    Number of Versions: {num_versions}
 
-        ### INPUT DETAILS
-        Destination: {destination}
-        Number of Versions: {num_versions}
+    User Likes (HIGH PRIORITY): {user.likes}
+    User Dislikes (HIGH PRIORITY): {user.dislikes}
 
-        Trip-Specific Likes (HIGH PRIORITY): {trip_likes}
-        Trip-Specific Dislikes (HIGH PRIORITY): {trip_dislikes}
-        User-Level Likes (LOWER PRIORITY): {user_likes}
-        User-Level Dislikes (LOWER PRIORITY): {user_dislikes}
+    Trip Duration (days): {num_days}
 
-        ---
+    Additional Trip Preferences: Hotels = {hotels}, Timeline = {timeline}
 
-        ### RULES
-        1. Generate {num_versions} complete trip versions for the given destination.
-        2. Each trip version should include:
-        - A single list of **stops**.
-        - Each stop should represent a key experience, activity, or location aligned with the user's interests.
-        3. Each stop must include:
-        - name, coordinates (lat, lng), stop_type, and a short description (1-2 sentences). 
-        - Include details like how long the activity at the stop usually takes in the short description whenever applicable.
-        4. Coordinates should be realistic near the destination.
-        5. Prioritize trip-specific likes and dislikes over user-level preferences. 
-        - Trip-specific preferences represent this trip's immediate mood and goals.
-        - User-level preferences represent general tendencies and should only influence filler ideas or extra variety when not in conflict.
-        6. If a trip-specific dislike conflicts with a user-level like, the trip-specific dislike **always overrides**. 
-        - Example: if the trip-specific dislike is “museums” but user-level like is “museums,” then exclude museums completely.
-        7. If a trip-specific like conflicts with a user-level dislike, the trip-specific like **always overrides**. 
-        - Example: if the trip-specific like is “beach activities” but user-level dislike is “beach,” then include beaches for this trip anyway.
-        8. You may use user-level likes only when they do not contradict trip-specific dislikes.
-        9. The JSON format must always remain identical, valid, and strictly follow the schema below.
-        10. Do not include Markdown, explanations, or any text outside the JSON block.
-        11. Always generate at least 5-10 stops depending on the duration and trip type.
-        12. Personalize every stop so it feels custom-tailored to the traveler's interests.
+    ---
 
-        ---
+    ### RULES
+    1. Generate {num_versions} complete trip versions for the given destination.
+    2. Each trip version should include:
+    - A single list of **stops**.
+    - Each stop should represent a key experience, activity, or location aligned with the user's interests.
+    3. Each stop must include:
+    - name, coordinates (lat, lng), stop_type, and a short description (1-2 sentences). 
+    - Include details like how long the activity at the stop usually takes in the short description whenever applicable.
+    4. Coordinates should be realistic near the destination.
+    5. Incorporate trip-specific additional information about hotels and likes and dislikes alongside user-level preferences. 
+    - Trip-specific information represent this trip's most immediate information and goals.
+    - User-level preferences represent general tendencies of the user.
+    6. The JSON format must always remain identical, valid, and strictly follow the schema below.
+    7. Do not include Markdown, explanations, or any text outside the JSON block.
+    8. Always generate at least 5-10 stops depending on the duration and trip type.
+    9. Personalize every stop so it feels custom-tailored to the traveler's interests.
 
-        ### STRICT JSON SCHEMA EXAMPLE
-        Use this structure exactly and include "..." where multiple elements may appear.
-        """
+    ---
 
-        schema_block = r"""
+    ### STRICT JSON SCHEMA EXAMPLE
+    Use this structure exactly and include "..." where multiple elements may appear.
+    """
+
+    schema_block = r"""
+        {
+        "trips": [
             {
-            "trips": [
+            "version": 1,
+            "destination": "string",
+            "duration_days": number,
+            "stops": [
                 {
-                "version": 1,
-                "destination": "string",
-                "duration_days": number,
-                "stops": [
-                    {
-                    "name": "string",
-                    "coordinates": {"lat": number, "lng": number},
-                    "stop_type": "string",
-                    "description": "string"
-                    },
-                    ...
-                ]
+                "name": "string",
+                "latitude": number,
+                "longitude": number,
+                "stop_type": "string",
+                "order": number,
                 },
                 ...
             ]
-            }
-        """
-        final_prompt = prompt + "\n```json\n" + schema_block + "\n```\n\n" + f"Generate {num_versions} complete trip versions following this JSON schema exactly."
-        ""
-        gemini_response = model.generate_content(final_prompt)
-        response_text = gemini_response.text.strip()
+            },
+            ...
+        ]
+        }
+    """
+    final_prompt = prompt + "\n```json\n" + schema_block + "\n```\n\n" + f"Generate {num_versions} complete trip versions following this JSON schema exactly."
+    ""
+    gemini_response = model.generate_content(final_prompt)
+    response_text = gemini_response.text.strip()
 
-        print("Response from Gemini:", response_text)
-        # 🧹 Extract valid JSON
-        json_start = response_text.find('{')
-        json_end = response_text.rfind('}') + 1
-        json_str = response_text[json_start:json_end]
+    print("Response from Gemini:", response_text)
+    # 🧹 Extract valid JSON
+    json_start = response_text.find('{')
+    json_end = response_text.rfind('}') + 1
+    json_str = response_text[json_start:json_end]
 
-        try:
-            itinerary_data = json.loads(json_str)
-        except Exception:
-            return jsonify({"error": "Gemini returned invalid JSON", "raw": response_text}), 500
+    try:
+        itinerary_data = json.loads(json_str)
+    except Exception:
+        return jsonify({"error": "Gemini returned invalid JSON", "raw": response_text}), 500
 
-        # ✅ Return AI-generated trip JSON
-        return itinerary_data, 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    return itinerary_data, 200
 
 @app.route('/trips', methods=['GET'])
 def get_trips():
@@ -626,9 +653,9 @@ def modify_itinerary(trip_id):
                 stop_type=s.get('stop_type', ''),
                 latitude=s['latitude'],
                 longitude=s['longitude'],
-                description=s.get('description', ''),
+                name=s.get('name', ''),
                 completed=s.get('completed', False),
-                stop_order=stop_order
+                order=(len(existing_stops)+1)
             )
             db.session.add(new_stop)
         
@@ -651,7 +678,6 @@ def save_trip():
     {
         "name": "Tokyo Adventure",
         "description": "A week exploring Tokyo",
-        "status": "planned",
         "stops": [
             {
                 "name": "Senso-ji Temple",
@@ -680,7 +706,7 @@ def save_trip():
             owner_id=current_user_id,
             name=data.get("name").strip(),
             description=data.get("description", "").strip(),
-            status=data.get("status", "planned"),
+            status="active",
             driving_polyline="",
             driving_polyline_timestamp=None
         )
