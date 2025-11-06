@@ -312,7 +312,7 @@ def generate_ai_trip():
     destination = data.get("destination", "").strip()
     num_versions = int(data.get("num_versions", 1))
     num_days = data.get("num_days", 1)
-    hotels = data.get("hotels", "")
+    stops = data.get("stops", "")
     timeline = data.get("timeline", "")
 
     if not destination:
@@ -332,7 +332,7 @@ def generate_ai_trip():
 
     Trip Duration (days): {num_days}
 
-    Additional Trip Preferences: Hotels = {hotels}, Timeline = {timeline}
+    Additional Trip Preferences: Stops = {stops}, Timeline = {timeline}
 
     ---
 
@@ -345,7 +345,7 @@ def generate_ai_trip():
     - name, coordinates (lat, lng), stop_type, and a short description (1-2 sentences). 
     - Include details like how long the activity at the stop usually takes in the short description whenever applicable.
     4. Coordinates should be realistic near the destination.
-    5. Incorporate trip-specific additional information about hotels and likes and dislikes alongside user-level preferences. 
+    5. Incorporate trip-specific additional information about stops and user-suggested timeline alongside user-level preferences. 
     - Trip-specific information represent this trip's most immediate information and goals.
     - User-level preferences represent general tendencies of the user.
     6. The JSON format must always remain identical, valid, and strictly follow the schema below.
@@ -364,8 +364,8 @@ def generate_ai_trip():
         "trips": [
             {
             "version": 1,
-            "destination": "string",
-            "duration_days": number,
+            "name": "string",
+            "description": "string",
             "stops": [
                 {
                 "name": "string",
