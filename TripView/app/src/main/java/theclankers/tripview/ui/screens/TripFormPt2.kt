@@ -19,6 +19,23 @@ import androidx.navigation.NavController
 import theclankers.tripview.ui.components.*
 import theclankers.tripview.ui.theme.PurpleGrey80
 import theclankers.tripview.ui.viewmodels.TripViewModel
+import theclankers.tripview.ui.viewmodels.useAppContext
+
+@Composable
+fun TripFormPt2(
+    navController: NavController
+) {
+    val appVM = useAppContext();
+    val userID= appVM.userIdState.value;
+    val token= appVM.accessTokenState.value;
+    if (userID==null || token==null){
+        return;
+    }
+    Column(){
+        //Text("${appVM.latestTripResponse}")
+        Text("hey")
+    }
+}
 
 //@Composable
 //fun TripFormPt2(
@@ -71,7 +88,7 @@ import theclankers.tripview.ui.viewmodels.TripViewModel
 //        items(trips) { trip ->
 //            val tripStops = stops.filter { it.tripId == trip.tripId }
 //
-//            TripItem2(
+//            TripSuggestion(
 //                tripName = "Trip ${trip.tripId}: ${trip.status}",
 //                tripDescription = "Stops: ${tripStops.joinToString(" • ") { it.name }}",
 //                expandedContent = {

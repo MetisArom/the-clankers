@@ -38,7 +38,9 @@ class UserViewModel(private val token: String) : ViewModel() {
             isLoadingState.value = true
             errorMessageState.value = null
             try {
-                val user = ApiClient.getUser(token, userId)
+                val user = withContext(Dispatchers.IO) {
+                    ApiClient.getUser(token, userId)
+                }
 
                 // Assign to individual fields
                 firstNameState.value = user.firstName

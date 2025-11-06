@@ -18,7 +18,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import theclankers.tripview.data.api.ApiClient.sendTripForm
 import theclankers.tripview.ui.components.FormInput
+import theclankers.tripview.ui.viewmodels.SendFormViewModel
+import theclankers.tripview.ui.viewmodels.useAppContext
+import theclankers.tripview.ui.viewmodels.useSendForm
+import theclankers.tripview.ui.viewmodels.useUser
 
 @Composable
 fun TripCreationForm(navController: NavController) {
@@ -27,6 +32,21 @@ fun TripCreationForm(navController: NavController) {
     var stops by remember { mutableStateOf("") }
     var timeline by remember { mutableStateOf("") }
 
+    val appVM = useAppContext()
+    val userID = appVM.userIdState.value
+    val token = appVM.accessTokenState.value
+
+    if(userID == null || token == null) return
+
+    val sendFormVM = useSendForm(token)
+
+    fun onSubmit() {
+        if (sendFormVM.isLoadingState.value) {
+        } else {
+            sendFormVM.sendForm(destination, days, stops, timeline, "1")
+            navController.navigate("tripcreationform")
+        }
+    }
     Scaffold(
         containerColor = Color(0xFFF7F6F8)
     ) { innerPadding ->
@@ -89,10 +109,6 @@ fun TripCreationForm(navController: NavController) {
                     singleLine = false,
                     imeAction = ImeAction.Done,
                     modifier = Modifier.padding(bottom = 24.dp),
-                    onSubmit = {
-                        // Submit the form when user presses done
-                        navController.navigate("tripcreationform1")
-                    }
                 )
             }
 
@@ -101,7 +117,7 @@ fun TripCreationForm(navController: NavController) {
                 modifier = Modifier.padding(vertical = 16.dp)
             ) {
                 Button(
-                    onClick = { navController.navigate("tripcreationform1") }, // TripFormPt2
+                    onClick = { onSubmit() },
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)

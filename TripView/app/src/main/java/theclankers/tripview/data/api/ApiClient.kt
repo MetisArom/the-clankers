@@ -1,7 +1,9 @@
 package theclankers.tripview.data.api
 
+import android.R.attr.mimeType
 import android.R.attr.password
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -393,11 +395,37 @@ object ApiClient {
         return completedTripsList
     }
 
+    suspend fun sendTripForm (
+        token: String, destination: String, numDays: String, hotels: String, timeline: String, numChoices: String
+    ): JSONObject = withContext(Dispatchers.IO) {
+        val url = "$BASE_URL/trips/send_form"
+
+        val bodyJson = JSONObject().apply {
+            put("destination", destination)
+            put("num_versions", numChoices)
+            put("numDays", numDays)
+            put("hotels", hotels)
+            put("timeline", timeline)
+        }.toString()
+
+        val request = Request.Builder()
+            .url(url)
+            .post(bodyJson.toRequestBody(JSON))
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.get(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code} ${response.message}")
+        val responseBody = response.body?.string() ?: throw IOException("Empty response")
+
+        return@withContext JSONObject(response.body.string())
+    }
+
     // -------------------------------
     // CAMERA ENDPOINTS
     // -------------------------------
 
-    suspend fun landmarkContext(
+    suspend fun getLandmarkContext(
         imagePath: String
     ): String = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/landmark_context"
