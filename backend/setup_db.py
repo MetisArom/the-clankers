@@ -87,7 +87,6 @@ with app.app_context():
 
     # --- TRIPS ---
     trip1 = Trip(
-        trip_id=1, 
         owner_id=alice.user_id, 
         status="ongoing", 
         name="Weekend Getaway",
@@ -96,7 +95,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip2 = Trip(
-        trip_id=2, 
         owner_id=bob.user_id, 
         status="ongoing", 
         name="City Exploration",
@@ -105,7 +103,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip3 = Trip(
-        trip_id=3, 
         owner_id=charlie.user_id, 
         status="archived", 
         name="Mountain Hike",
@@ -114,7 +111,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip4 = Trip(
-        trip_id=4, 
         owner_id=david.user_id, 
         status="completed", 
         name="Beach Day",
@@ -123,7 +119,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip5 = Trip(
-        trip_id=5,
         owner_id=emily.user_id,
         status="planned",
         name="Desert Adventure",
@@ -132,7 +127,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip6 = Trip(
-        trip_id=6,
         owner_id=frank.user_id,
         status="planned",
         name="Forest Retreat",
@@ -141,7 +135,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip7 = Trip(
-        trip_id=7,
         owner_id=grace.user_id,
         status="planned",
         name="City Lights",
@@ -150,7 +143,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip8 = Trip(
-        trip_id=8,
         owner_id=harry.user_id,
         status="planned",
         name="Lake House",
@@ -159,7 +151,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip9 = Trip(
-        trip_id=9,
         owner_id=irene.user_id,
         status="planned",
         name="Countryside Escape",
@@ -168,7 +159,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip10 = Trip(
-        trip_id=10, 
         owner_id=james.user_id, 
         status="completed", 
         name="Cultural Tour",
@@ -177,7 +167,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip11 = Trip(
-        trip_id=11, 
         owner_id=karen.user_id, 
         status="archived", 
         name="Foodie Trip",
@@ -186,7 +175,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip12 = Trip(
-        trip_id=12, 
         owner_id=lucas.user_id, 
         status="ongoing", 
         name="Cycling Tour",
@@ -195,7 +183,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip13 = Trip(
-        trip_id=13, 
         owner_id=mia.user_id, 
         status="planned", 
         name="Yoga Retreat",
@@ -204,7 +191,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip14 = Trip(
-        trip_id=14, 
         owner_id=noah.user_id, 
         status="archived", 
         name="Music Festival",
@@ -213,7 +199,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip15 = Trip(
-        trip_id=15, 
         owner_id=alice.user_id, 
         status="completed", 
         name="Road Trip",
@@ -222,7 +207,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip16 = Trip(
-        trip_id=16, 
         owner_id=bob.user_id, 
         status="archived", 
         name="Ski Vacation",
@@ -231,7 +215,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip17 = Trip(
-        trip_id=17, 
         owner_id=alice.user_id,
         status="planned", 
         name="Spring Break",
@@ -240,7 +223,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip18 = Trip(
-        trip_id=18, 
         owner_id=charlie.user_id,
         status="completed", 
         name="Canyon Hike",
@@ -249,7 +231,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip19 = Trip(
-        trip_id=19, 
         owner_id=alice.user_id,
         status="archived", 
         name="City Marathon",
@@ -258,7 +239,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip20 = Trip(
-        trip_id=20, 
         owner_id=alice.user_id,
         status="completed", 
         name="Family Reunion",
@@ -267,7 +247,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip21 = Trip(
-        trip_id=21, 
         owner_id=bob.user_id,
         status="planned", 
         name="Island Hopping",
@@ -276,7 +255,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip22 = Trip(
-        trip_id=22, 
         owner_id=alice.user_id,
         status="ongoing", 
         name="Business Trip",
@@ -285,7 +263,6 @@ with app.app_context():
         driving_polyline_timestamp=datetime.now(timezone.utc)
     )
     trip23 = Trip(
-        trip_id=23, 
         owner_id=charlie.user_id,
         status="planned", 
         name="Art Tour",

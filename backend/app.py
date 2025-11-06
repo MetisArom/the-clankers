@@ -673,34 +673,25 @@ def modify_itinerary(trip_id):
 def save_trip():
     """
     Save a trip to the database with its stops
-    
-    Expected JSON:
-    {
-        "name": "Tokyo Adventure",
-        "description": "A week exploring Tokyo",
-        "stops": [
-            {
-                "name": "Senso-ji Temple",
-                "latitude": "35.7148",
-                "longitude": "139.7967",
-                "stop_type": "attraction",
-                "order": 1
-            }
-        ]
-    }
     """
     try:
+        print("---- save_trip called ----")
         current_user_id = int(get_jwt_identity())
-        
+        print(f"Current user ID: {current_user_id}")
+
         user = db.session.get(User, current_user_id)
         if not user:
+            print("User not found!")
             return jsonify({"error": "User not found"}), 404
-        
+        print(f"User found: {user}")
+
         data = request.get_json()
-        
+        print(f"Received JSON data: {data}")
+
         if not data.get("name"):
+            print("Trip name missing in request")
             return jsonify({"error": "Trip name is required"}), 400
-        
+
         # Create new trip
         new_trip = Trip(
             owner_id=current_user_id,
@@ -710,14 +701,18 @@ def save_trip():
             driving_polyline="",
             driving_polyline_timestamp=None
         )
-        
+        print(f"Created Trip object: {new_trip}")
+
         db.session.add(new_trip)
         db.session.flush()  # Get trip_id before adding stops
-        
+        print(f"Trip ID after flush: {new_trip.trip_id}")
+
         # Add stops if provided
         stops_data = data.get("stops", [])
+        print(f"Stops data: {stops_data}")
         if stops_data:
-            for stop_info in stops_data:
+            for i, stop_info in enumerate(stops_data):
+                print(f"Processing stop {i}: {stop_info}")
                 new_stop = Stop(
                     trip_id=new_trip.trip_id,
                     name=stop_info.get("name", "").strip(),
@@ -727,12 +722,15 @@ def save_trip():
                     order=stop_info.get("order", 0),
                     completed=False
                 )
+                print(f"Adding stop: {new_stop}")
                 db.session.add(new_stop)
-        
+
         db.session.commit()
+        print("Database commit successful!")
 
         regenerate_driving_polyline(new_trip.trip_id, True)
-        
+        print("Driving polyline regenerated")
+
         return jsonify({
             "message": "Trip saved successfully",
             "trip_id": new_trip.trip_id,
@@ -745,13 +743,18 @@ def save_trip():
                 "stop_count": len(stops_data)
             }
         }), 201
-        
+
     except ValueError as e:
         db.session.rollback()
+        print(f"ValueError: {str(e)}")
         return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
     except Exception as e:
         db.session.rollback()
+        print(f"Exception occurred: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": f"Failed to save trip: {str(e)}"}), 500
+
     
 @app.route('/trips/<int:trip_id>', methods=['DELETE'])
 def delete_trip(trip_id):
