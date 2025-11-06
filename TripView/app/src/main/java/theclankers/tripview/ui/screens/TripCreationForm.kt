@@ -44,7 +44,7 @@ fun TripCreationForm(navController: NavController) {
         if (sendFormVM.isLoadingState.value) {
         } else {
             sendFormVM.sendForm(destination, days, stops, timeline, "1")
-            navController.navigate("tripcreationform")
+            navController.navigate("TripFormPt2")
         }
     }
     Scaffold(
