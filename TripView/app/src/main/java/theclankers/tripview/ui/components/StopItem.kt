@@ -114,6 +114,10 @@ fun StopItem(navController: NavController,
                         scope.launch {
                             stopVM.deleteStop(stop.stopId)
                         }
+                        navController.navigate("EditItinerary/${stop.tripId}") {
+                            popUpTo("EditItinerary/${stop.tripId}") { inclusive = true } // Remove current instance
+                            launchSingleTop = true // Avoid duplicates
+                        }
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
