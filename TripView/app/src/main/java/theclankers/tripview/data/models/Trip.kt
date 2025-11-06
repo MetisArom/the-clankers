@@ -1,5 +1,6 @@
 package theclankers.tripview.data.models
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.json.JSONArray
 import org.json.JSONObject
@@ -16,4 +17,11 @@ data class Trip(
     val name: String,
     val description: String,
     val stopIds: List<Int>
+)
+
+@Serializable
+data class TripSuggestion(
+    val name: String,
+    val description: String,
+    @Contextual val stopsJSONArray: JSONArray
 )
