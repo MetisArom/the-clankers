@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -49,15 +48,14 @@ fun EditItinerary(navController: NavHostController, tripId: Int, token: String) 
     val errorMessage by viewModel.errorMessage
 
 //    val stops = remember { mutableStateOf<List<Stop>>(viewModel.stops.value?: emptyList()) }
-    var stops = viewModel.stops
+    val stops = viewModel.stops
 
 
     val lazyListState = rememberLazyListState()
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
         // Update the list
-        stops = stops.toMutableStateList().apply {
-            add(to.index, removeAt(from.index))
-        }
+        val item = stops.removeAt(from.index)
+        stops.add(to.index, item)
     }
 
     Scaffold(
@@ -106,8 +104,9 @@ fun EditItinerary(navController: NavHostController, tripId: Int, token: String) 
                                     )
                                 },
                                 onDeleteStop = { deleteId ->
-                                    stops.removeAll { it.stopId == deleteId }
                                     viewModel.deleteStop(deleteId)
+                                    stops.removeAll { it.stopId == deleteId }
+
                                 },
                                 editMode = true
                             )
