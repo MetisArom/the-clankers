@@ -299,7 +299,7 @@ def search_users():
 # TRIPS CRUD (Base)
 # ============================================================
 
-@app.route('/trips/send_form', methods=['POST'])
+@app.route('/submit_form', methods=['POST'])
 @jwt_required()
 def generate_ai_trip():
     """AI-powered Trip Generator using Gemini"""
@@ -668,7 +668,7 @@ def modify_itinerary(trip_id):
 
     return jsonify({"message": "Stops updated successfully"}), 200
 
-@app.route('/trips/save', methods=['POST'])
+@app.route('/choose_trip', methods=['POST'])
 @jwt_required()
 def save_trip():
     """

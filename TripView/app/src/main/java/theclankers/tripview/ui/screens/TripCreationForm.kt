@@ -1,6 +1,5 @@
 package theclankers.tripview.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,43 +17,25 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import theclankers.tripview.data.api.ApiClient.sendTripForm
 import theclankers.tripview.ui.components.FormInput
-import theclankers.tripview.ui.navigation.navigateToDetail
-import theclankers.tripview.ui.viewmodels.SendFormViewModel
 import theclankers.tripview.ui.viewmodels.useAppContext
-import theclankers.tripview.ui.viewmodels.useSendForm
-import theclankers.tripview.ui.viewmodels.useUser
 
 @Composable
 fun TripCreationForm(navController: NavController) {
-    var destination by remember { mutableStateOf("") }
-    var days by remember { mutableStateOf("") }
-    var stops by remember { mutableStateOf("") }
-    var timeline by remember { mutableStateOf("") }
-
     val appVM = useAppContext()
     val userID = appVM.userIdState.value
     val token = appVM.accessTokenState.value
 
     if(userID == null || token == null) return
 
-    val sendFormVM = useSendForm(token)
-
-    val isLoading by remember { derivedStateOf { sendFormVM.isLoadingState.value } }
-    val trips = sendFormVM.tripSuggestions
-    val error by remember { derivedStateOf { sendFormVM.errorMessageState.value } }
-
-    LaunchedEffect(isLoading, trips.size) {
-        // only navigate when loading finished and there are trips (successful result)
-        if (!isLoading && trips.isNotEmpty()) {
-            navigateToDetail(navController, "TripFormPt2")
+    if (appVM.isLoadingState.value) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
-    }
-
-    fun onSubmit() {
-        // just start the request; navigation happens via LaunchedEffect above
-        sendFormVM.sendForm(destination, days, stops, timeline, "1")
+        return
     }
 
     Scaffold(
@@ -83,8 +64,8 @@ fun TripCreationForm(navController: NavController) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 FormInput(
-                    value = destination,
-                    onValueChange = { destination = it },
+                    value = appVM.destination.value,
+                    onValueChange = { appVM.destination.value = it },
                     label = "Where are you going?",
                     placeholder = "e.g., Paris, France",
                     imeAction = ImeAction.Next,
@@ -92,8 +73,8 @@ fun TripCreationForm(navController: NavController) {
                 )
 
                 FormInput(
-                    value = days,
-                    onValueChange = { days = it },
+                    value = appVM.numDays.value,
+                    onValueChange = { appVM.numDays.value = it },
                     label = "How many days are you going for?",
                     placeholder = "e.g., 5",
                     keyboardType = KeyboardType.Number,
@@ -102,8 +83,8 @@ fun TripCreationForm(navController: NavController) {
                 )
 
                 FormInput(
-                    value = stops,
-                    onValueChange = { stops = it },
+                    value = appVM.stops.value,
+                    onValueChange = { appVM.stops.value = it },
                     label = "Where are you staying along the way?",
                     placeholder = "e.g., Hotel Name, City",
                     imeAction = ImeAction.Next,
@@ -111,8 +92,8 @@ fun TripCreationForm(navController: NavController) {
                 )
 
                 FormInput(
-                    value = timeline,
-                    onValueChange = { timeline = it },
+                    value = appVM.timeline.value,
+                    onValueChange = { appVM.timeline.value = it },
                     label = "Please specify the timeline of your trip, dates where you have to be in certain places",
                     placeholder = "e.g., Day 1: Paris, Day 3: Lyon",
                     maxLines = 3,
@@ -127,12 +108,12 @@ fun TripCreationForm(navController: NavController) {
                 modifier = Modifier.padding(vertical = 16.dp)
             ) {
                 Button(
-                    onClick = { onSubmit() },
+                    onClick = { appVM.submitForm(navController) },
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
                 ) {
-                    if (isLoading) {
+                    if (appVM.isLoadingState.value) {
                        Text("Submitting...")
                     } else {
                         Icon(
