@@ -108,6 +108,15 @@ fun TripViewNavGraph(navController: NavHostController) {
             if (tripId != 0) TripScreen(navController, tripId) else goBack(navController)
         }
 
+        // Add stop screen for a specific trip
+        composable(
+            "addStop/{tripId}",
+            arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getInt("tripId") ?: 0
+            if (tripId != 0) AddStopScreen(navController, tripId) else goBack(navController)
+        }
+
         // Stop screen for a specific stop
         composable(
             "stop/{stopId}",

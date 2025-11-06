@@ -663,9 +663,9 @@ def modify_itinerary(trip_id):
                 stop_type=s.get('stop_type', ''),
                 latitude=s['latitude'],
                 longitude=s['longitude'],
-                description=s.get('description', ''),
+                name=s.get('name', ''),
                 completed=s.get('completed', False),
-                stop_order=stop_order
+                order=(len(existing_stops)+1)
             )
             db.session.add(new_stop)
         

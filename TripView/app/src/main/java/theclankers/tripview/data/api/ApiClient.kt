@@ -568,6 +568,33 @@ object ApiClient {
         return response.body?.string() ?: throw IOException("Empty response")
     }
 
+    suspend fun addStop(token: String, tripId: Int, name: String, latitude: String, longitude:String): String {
+        val url = "$BASE_URL/trips/$tripId/stops"
+        val stopArray = JSONArray().apply {
+            put(
+                JSONObject().apply {
+                    put("name", name)
+                    put("latitude", latitude.toDouble())
+                    put("longitude", longitude.toDouble())
+                }
+            )
+        }
+
+        val bodyJson = JSONObject().apply {
+            put("stops", stopArray)
+        }.toString()
+
+        val request = Request.Builder()
+            .url(url)
+            .patch(bodyJson.toRequestBody(JSON))
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.put(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        return response.body?.string() ?: throw IOException("Empty response")
+    }
+
     suspend fun deleteStop(token: String, stopId: Int): String {
         val url = "$BASE_URL/stops/$stopId"
         val request = Request.Builder()
