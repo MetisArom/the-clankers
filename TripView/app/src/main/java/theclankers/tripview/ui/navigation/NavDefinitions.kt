@@ -1,6 +1,8 @@
 package theclankers.tripview.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -10,6 +12,7 @@ import androidx.navigation.navArgument
 import theclankers.tripview.ui.screens.*
 import theclankers.tripview.ui.screens.auth.LoginScreen
 import theclankers.tripview.ui.screens.auth.SignupScreen
+import theclankers.tripview.ui.viewmodels.TripViewModel
 
 /**
  * Main Navigation Graph for the TripView app
@@ -91,6 +94,7 @@ fun TripViewNavGraph(navController: NavHostController) {
 
         // ABOVE HERE WAS NOT IN MAIN
 
+
         // Trip screen for a specific trip
         composable(
             "trip/{tripId}",
@@ -118,11 +122,32 @@ fun TripViewNavGraph(navController: NavHostController) {
         // Debug screen
         composable("debug") { DebugScreen(navController) }
         // Sample trip screen
-        composable("sampleTrip") { SampleTrip(navController) }
+        composable("sampleTrip") { (navController) }
 
         // Edit itinerary screen
-        composable("editItinerary") { EditItinerary(navController) }
-        
+        composable("editItinerary/1") { EditItinerary(navController, 1, "user_jwt_token") }
+
+        composable(
+            route = "ItineraryScreen/{tripId}",
+            arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getInt("tripId")
+
+            if (tripId == null) {
+                // tripId missing: safely go back
+                LaunchedEffect(Unit) {
+                    goBack(navController)
+                }
+            } else {
+                val token = "user_jwt_token"
+                ItineraryScreen(
+                    navController = navController,
+                    tripId = tripId,
+                    token = token
+                )
+            }
+        }
+
         // composable(
         //     route = "EditItinerary/{tripId}"
         // ) { backStackEntry ->
@@ -133,18 +158,18 @@ fun TripViewNavGraph(navController: NavHostController) {
         // }
         //   composable("tripdetail/{tripId}", arguments = listOf(navArgument("tripId") { type = NavType.IntType })) { TripDetailsScreen(navController) }
         //   composable("ItineraryScreen"){ ItineraryScreen(navController, 1, viewModel)}
-        // composable(
-        //     route = "ItineraryScreen/{tripId}",
-        //     arguments = listOf(navArgument("tripId") { type = NavType.IntType })
-        // ) { backStackEntry ->
-        //     val tripId = backStackEntry.arguments?.getInt("tripId") ?: return@composable
-        //     val tripViewModel: TripViewModel = viewModel()
-   
-        //     ItineraryScreen(
-        //         navController = navController,
-        //         tripId = tripId,
-        //         viewModel = tripViewModel
-        //     )
+//         composable(
+//             route = "ItineraryScreen/{tripId}",
+//             arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+//         ) { backStackEntry ->
+//             val tripId = backStackEntry.arguments?.getInt("tripId") ?: return@composable
+//             val token = "user_jwt_token"
+//
+//             ItineraryScreen(
+//                 navController = navController,
+//                 tripId = tripId,
+//                 token = token
+//             )
         // }
         // composable("ItineraryScreen/1") {
         //     val debugToken = "user_jwt_token"

@@ -47,13 +47,17 @@ import theclankers.tripview.ui.viewmodels.useStop
 
 // Clicking this stop opens up the Stop in its own screen
 @Composable
-fun StopItem(navController: NavController, stopId: Int) {
+fun StopItem(navController: NavController,
+             stop: Stop,
+             editMode: Boolean = false,
+             onDeleteStop: suspend (stopId: Int) -> Unit = {},
+             trailingContent: @Composable (() -> Unit)? = null) {
     val appVM = useAppContext()
     val token = appVM.accessTokenState.value
 
     if (token == null) return
 
-    val stopVM = useStop(token, stopId)
+    val stopVM = useStop(token, stop)
     val completed = stopVM.completedState.value
     val name = stopVM.nameState.value
 
@@ -65,14 +69,14 @@ fun StopItem(navController: NavController, stopId: Int) {
     //onDeleteStop: suspend (Stop) -> Unit? = {},
     //editMode: Boolean = false,
     //trailingContent: @Composable (() -> Unit)? = null
-    //val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
             .clickable {
-                navController.navigate("stop/${stopId}")
+                navController.navigate("stop/${stop.stopId}")
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
@@ -101,31 +105,32 @@ fun StopItem(navController: NavController, stopId: Int) {
                 )
             }
 
-            //if (editMode) {
-            //    Row(
-            //        verticalAlignment = Alignment.CenterVertically,
-            //        horizontalArrangement = Arrangement.spacedBy(4.dp)
-            //    ) {
-            //        IconButton(onClick = {
-            //            scope.launch {
-            //                onDeleteStop(stop)
-            //            }
-            //        }) {
-            //            Icon(
-            //                imageVector = Icons.Filled.Delete,
-            //                contentDescription = "Delete stop"
-            //            )
-            //        }
+            if (editMode) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    IconButton(onClick = {
+                        scope.launch {
+                            stopVM.deleteStop(stop.stopId)
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "Delete stop"
+                        )
+                    }
 
-            //        trailingContent?.invoke()
-            //    }
-            //} else {}
-            Checkbox(
-                checked = completed,
-                onCheckedChange = { checked ->
-                    stopVM.toggleCompleted(stopId, checked)
+                    trailingContent?.invoke()
                 }
-            )
+            } else {
+                Checkbox(
+                    checked = completed,
+                    onCheckedChange = { checked ->
+                        stopVM.toggleCompleted(stop.stopId, checked)
+                    }
+                )
+            }
         }
     }
 }

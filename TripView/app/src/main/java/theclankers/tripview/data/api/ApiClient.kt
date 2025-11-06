@@ -305,7 +305,19 @@ object ApiClient {
 
         return trip
     }
-    
+
+    suspend fun getTripStops(token: String, tripId: Int): String {
+        val url = "$BASE_URL/trips/$tripId/stops"
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.get(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        return response.body?.string() ?: throw IOException("Empty response")
+    }
     suspend fun getStop(token: String, stopId: Int): Stop {
         val url = "$BASE_URL/stop/$stopId"
         val request = Request.Builder()
@@ -360,8 +372,8 @@ object ApiClient {
         return response.body?.string() ?: throw IOException("Empty response")
     }
 
-    suspend fun deleteStop(token: String, tripId: Int, stopId: Int): String {
-        val url = "$BASE_URL/trips/$tripId/$stopId"
+    suspend fun deleteStop(token: String, stopId: Int): String {
+        val url = "$BASE_URL/stops/$stopId"
         val request = Request.Builder()
             .url(url)
             .delete()
@@ -414,4 +426,36 @@ object ApiClient {
 
 
     }
+    suspend fun updateStops(token: String, tripId: Int, stops: List<Stop>) {
+        val url = "$BASE_URL/trips/$tripId/stops"
+
+        // Build JSON payload
+        val stopsArray = JSONArray(stops.mapIndexed { index, stop ->
+            JSONObject().apply {
+                put("stop_id", stop.stopId)            // matches backend
+                put("order", index)               // matches backend
+                put("completed", stop.completed)       // boolean
+                put("description", stop.name)          // backend uses 'description'
+                put("stop_type", stop.stopType)        // optional if you need
+                put("latitude", stop.latitude)
+                put("longitude", stop.longitude)
+            }
+        })
+
+        val bodyJson = JSONObject().apply {
+            put("stops", stopsArray)
+        }.toString()
+
+        println("PATCH payload: $bodyJson")
+
+        val request = Request.Builder()
+            .url(url)
+            .patch(bodyJson.toRequestBody(JSON))
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.patch(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+    }
+
 }
