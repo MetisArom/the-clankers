@@ -23,42 +23,42 @@ import theclankers.tripview.ui.viewmodels.useInvites
 
 @Composable
 fun FriendsScreen(navController: NavController) {
-    val appVM: AppViewModel = useAppContext()
-    val userId = appVM.userIdState.value
-    val token = appVM.accessTokenState.value
-
-    if (userId == null || token == null) return
-
-    val friendsVM: FriendsViewModel = useFriends(token, userId)
-    val friends = friendsVM.friendsState.value
-
-    val invitesVM: InvitesViewModel = useInvites(token, userId)
-    val invites = invitesVM.invitesState.value
-
-    // TODO: Make sure the below line makes sense... Might not need it?
-    if (friends == null || invites == null) return
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        TitleText("Your Friends")
-
-        FriendItem(username = "janesmith67", displayName = "Jane Smith", onClick = { navController.navigate("friendProfile") })
-        FriendItem(username = "ozzy67", displayName = "Ozzy Osbourne", onClick = { navController.navigate("friendProfile")})
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Invite Requests", style = MaterialTheme.typography.titleLarge)
-
-        FriendItem(
-            username = "andrew45",
-            displayName = "Andrew",
-            showActions = true,
-            onAccept = { /* handle accept */ },
-            onDecline = { /* handle decline */ },
-            onClick = { navController.navigate("friendProfile")}
-        )
-    }
+//    val appVM: AppViewModel = useAppContext()
+//    val userId = appVM.userIdState.value
+//    val token = appVM.accessTokenState.value
+//
+//    if (userId == null || token == null) return
+//
+//    val friendsVM: FriendsViewModel = useFriends(token, userId)
+//    val friends = friendsVM.friendsState.value
+//
+//    val invitesVM: InvitesViewModel = useInvites(token, userId)
+//    val invites = invitesVM.invitesState.value
+//
+//    // TODO: Make sure the below line makes sense... Might not need it?
+//    if (friends == null || invites == null) return
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(16.dp),
+//        verticalArrangement = Arrangement.spacedBy(8.dp)
+//    ) {
+//        TitleText("Your Friends")
+//
+        //FriendItem(username = "janesmith67", displayName = "Jane Smith", onClick = { navController.navigate("friendProfile") })
+        //FriendItem(username = "ozzy67", displayName = "Ozzy Osbourne", onClick = { navController.navigate("friendProfile")})
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//        Text("Invite Requests", style = MaterialTheme.typography.titleLarge)
+//
+        //FriendItem(
+        //    username = "andrew45",
+        //    displayName = "Andrew",
+        //    showActions = true,
+        //    onAccept = { /* handle accept */ },
+        //    onDecline = { /* handle decline */ },
+        //    onClick = { navController.navigate("friendProfile")}
+        //)
+//    }
 }
