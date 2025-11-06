@@ -49,14 +49,24 @@ fun EditItinerary(navController: NavHostController, tripId: Int, token: String) 
     val errorMessage by viewModel.errorMessage
 
 //    val stops = remember { mutableStateOf<List<Stop>>(viewModel.stops.value?: emptyList()) }
-    val stops = viewModel.stops
+    val stops = remember { mutableStateOf<List<Stop>>(emptyList()) }
 
 
+    LaunchedEffect(stopIds) {
+        val fetchedStops = stopIds?.map { stopId ->
+            withContext(Dispatchers.IO) { ApiClient.getStop(token, stopId) }
+        } ?: emptyList()
+        stops.value = fetchedStops.sortedBy { it.order }
+    }
     val lazyListState = rememberLazyListState()
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        stops.value = stops.value.toMutableList().apply {
         // Update the list
-        val item = stops.removeAt(from.index)
-        stops.add(to.index, item)
+        forEachIndexed { index, stop ->
+            this[index] = stop.copy(order = index + 1) // assuming order starts at 1
+            }
+        }
+
     }
 
     Scaffold(
@@ -87,7 +97,7 @@ fun EditItinerary(navController: NavHostController, tripId: Int, token: String) 
                     state = lazyListState
             ) {
 
-                items(stops, key = { it.stopId }) { stop ->
+                items(stops.value, key = { it.stopId }) { stop ->
                     ReorderableItem(reorderableLazyListState, key = stop.stopId) { isDragging ->
                         Box(
                             modifier = Modifier
@@ -107,7 +117,6 @@ fun EditItinerary(navController: NavHostController, tripId: Int, token: String) 
                                 },
                                 onDeleteStop = { deleteId ->
                                     viewModel.deleteStop(deleteId)
-                                    stops.removeAll { it.stopId == deleteId }
 
                                 },
                                 editMode = true
@@ -122,7 +131,7 @@ fun EditItinerary(navController: NavHostController, tripId: Int, token: String) 
                     // call confirm changes to api here
                     // navigate to trips screen after
                     // also add confirmation toast?
-                    viewModel.updateTrip(tripId, stops)
+                    viewModel.updateTrip(tripId, stops.value)
                     println("Confirmed changes")
                     navController.navigate("ItineraryScreen/$tripId")
                 },
