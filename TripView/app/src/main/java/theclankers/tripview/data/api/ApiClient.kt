@@ -737,7 +737,7 @@ object ApiClient {
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
     }
 
-    suspend fun chooseTrip(token: String, trip: JSONObject): String {
+    suspend fun chooseTrip(token: String, trip: JSONObject): String = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/choose_trip"
         
         val request = Request.Builder()
@@ -748,6 +748,6 @@ object ApiClient {
 
         val response = HttpHelper.post(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code} ${response.message}")
-        return response.body?.string() ?: throw IOException("Empty response")
+        return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
 }
