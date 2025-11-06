@@ -17,6 +17,7 @@ import theclankers.tripview.data.models.LoginResult
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.models.User
+import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.utils.HttpHelper
 import java.io.File
 import java.io.IOException
@@ -110,10 +111,31 @@ object ApiClient {
         return LoginResult(0, "") // to prevent compile errors
     }
 
-    // TODO: Implement editUser API function, calls endpoint /edit_user/<int:user_id>
-    // returns nothing
-    suspend fun editUser(username: String, firstName: String, lastName: String, likes: String, dislikes: String) {
+    // Calls endpoint /edit_user to update information about the currently logged in user
+    suspend fun editUser(token: String, username: String, firstName: String, lastName: String, likes: String, dislikes: String): String {
+        val url = "$BASE_URL/edit_user"
 
+        val bodyJson = JSONObject().apply {
+            put("username", username)
+            put("firstname", firstName)
+            put("lastname", lastName)
+            put("likes", likes)
+            put("dislikes", dislikes)
+        }.toString()
+
+        val request = Request.Builder()
+            .url(url)
+            .post(bodyJson.toRequestBody(JSON))
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        val response = HttpHelper.get(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code} ${response.message}")
+        val responseBody = response.body?.string() ?: throw IOException("Empty response")
+
+        Log.d("ApiClient", "Updated currently logged in user!")
+
+        return responseBody
     }
 
     // -------------------------------

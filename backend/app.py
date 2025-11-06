@@ -493,7 +493,7 @@ def edit_user():
         return jsonify({"error": "User not found"}), 404
 
     data = request.get_json()
-    allowed_fields = ['firstname', "lastname" , 'likes', 'dislikes']
+    allowed_fields = ['firstname', "lastname", "username" , "likes", "dislikes"]
 
     for field in allowed_fields:
         if field in data:

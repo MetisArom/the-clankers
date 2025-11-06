@@ -46,19 +46,19 @@ fun FriendsScreen(navController: NavController) {
 //    ) {
 //        TitleText("Your Friends")
 //
-//        FriendItem(username = "janesmith67", displayName = "Jane Smith", onClick = { navController.navigate("friendProfile") })
-//        FriendItem(username = "ozzy67", displayName = "Ozzy Osbourne", onClick = { navController.navigate("friendProfile")})
+        //FriendItem(username = "janesmith67", displayName = "Jane Smith", onClick = { navController.navigate("friendProfile") })
+        //FriendItem(username = "ozzy67", displayName = "Ozzy Osbourne", onClick = { navController.navigate("friendProfile")})
 //
 //        Spacer(modifier = Modifier.height(16.dp))
 //        Text("Invite Requests", style = MaterialTheme.typography.titleLarge)
 //
-//        FriendItem(
-//            username = "andrew45",
-//            displayName = "Andrew",
-//            showActions = true,
-//            onAccept = { /* handle accept */ },
-//            onDecline = { /* handle decline */ },
-//            onClick = { navController.navigate("friendProfile")}
-//        )
+        //FriendItem(
+        //    username = "andrew45",
+        //    displayName = "Andrew",
+        //    showActions = true,
+        //    onAccept = { /* handle accept */ },
+        //    onDecline = { /* handle decline */ },
+        //    onClick = { navController.navigate("friendProfile")}
+        //)
 //    }
 }
