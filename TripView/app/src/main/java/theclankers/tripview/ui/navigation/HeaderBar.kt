@@ -37,9 +37,6 @@ fun Header(navController: NavController) {
                     )
                 }
             }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFFF7F6F8)
-        )
+        }
     )
 }

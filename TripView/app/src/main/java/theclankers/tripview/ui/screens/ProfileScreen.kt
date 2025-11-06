@@ -30,7 +30,6 @@ fun ProfileScreen(navController: NavController) {
 
     Column(modifier = Modifier
         .fillMaxSize()
-        .background(Color(0xFFF7F6F8))
         .padding(16.dp)
         .verticalScroll(rememberScrollState())){
 

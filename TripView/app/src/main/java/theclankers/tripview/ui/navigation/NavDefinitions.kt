@@ -138,7 +138,13 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("sampleTrip") { (navController) }
 
         // Edit itinerary screen
-        composable("editItinerary/1") { EditItinerary(navController, 1, "user_jwt_token") }
+        composable(
+            "editItinerary/{tripId}",
+            arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getInt("tripId") ?: 0
+            if (tripId != 0) EditItinerary(navController, tripId) else goBack(navController)
+        }
 
         composable(
             route = "ItineraryScreen/{tripId}",

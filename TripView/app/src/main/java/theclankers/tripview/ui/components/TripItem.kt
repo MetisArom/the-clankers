@@ -64,7 +64,7 @@ fun TripItem(navController: NavController, tripId: Int) {
         modifier = Modifier
             .fillMaxWidth()
             .padding( vertical = 8.dp)
-            .clickable { navController.navigate("trip/${tripId}") }
+            .clickable { navController.navigate("ItineraryScreen/${tripId}") }
     ) {
         Column(
             modifier = Modifier
