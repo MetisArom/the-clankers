@@ -41,7 +41,6 @@ fun FriendsScreen(navController: NavController) {
 
     Log.d("FriendsScreen", "Invites: $invites")
 
-    // TODO: Make sure the below line makes sense... Might not need it?
     if (friends == null || invites == null) return
 
     Column(

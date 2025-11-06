@@ -106,11 +106,25 @@ def get_invites(user_id):
 
     return jsonify(incoming_requests), 200
 
-# TODO: Implement /get_relationship/<int:user_id1>/<int:user_id2> endpoint
-# Should return one of the following statuses: "friends", "pending_incoming", "pending_outgoing", "none", "self"
 @app.route('/get_relationship/<int:user_id1>/<int:user_id2>', methods=['GET'])
 def get_relationship(user_id1, user_id2):
-    pass
+    f1, f2 = sorted([user_id1, user_id2])
+
+    if user_id1 == user_id2:
+        return jsonify({"status": "self"}), 200
+
+    friendship = IsFriends.query.filter_by(friend1_id=f1, friend2_id=f2).first()
+
+    if not friendship:
+        return jsonify({"status": "none"}), 200
+
+    if friendship.relationship:
+        return jsonify({"status": "friends"}), 200
+    else:
+        if friendship.initiator_id == user_id1:
+            return jsonify({"status": "pending_outgoing"}), 200
+        else:
+            return jsonify({"status": "pending_incoming"}), 200
 
 # Sending a Friend Request
 @app.route('/send_friend_request/<int:user_id>', methods=['POST'])

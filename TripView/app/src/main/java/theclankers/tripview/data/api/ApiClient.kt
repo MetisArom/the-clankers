@@ -244,10 +244,26 @@ object ApiClient {
         return invitesList
     }
 
-    // TODO: Implement getRelationship, call the back-end route get_relationship/<int:user_id1>/<int:user_id2>
-    // get_relationship returns a status string: "friends", "pending_incoming", "pending_outgoing", "none", "self"
-    suspend fun getRelationship(token: String, user_id1: Int, user_id2: Int): String {
-        return ""
+    suspend fun getRelationship(token: String, user_id1: Int, user_id2: Int): String? {
+        val url = "$BASE_URL/get_relationship/$user_id1/$user_id2"
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+        val response = HttpHelper.get(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        val responseBody = response.body?.string() ?: throw IOException("Empty response")
+
+        Log.d("ApiClient", "Fetched relationship: $responseBody")
+        var relationship: String? = null
+        try {
+            val json = JSONObject(responseBody)
+            relationship = json.getString("status")
+        } catch (e: Exception) {
+            Log.e("ApiClient", "Error parsing relationship JSON: ${e.message}")
+        }
+        return relationship
     }
 
     // -------------------------------
