@@ -27,6 +27,7 @@ import kotlin.collections.map
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import theclankers.tripview.data.api.ApiClient
+import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.TripViewModel
 import theclankers.tripview.ui.viewmodels.useTrip
 
@@ -45,9 +46,11 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
             TopAppBar(
                 title = { Text("San Francisco Itinerary") },
                 actions = {
-                    Button(onClick = { println("Navigation clicked") }) { Text("Navigation") }
+                    Button(onClick = {
+                        navigateToDetail(navController, "navigation/$tripId" )
+                    }) { Text("Navigation") }
                     Button(onClick = { println("Chat clicked") }) { Text("Chat") }
-                    Button(onClick = { println("Edit clicked") }) { Text("Edit") }
+                    Button(onClick = { navController.navigate("EditItinerary/$tripId") }) { Text("Edit") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer

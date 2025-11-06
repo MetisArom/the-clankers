@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import theclankers.tripview.data.api.ApiClient.sendTripForm
 import theclankers.tripview.ui.components.FormInput
+import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.SendFormViewModel
 import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.ui.viewmodels.useSendForm
@@ -40,13 +41,22 @@ fun TripCreationForm(navController: NavController) {
 
     val sendFormVM = useSendForm(token)
 
-    fun onSubmit() {
-        if (sendFormVM.isLoadingState.value) {
-        } else {
-            sendFormVM.sendForm(destination, days, stops, timeline, "1")
-            navController.navigate("tripcreationform")
+    val isLoading by remember { derivedStateOf { sendFormVM.isLoadingState.value } }
+    val trips = sendFormVM.tripSuggestions
+    val error by remember { derivedStateOf { sendFormVM.errorMessageState.value } }
+
+    LaunchedEffect(isLoading, trips.size) {
+        // only navigate when loading finished and there are trips (successful result)
+        if (!isLoading && trips.isNotEmpty()) {
+            navigateToDetail(navController, "TripFormPt2")
         }
     }
+
+    fun onSubmit() {
+        // just start the request; navigation happens via LaunchedEffect above
+        sendFormVM.sendForm(destination, days, stops, timeline, "1")
+    }
+
     Scaffold(
         containerColor = Color(0xFFF7F6F8)
     ) { innerPadding ->
@@ -122,13 +132,20 @@ fun TripCreationForm(navController: NavController) {
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = null,
-                        tint = Color.White
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Submit", color = Color.White) //will lead to Trip Creation Form - Part 2
+                    if (isLoading) {
+                       Text("Submitting...")
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            "Submit",
+                            color = Color.White
+                        ) //will lead to Trip Creation Form - Part 2
+                    }
                 }
             }
         }

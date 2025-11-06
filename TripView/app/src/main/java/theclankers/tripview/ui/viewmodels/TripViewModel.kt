@@ -20,6 +20,7 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
@@ -29,6 +30,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.api.ApiClient
+import kotlin.collections.filter
 
 /**
  * ViewModel for managing data about a specific Trip.
@@ -221,6 +223,23 @@ class TripViewModel(private val token: String) : ViewModel() {
         }
     }
 
+    fun deleteStop(stopId: Int) {
+
+        viewModelScope.launch {
+            try {
+                // 🔹 Send the update to the backend
+                withContext(Dispatchers.IO) {
+                    ApiClient.deleteStop(token, stopId)
+                }
+
+
+                Log.d("StopViewModel", "✅ Stop deleted ")
+            } catch (e: Exception) {
+                Log.e("StopViewModel", "❌ Failed to delete stop", e)
+                e.printStackTrace()
+            }
+        }
+    }
     val isAddingStopState: MutableState<Boolean> = mutableStateOf(false)
     val addStopMessageState: MutableState<String?> = mutableStateOf(null)
 
