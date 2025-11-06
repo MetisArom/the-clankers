@@ -29,6 +29,10 @@ fun TripViewNavGraph(navController: NavHostController) {
         // Friends list screen
         composable("friends") { FriendsScreen(navController) }
 
+        // Search Friends Screen
+
+        composable("searchFriends") { SearchFriendsScreen(navController)}
+
         // Profile screen
         composable("profile") { ProfileScreen(navController) }
 
@@ -88,9 +92,9 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("tripcreationform") {
             TripCreationForm(navController = navController)
         }
-//        composable(route="TripFormPt2") {
-//            TripFormPt2(navController = navController)
-//        }
+        composable(route="TripFormPt2") {
+            TripFormPt2(navController = navController)
+        }
 
         // ABOVE HERE WAS NOT IN MAIN
 
@@ -102,6 +106,15 @@ fun TripViewNavGraph(navController: NavHostController) {
         ) { backStackEntry ->
             val tripId = backStackEntry.arguments?.getInt("tripId") ?: 0
             if (tripId != 0) TripScreen(navController, tripId) else goBack(navController)
+        }
+
+        // Add stop screen for a specific trip
+        composable(
+            "addStop/{tripId}",
+            arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getInt("tripId") ?: 0
+            if (tripId != 0) AddStopScreen(navController, tripId) else goBack(navController)
         }
 
         // Stop screen for a specific stop

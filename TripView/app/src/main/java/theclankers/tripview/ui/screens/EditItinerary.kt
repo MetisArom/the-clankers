@@ -34,6 +34,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.api.ApiClient
 import theclankers.tripview.ui.components.StopItem
+import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.TripViewModel
 import theclankers.tripview.ui.viewmodels.useStop
 import theclankers.tripview.ui.viewmodels.useTrip
@@ -66,6 +67,7 @@ fun EditItinerary(navController: NavHostController, tripId: Int, token: String) 
                 actions = {
                     Button(onClick = { println("Navigation clicked") }) { Text("Navigation") }
                     Button(onClick = { println("Chat clicked") }) { Text("Chat") }
+                    Button(onClick = { navigateToDetail(navController, "addStop/$tripId") }) { Text("Add Stop") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer

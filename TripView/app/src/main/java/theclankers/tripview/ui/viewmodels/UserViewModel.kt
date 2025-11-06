@@ -11,6 +11,8 @@ import org.json.JSONObject
 import theclankers.tripview.data.models.User
 import theclankers.tripview.data.api.ApiClient
 import androidx.compose.runtime.State
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 // Use this ViewModel for grabbing state relevant to a specific user.
 // For example, pass as input "user_id" and it will return variables like "first_name", "last_name", and "username"
@@ -27,12 +29,18 @@ class UserViewModel(private val token: String) : ViewModel() {
     val isLoadingState = mutableStateOf(false)
     val errorMessageState = mutableStateOf<String?>(null)
 
+    val isUpdatingState = mutableStateOf(false)
+
+    val updateMessageState = mutableStateOf<String?>(null)
+
     fun loadUser(userId: Int) {
         viewModelScope.launch {
             isLoadingState.value = true
             errorMessageState.value = null
             try {
-                val user = ApiClient.getUser(token, userId)
+                val user = withContext(Dispatchers.IO) {
+                    ApiClient.getUser(token, userId)
+                }
 
                 // Assign to individual fields
                 firstNameState.value = user.firstName
@@ -50,10 +58,73 @@ class UserViewModel(private val token: String) : ViewModel() {
         }
     }
 
-    // TODO: Implement editUser, calls ApiService editUser
     fun editUser(username: String, firstName: String, lastName: String, likes: String, dislikes: String) {
-
+        viewModelScope.launch {
+            isUpdatingState.value = true
+            try {
+                withContext(Dispatchers.IO) {
+                    ApiClient.editUser(token, username, firstName, lastName, likes, dislikes)
+                }
+                updateMessageState.value = "Successfully updated profile!"
+            } catch (e: Exception) {
+                updateMessageState.value = e.message
+            } finally {
+                isUpdatingState.value = false
+            }
+        }
     }
+
+    
+
+     fun accept(userId: Int) {
+         viewModelScope.launch {
+             try {
+                 ApiClient.acceptFriendRequest(token, userId)
+             } catch (e: Exception) {
+                 errorMessageState.value = e.message
+             }
+         }
+     }
+
+     fun decline(userId: Int) {
+         viewModelScope.launch {
+             try {
+                 ApiClient.declineFriendRequest(token, userId)
+             } catch (e: Exception) {
+                 errorMessageState.value = e.message
+             }
+         }
+     }
+
+     fun remove(userId: Int) {
+         viewModelScope.launch {
+             try {
+                 ApiClient.removeFriend(token, userId)
+             } catch (e: Exception) {
+                 errorMessageState.value = e.message
+             }
+         }
+     }
+
+     fun invite(userId: Int) {
+         viewModelScope.launch {
+             try {
+                 ApiClient.sendFriendRequest(token, userId)
+             } catch (e: Exception) {
+                 errorMessageState.value = e.message
+             }
+         }
+     }
+
+     fun revoke(userId: Int) {
+         viewModelScope.launch {
+             try {
+                 ApiClient.revokeFriendRequest(token, userId)
+             } catch (e: Exception) {
+                 errorMessageState.value = e.message
+             }
+         }
+     }
 }
 
 @Composable

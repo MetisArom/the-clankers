@@ -1,6 +1,8 @@
 package theclankers.tripview.data.models
 
 import kotlinx.serialization.Serializable
+import org.json.JSONArray
+import org.json.JSONObject
 
 // There will be a Trip class here that defines the Trip object, according to the ER diagram
 

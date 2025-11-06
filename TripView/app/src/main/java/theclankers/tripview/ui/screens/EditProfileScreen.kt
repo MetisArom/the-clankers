@@ -32,7 +32,8 @@ fun EditProfileScreen(navController: NavController) {
     val initialFirstName = userVM.firstNameState.value
     val initialLastName = userVM.lastNameState.value
     val initialUsername = userVM.usernameState.value
-    // TODO: Get initial variables for likes and dislikes
+    val initialLikes = userVM.likesState.value ?: ""
+    val initialDislikes = userVM.dislikesState.value ?: ""
 
     if (initialFirstName == null || initialLastName == null || initialUsername == null) return
 
@@ -40,12 +41,15 @@ fun EditProfileScreen(navController: NavController) {
     val firstName = remember { mutableStateOf(initialFirstName) }
     val lastName = remember { mutableStateOf(initialLastName) }
     val username = remember { mutableStateOf(initialUsername) }
-    // TODO: Create state for likes and dislikes
-    // TODO: Create state for loading
+    // Create state for likes and dislikes
+    val likes = remember { mutableStateOf(initialLikes) }
+    val dislikes = remember { mutableStateOf(initialDislikes) }
 
-    // TODO: Implement onSubmit, disables all buttons on the screen using a new loading state, then calls userVM.editUser(...), then navigates to ProfileScreen
+    // Disables all buttons on the edit profile screen using a new loading state,
+    // then calls userVM.editUser(...)
     fun onSubmit() {
-
+        userVM.isUpdatingState.value = true
+        userVM.editUser(username.value, firstName.value, lastName.value, likes.value, dislikes.value)
     }
 
     Scaffold(containerColor = Color(0xFFF7F6F8)) { innerPadding ->
@@ -102,18 +106,35 @@ fun EditProfileScreen(navController: NavController) {
                     )
 
                     // TODO: Create form inputs for likes and dislikes
+                    FormInput(
+                        value = likes.value,
+                        onValueChange = { likes.value = it },
+                        label = "Likes:",
+                        placeholder = "Cheap Cities, Italian Food",
+                        imeAction = ImeAction.Next,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    FormInput(
+                        value = dislikes.value,
+                        onValueChange = { dislikes.value = it },
+                        label = "Dislikes:",
+                        placeholder = "Rust Belt Cities, Fish",
+                        imeAction = ImeAction.Next,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
                 }
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(vertical = 16.dp)
                 ) {
-                    // TODO: Make this button disabled when loading
                     Button(
                         onClick = { onSubmit() },
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                        enabled = !userVM.isUpdatingState.value
                     ) {
                         Icon(
                             imageVector = Icons.Default.Check,
@@ -124,6 +145,8 @@ fun EditProfileScreen(navController: NavController) {
                         Text("Save Changes", color = Color.White)
                     }
                 }
+
+                Text(userVM.updateMessageState.value ?: "")
             }
         }
     }
