@@ -216,7 +216,29 @@ object ApiClient {
         return friendsList
     }
 
-    // TODO: Implement getInvites, call the back-end route get_invites/<int:user_id>
+    suspend fun searchFriends(token: String, query: String): List<Int> {
+        val url = "$BASE_URL/search_friends?query=${query}"
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+        val response = HttpHelper.get(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
+        val responseBody = response.body?.string() ?: throw IOException("Empty response")
+        val resultsList = mutableListOf<Int>()
+        try {
+            val resultsArray = JSONArray(responseBody)
+            for (i in 0 until resultsArray.length()) {
+                resultsList.add(resultsArray.getInt(i))
+            }
+        } catch (e: Exception) {
+            Log.e("ApiClient", "Error parsing search friends JSON: ${e.message}")
+        } 
+        Log.d("ApiClient", "Search friends results: $resultsList")
+        return resultsList
+    }
+
     suspend fun getInvites(token: String, userId: Int): List<Int> {
         val url = "$BASE_URL/get_invites/$userId"
         val request = Request.Builder()

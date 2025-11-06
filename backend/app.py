@@ -256,12 +256,13 @@ def remove_friend(user_id):
 
 # Search for friends in the Add friends page by username. 
 # Use this endpoint for performing a Debounced Username Search or Real-time type-ahead user search.
-@app.route('/friends/search', methods=['GET'])
+# Use ?query=${query}
+@app.route('/search_friends', methods=['GET'])
 @jwt_required()
 def search_users():
     current_user_id = int(get_jwt_identity())
-    query = request.args.get('q', '').strip().lower()
-
+    query = request.args.get('query', '').strip().lower()
+    
     if not query:
         return jsonify([]), 200
 
@@ -289,13 +290,7 @@ def search_users():
         else:
             status = "none"
 
-        results.append({
-            "user_id": user.user_id,
-            "username": user.username,
-            "firstname": user.firstname,
-            "lastname": user.lastname,
-            "status": status
-        })
+        results.append(user.user_id)
 
     return jsonify(results), 200
 
