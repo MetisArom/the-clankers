@@ -131,7 +131,10 @@ fun EditItinerary(navController: NavHostController, tripId: Int, token: String) 
                     // also add confirmation toast?
                     viewModel.updateTrip(tripId, stops.value)
                     println("Confirmed changes")
-                    navController.navigate("ItineraryScreen/$tripId")
+                    navController.navigate("ItineraryScreen/$tripId") {
+                        popUpTo("ItineraryScreen/$tripId") { inclusive = true }
+                        launchSingleTop = true
+                    }
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
