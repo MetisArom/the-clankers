@@ -20,6 +20,7 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
@@ -29,6 +30,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.api.ApiClient
+import kotlin.collections.filter
 
 /**
  * ViewModel for managing data about a specific Trip.
@@ -148,7 +150,8 @@ class TripViewModel(private val token: String) : ViewModel() {
     val stopIdsState: MutableState<List<Int>?> = mutableStateOf(null)
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
     val errorMessage: MutableState<String?> = mutableStateOf(null)
-    val stops: MutableState<List<Stop>> = mutableStateOf(emptyList())
+//    val stops: MutableState<List<Stop>> = mutableStateOf(emptyList())
+    val stops = mutableStateListOf<Stop>()
 
 
     fun loadTrip(tripId: Int) {
@@ -192,7 +195,8 @@ class TripViewModel(private val token: String) : ViewModel() {
                     )
                 }
 
-                stops.value = s
+                stops.clear()
+                stops.addAll(s)
 
                 Log.d("TripViewModel", "✅ Trip loaded: ${trip.name}")
 
@@ -216,6 +220,25 @@ class TripViewModel(private val token: String) : ViewModel() {
                 Log.d("StopViewModel", "✅ Stops updated  ")
             } catch (e: Exception) {
                 Log.e("StopViewModel", "❌ Failed to update stops", e)
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun deleteStop(stopId: Int) {
+
+        stops.removeAll { it.stopId == stopId }
+        viewModelScope.launch {
+            try {
+                // 🔹 Send the update to the backend
+                withContext(Dispatchers.IO) {
+                    ApiClient.deleteStop(token, stopId)
+                }
+
+
+                Log.d("StopViewModel", "✅ Stop deleted ")
+            } catch (e: Exception) {
+                Log.e("StopViewModel", "❌ Failed to delete stop", e)
                 e.printStackTrace()
             }
         }

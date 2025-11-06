@@ -38,7 +38,7 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
     val stopIds by viewModel.stopIdsState
     val isLoading by viewModel.isLoading
     val errorMessage by viewModel.errorMessage
-    val stops by viewModel.stops
+    val stops = viewModel.stops
 
     Scaffold(
         topBar = {
@@ -47,7 +47,7 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
                 actions = {
                     Button(onClick = { println("Navigation clicked") }) { Text("Navigation") }
                     Button(onClick = { println("Chat clicked") }) { Text("Chat") }
-                    Button(onClick = { println("Edit clicked") }) { Text("Edit") }
+                    Button(onClick = { navController.navigate("EditItinerary/$tripId") }) { Text("Edit") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer

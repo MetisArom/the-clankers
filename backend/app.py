@@ -572,13 +572,13 @@ def update_stop_completed(stop_id):
 
 @app.route('/stops/<int:stop_id>', methods=['DELETE'], endpoint="delete_stop")
 # @jwt_required
-def delete_stop(trip_id, stop_id):
-    stop = Stop.query.filter_by(trip_id=trip_id, stop_id=stop_id).first()
+def delete_stop(stop_id):
+    stop = Stop.query.filter_by(stop_id=stop_id).first()
     if not stop:
-        return jsonify({"ERROR": f"Stop with trip_id {trip_id} and stop_id {stop_id} not found"})
+        return jsonify({"ERROR": f" stop_id {stop_id} not found"})
     db.session.delete(stop)
     db.session.commit()
-    return jsonify({"message": f"Stop with trip_id {trip_id} and stop_id {stop_id} successfully deleted"})
+    return jsonify({"message": f"Stop with stop_id {stop_id} successfully deleted"})
 
 # ============================================================
 # Ethan added these routes
