@@ -455,7 +455,8 @@ object ApiClient {
     // -------------------------------
 
     suspend fun getLandmarkContext(
-        imagePath: String
+        imagePath: String,
+        token: String
     ): String = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/landmark_context"
 
@@ -477,6 +478,7 @@ object ApiClient {
         val request = Request.Builder()
             .url(url)
             .post(multipartBody)
+            .addHeader("Authorization", "Bearer $token")
             .build()
 
         val response = HttpHelper.post(request)

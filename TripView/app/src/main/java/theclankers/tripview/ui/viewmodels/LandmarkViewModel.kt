@@ -19,7 +19,7 @@ class LandmarkViewModel : ViewModel() {
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
     val errorMessage: MutableState<String?> = mutableStateOf(null)
 
-    fun fetchLandmarkContext(imagePath: String) {
+    fun fetchLandmarkContext(imagePath: String, token: String) {
         val file = File(imagePath)
         if (!file.exists() || !file.isFile) {
             errorMessage.value = "Image file not found: $imagePath"
@@ -30,7 +30,7 @@ class LandmarkViewModel : ViewModel() {
             isLoading.value = true
             errorMessage.value = null
             try {
-                val responseString = ApiClient.getLandmarkContext(imagePath)
+                val responseString = ApiClient.getLandmarkContext(imagePath, token)
                 val json = JSONObject(responseString)
                 contextText.value = json.optString("context", "No context found.")
             } catch (e: IOException) {
