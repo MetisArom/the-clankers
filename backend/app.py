@@ -775,6 +775,7 @@ def debug_regenerate_polyline(trip_id):
 
 # Send a photo to landmark context generator.
 @app.route('/landmark_context', methods=['POST'])
+@jwt_required()
 def landmark_context():
     if "image" not in request.files:
         return jsonify({"error": "Missing image multipart form data"}), 400
