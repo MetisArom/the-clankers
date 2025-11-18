@@ -1,10 +1,13 @@
 package theclankers.tripview.ui.screens
 
+import android.R.attr.onClick
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import theclankers.tripview.ui.components.ListComponent
 import theclankers.tripview.ui.components.StopItem
@@ -28,7 +31,11 @@ fun TripScreen(navController: NavHostController, tripId: Int) {
             Button(onClick = {
                 navigateToDetail(navController, "navigation/$tripId" )
             }) { Text("Navigation") }
-            Button(onClick = { println("Chat clicked") }) { Text("Chat") }
+            Button(
+                onClick = { navigateToDetail(navController, "ChatScreen") }
+            ) {
+                Text("Chat")
+            }
             Button(onClick = { println("Edit clicked") }) { Text("Edit") }
         }
 
