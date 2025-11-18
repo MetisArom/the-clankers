@@ -20,7 +20,7 @@ fun Header(navController: NavController) {
         BottomNavItem.Camera.route,
         BottomNavItem.Friends.route,
         BottomNavItem.Profile.route,
-        BottomNavItem.Debug.route
+        //BottomNavItem.Debug.route
     )
 
     // Only show the arrow if you're NOT on a root route

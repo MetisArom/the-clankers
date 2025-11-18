@@ -29,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.viewmodels.LandmarkViewModel
+import theclankers.tripview.ui.viewmodels.useAppContext
 
 @Composable
 fun LandmarkContextScreen (photoPath: String?,
@@ -38,13 +39,21 @@ fun LandmarkContextScreen (photoPath: String?,
         return
     }
 
+    val appVM = useAppContext()
+    val token = appVM.accessTokenState.value
+
+    if (token == null) {
+        Text("Not logged in!")
+        return
+    }
+
     val viewModel = androidx.lifecycle.viewmodel.compose.viewModel<LandmarkViewModel>()
     val scrollState = rememberScrollState()
 
     val bitmap = remember(photoPath) { loadRotatedBitmap(photoPath) }
 
     LaunchedEffect(photoPath) {
-        viewModel.fetchLandmarkContext(photoPath)
+        viewModel.fetchLandmarkContext(photoPath, token)
     }
 
     Column(

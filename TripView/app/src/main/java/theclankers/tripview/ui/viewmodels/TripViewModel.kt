@@ -226,14 +226,15 @@ class TripViewModel(private val token: String) : ViewModel() {
 
     fun deleteStop(stopId: Int) {
 
+        stops.value = stops.value.filter { it.stopId != stopId }
+        stopIdsState.value = stopIdsState.value?.filter { it != stopId }
+
         viewModelScope.launch {
             try {
                 // 🔹 Send the update to the backend
                 withContext(Dispatchers.IO) {
                     ApiClient.deleteStop(token, stopId)
                 }
-
-                stops.value = stops.value.filter { it.stopId != stopId }
 
                 Log.d("StopViewModel", "✅ Stop deleted ")
             } catch (e: Exception) {
