@@ -28,7 +28,9 @@ fun TripScreen(navController: NavHostController, tripId: Int) {
             Button(onClick = {
                 navigateToDetail(navController, "navigation/$tripId" )
             }) { Text("Navigation") }
-            Button(onClick = { println("Chat clicked") }) { Text("Chat") }
+            Button(onClick = {
+                navigateToDetail(navController, "chat" )
+            }) { Text("Chat") }
             Button(onClick = { println("Edit clicked") }) { Text("Edit") }
         }
 
