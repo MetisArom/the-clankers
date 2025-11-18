@@ -27,7 +27,7 @@ fun Header(navController: NavController) {
     val canGoBack = navController.previousBackStackEntry != null && currentRoute !in rootRoutes
 
     TopAppBar(
-        title = { Text(currentRoute ?: "TripView") },
+        title = { /* */ },
         navigationIcon = {
             if (canGoBack) {
                 IconButton(onClick = { navController.navigateUp() }) {
