@@ -39,6 +39,8 @@ fun TripViewNavGraph(navController: NavHostController) {
         // Edit profile screen
         composable("editProfile") { EditProfileScreen(navController) }
 
+        composable("chat") { ChatScreen() }
+
         // BELOW HERE WAS NOT IN MAIN
         
         // Friend Profile Screen
