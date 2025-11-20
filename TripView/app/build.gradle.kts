@@ -82,4 +82,7 @@ dependencies {
     implementation("androidx.camera:camera-view:1.3.4")
     implementation("sh.calvin.reorderable:reorderable:3.0.0")
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.material3:material3:1.4.0-beta02")
+    implementation("androidx.compose.material:material-icons-core:1.7.8")
+    implementation("androidx.navigation:navigation-compose:2.9.3")
 }
