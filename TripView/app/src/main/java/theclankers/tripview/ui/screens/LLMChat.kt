@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 //look at Figma, code same functionality
 
 @Composable
-fun CameraScreen(
+fun ChatScreen(
 ) {
     Text("chatScreen")
 }
