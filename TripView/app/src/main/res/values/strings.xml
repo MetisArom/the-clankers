@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">TripView</string>
+    <string name="chatter">llmPrompt</string>
+    <string name="send">Send</string>
+    <string name="model">tinyllama</string> <!-- TODO: change to our model-->
+    <string name="message">howdy?</string>
+    <string name="instruction">Type a message…</string>
 </resources>
