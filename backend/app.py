@@ -9,6 +9,7 @@ import google.generativeai as genai
 import os
 import json
 from polyline import regenerate_driving_polyline
+from place import get_place_info
 from dotenv import load_dotenv
 import base64
 
@@ -17,11 +18,15 @@ import base64
 # -------------------------
 load_dotenv()
 DB_PASSWORD = os.getenv("DB_PASSWORD")
+MAPS_API_KEY = os.getenv("MAPS_API_KEY")
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("models/gemini-2.5-flash")
 
 if not DB_PASSWORD:
     raise ValueError("❌ Missing DB_PASSWORD in environment variables")
+
+if not MAPS_API_KEY:
+    raise ValueError("❌ Missing MAPS_API_KEY in environment variables")
 
 app = Flask(__name__)
 CORS(app)  # allow mobile frontend access
@@ -188,7 +193,7 @@ def accept_friend_request(user_id):
 def decline_friend_request(user_id):
     current_user_id = int(get_jwt_identity())
     sender_id = user_id
-    sender_id = data.get('user_id')
+    #sender_id = data.get('user_id')
 
     if not sender_id:
         return jsonify({"error": "Missing sender user_id"}), 400
@@ -664,6 +669,10 @@ def modify_itinerary(trip_id):
 
     db.session.commit()
 
+    #If stops provided, get place information:
+    # get all stop ids for trip
+    # call get_place_info for each
+
     regenerate_driving_polyline(trip_id, True)
 
     return jsonify({"message": "Stops updated successfully"}), 200
@@ -728,6 +737,10 @@ def save_trip():
         db.session.commit()
         print("Database commit successful!")
 
+        #If stops provided, get place information:
+        # get all stop ids for trip
+        # call get_place_info for each
+
         regenerate_driving_polyline(new_trip.trip_id, True)
         print("Driving polyline regenerated")
 
@@ -767,6 +780,10 @@ def delete_trip(trip_id):
 @app.route('/trips/<int:trip_id>/debug_polyline', methods=['GET'])
 def debug_regenerate_polyline(trip_id):
     return regenerate_driving_polyline(trip_id, True)
+
+@app.route('/stops/<int:stop_id>/debug_place_id', methods=['GET'])
+def debug_place_id(stop_id):
+    return get_place_info(stop_id, True, MAPS_API_KEY)
 
 
 # ===========================================================
