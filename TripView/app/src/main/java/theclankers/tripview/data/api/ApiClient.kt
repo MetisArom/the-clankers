@@ -596,7 +596,12 @@ object ApiClient {
                 longitude = json.getDouble("longitude"),
                 name = json.getString("name"),
                 completed = json.getBoolean("completed"),
-                order = json.getInt("order")
+                order = json.getInt("order"),
+                address = json.getString("address"),
+                hours = json.getString("hours"),
+                rating = json.getString("rating"),
+                priceRange = json.getString("priceRange"),
+                googleMapsUri = json.getString("googleMapsUri")
             )
         } catch (e: Exception) {
             Log.e("ApiClient", "Error parsing stop JSON: ${e.message}")

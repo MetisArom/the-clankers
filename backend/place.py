@@ -2,9 +2,9 @@ import requests
 from flask import jsonify
 from database import db, Stop
     
-fieldMask = "places.rating,places.priceRange,places.currentOpeningHours,places.shortFormattedAddress"
+fieldMask = "places.rating,places.priceRange,places.currentOpeningHours,places.shortFormattedAddress,places.googleMapsUri"
 
-def get_place_info(stop_id, debug, MAPS_API_KEY):
+def get_place_info(stop_id, MAPS_API_KEY, debug):
     stop = Stop.query.get_or_404(stop_id)
     
     debug_response = {}
@@ -60,6 +60,8 @@ def get_place_info(stop_id, debug, MAPS_API_KEY):
             for dayHours in geocoding_response["places"][0]["currentOpeningHours"]["weekdayDescriptions"]:
                 hoursString += dayHours + "\n"
             stop.hours = hoursString
+        if "googleMapsUri" in geocoding_response["places"][0]:
+            stop.googleMapsUri = geocoding_response["places"][0]["googleMapsUri"]
 
     db.session.commit()
 
@@ -69,7 +71,8 @@ def get_place_info(stop_id, debug, MAPS_API_KEY):
         debug_response["new_price_range"] = stop.priceRange
         debug_response["new_address"] = stop.address
         debug_response["new_hours"] = stop.hours
+        debug_response["new_maps_uri"] = stop.googleMapsUri
         debug_response["response"] = geocoding_response
         return jsonify(debug_response)
     else:
-        return jsonify({"place_id": stop.place_id})
+        return jsonify({"success": True})

@@ -55,6 +55,7 @@ class Stop(db.Model):
     hours = db.Column(db.Text, default="")
     rating = db.Column(db.Text, default="")
     priceRange = db.Column(db.Text, default="")
+    googleMapsUri = db.Column(db.Text, default="")
 
 
 class Chat(db.Model):

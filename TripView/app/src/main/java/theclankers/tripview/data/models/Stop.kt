@@ -14,4 +14,9 @@ data class Stop(
     val name: String,
     val completed: Boolean,
     val order: Int,
+    val address: String = "",
+    val hours: String = "",
+    val rating: String = "",
+    val priceRange: String = "",
+    val googleMapsUri: String = ""
 )
