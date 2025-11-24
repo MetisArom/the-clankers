@@ -224,6 +224,23 @@ class TripViewModel(private val token: String) : ViewModel() {
         }
     }
 
+    fun archiveTrip(tripId: Int) {
+        viewModelScope.launch {
+            try {
+                // 🔹 Send the update to the backend
+                withContext(Dispatchers.IO) {
+                    ApiClient.archiveTrip(token, tripId)
+                }
+
+
+                Log.d("StopViewModel", "✅ Trip archived ")
+            } catch (e: Exception) {
+                Log.e("StopViewModel", "❌ Failed to archive trip", e)
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun deleteStop(stopId: Int) {
 
         stops.value = stops.value.filter { it.stopId != stopId }

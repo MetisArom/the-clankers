@@ -668,7 +668,7 @@ object ApiClient {
     }
 
     suspend fun archiveTrip(token: String, tripId: Int): String {
-        val url = "$BASE_URL/trips/$tripId/archive_trip"
+        val url = "$BASE_URL/trips/$tripId/archive"
 
         val bodyJson = JSONObject().apply {
             put("status", "archived")
