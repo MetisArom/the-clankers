@@ -397,7 +397,62 @@ def generate_ai_trip():
     except Exception:
         return jsonify({"error": "Gemini returned invalid JSON", "raw": response_text}), 500
 
-    return itinerary_data, 200
+    # -------------------------------
+    # STEP 2 — Add Trip-Level Cost + Transport (String-Based Version)
+    # -------------------------------
+    refinement_prompt = f"""
+    You are TripView AI. Improve the following trip itineraries by adding concise,
+    human-friendly cost and transportation summaries at the *trip level* only.
+
+    Here is the generated itinerary JSON:
+    {json.dumps(itinerary_data, indent=2)}
+
+    For EACH trip in "trips[]", ADD these exact fields:
+
+    1. "total_cost_estimate": number
+       - full trip cost in USD
+       - include typical range (low-end vs realistic-high)
+
+    2. "cost_breakdown": string
+    - A SHORT but useful summary including:
+        lodging, food, transportation, activities/entry fees, misc.
+    - Keep it to 2-3 sentences max.
+    - No lists, no objects — ONE STRING.
+
+    3. "transportation_summary": string
+    - High-level overview: walking, metro, buses, taxis, etc.
+    - Focus on general mobility patterns.
+    - ONE short paragraph.
+
+    4. "transportation_breakdown": string
+    - A concise breakdown including:
+        primary mode, secondary modes, expected number of paid rides,
+        estimated daily travel time, and any important notes.
+    - Keep it compact (1-3 sentences).
+    - ONE STRING.
+
+    RULES:
+    - DO NOT change or modify stops.
+    - DO NOT add per-stop costs or transport.
+    - Return VALID JSON ONLY.
+    """
+
+    refine_response = model.generate_content(refinement_prompt)
+    refine_text = refine_response.text.strip()
+
+    json_start = refine_text.find('{')
+    json_end = refine_text.rfind('}') + 1
+    refined_json_str = refine_text[json_start:json_end]
+
+    try:
+        refined_data = json.loads(refined_json_str)
+    except Exception:
+        return jsonify({
+            "error": "Gemini returned invalid JSON (step 2)",
+            "raw": refine_text
+        }), 500
+
+    return refined_data, 200
 
 @app.route('/trips', methods=['GET'])
 def get_trips():
@@ -584,6 +639,10 @@ def get_trip(trip_id):
         "status": str(trip.status),
         "name": trip.name,
         "description": trip.description,
+        "cost_breakdown": trip.cost_breakdown,
+        "total_cost_estimate": trip.total_cost_estimate,
+        "transportation_breakdown": trip.transportation_breakdown,
+        "transportation_summary": trip.transportation_summary,
         "driving_polyline": str(trip.driving_polyline),
         "driving_polyline_timestamp": trip.driving_polyline_timestamp,
         "stop_ids": [stop.stop_id for stop in sorted_stops]
@@ -697,6 +756,10 @@ def save_trip():
             owner_id=current_user_id,
             name=data.get("name").strip(),
             description=data.get("description", "").strip(),
+            cost_breakdown = data.get("cost_breakdown", "").strip(),
+            total_cost_estimate = data.get("total_cost_estimate", 0),
+            transportation_breakdown = data.get("transportation_breakdown", "").strip(),
+            transportation_summary = data.get("transportation_summary", "").strip(),
             status="active",
             driving_polyline="",
             driving_polyline_timestamp=None
@@ -739,6 +802,10 @@ def save_trip():
                 "owner_id": new_trip.owner_id,
                 "name": new_trip.name,
                 "description": new_trip.description,
+                "cost_breakdown": new_trip.cost_breakdown,
+                "total_cost_estimate": new_trip.total_cost_estimate,
+                "transportation_breakdown": new_trip.transportation_breakdown,
+                "transportation_summary": new_trip.transportation_summary,
                 "status": new_trip.status,
                 "stop_count": len(stops_data)
             }
