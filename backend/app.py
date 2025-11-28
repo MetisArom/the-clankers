@@ -830,6 +830,12 @@ def delete_trip(trip_id):
     db.session.commit()
     return jsonify({"message": f"Trip {trip_id} deleted successfully!"})
 
+@app.route('/trips/<int:trip_id>/archive', methods=['PATCH'])
+def archive_trip(trip_id):
+    trip = Trip.query.get_or_404(trip_id)
+    trip.status = 'completed'
+    db.session.commit()
+    return jsonify({"message": f"Trip {trip_id} archived successfully!"})
 
 @app.route('/trips/<int:trip_id>/debug_polyline', methods=['GET'])
 def debug_regenerate_polyline(trip_id):
