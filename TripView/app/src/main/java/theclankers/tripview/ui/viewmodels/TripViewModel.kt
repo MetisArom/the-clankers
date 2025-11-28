@@ -216,9 +216,9 @@ class TripViewModel(private val token: String) : ViewModel() {
                 }
 
 
-                Log.d("StopViewModel", "✅ Stops updated  ")
+                Log.d("TripViewModel", "✅ Stops updated  ")
             } catch (e: Exception) {
-                Log.e("StopViewModel", "❌ Failed to update stops", e)
+                Log.e("TripViewModel", "❌ Failed to update stops", e)
                 e.printStackTrace()
             }
         }
@@ -233,9 +233,9 @@ class TripViewModel(private val token: String) : ViewModel() {
                 }
 
 
-                Log.d("StopViewModel", "✅ Trip archived ")
+                Log.d("TripViewModel", "✅ Trip archived ")
             } catch (e: Exception) {
-                Log.e("StopViewModel", "❌ Failed to archive trip", e)
+                Log.e("TripViewModel", "❌ Failed to archive trip", e)
                 e.printStackTrace()
             }
         }
@@ -253,9 +253,9 @@ class TripViewModel(private val token: String) : ViewModel() {
                     ApiClient.deleteStop(token, stopId)
                 }
 
-                Log.d("StopViewModel", "✅ Stop deleted ")
+                Log.d("TripViewModel", "✅ Stop deleted ")
             } catch (e: Exception) {
-                Log.e("StopViewModel", "❌ Failed to delete stop", e)
+                Log.e("TripViewModel", "❌ Failed to delete stop", e)
                 e.printStackTrace()
             }
         }
@@ -270,7 +270,7 @@ class TripViewModel(private val token: String) : ViewModel() {
                 ApiClient.addStop(token, tripId, name, latitude, longitude)
                 addStopMessageState.value = "Successfully added stop"
             } catch (e: Exception) {
-                Log.e("StopViewModel", "❌ Failed to add stop", e)
+                Log.e("TripViewModel", "❌ Failed to add stop", e)
                 addStopMessageState.value = "Failed to add stop"
                 e.printStackTrace()
             } finally {
@@ -291,3 +291,4 @@ fun useTrip(token: String, tripId: Int): TripViewModel {
 
     return viewModel
 }
+
