@@ -30,10 +30,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- This is bad bad bad bad bad and I need to set up a better way to do this!-->
+        <!-- Type in your own Maps API Key here-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyA-6_5A1FltXPpqPeGdA-vPM2_CvAaGOwU"
+            android:value="AIzaSyCtZrjkDgUY3trothFO7Q_DExylAoRrw_M"
         />
     </application>
 
