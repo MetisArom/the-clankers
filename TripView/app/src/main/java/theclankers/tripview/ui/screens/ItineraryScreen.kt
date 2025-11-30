@@ -78,7 +78,12 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
                     // call archive logic to api here
                     // navigate to trips screen after
                     // also add confirmation toast?
+                    viewModel.archiveTrip(tripId)
                     println("Trip archived")
+                    navController.navigate("trips") {
+                        popUpTo("trips") { inclusive = true }
+                        launchSingleTop = true
+                    }
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
