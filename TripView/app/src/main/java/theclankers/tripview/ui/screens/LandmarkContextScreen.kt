@@ -1,6 +1,7 @@
 package theclankers.tripview.ui.screens
 
 import android.R.attr.bitmap
+import android.R.id.bold
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.viewmodels.LandmarkViewModel
