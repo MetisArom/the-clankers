@@ -181,7 +181,7 @@ fun TripFormPt2(navController: NavHostController) {
                     },
                 shape = RoundedCornerShape(8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Purple4.copy(alpha = 0.1f)
+                    containerColor = Purple4.copy(alpha = 1f)
                 )
             ) {
                 Column(
@@ -206,7 +206,7 @@ fun TripFormPt2(navController: NavHostController) {
                     // New fields
                     Text(
                         text = "Total Cost Estimate: $${trip.totalCostEstimate}",
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(Modifier.height(6.dp))
 
