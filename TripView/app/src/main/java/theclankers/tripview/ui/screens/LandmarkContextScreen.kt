@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +34,12 @@ import androidx.navigation.NavHostController
 import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.viewmodels.LandmarkViewModel
 import theclankers.tripview.ui.viewmodels.useAppContext
+import androidx.compose.ui.platform.LocalContext
+import theclankers.tripview.utils.rememberCurrentLocation
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import theclankers.tripview.utils.LocationPermissionRequest
 
 @Composable
 fun LandmarkContextScreen (photoPath: String?,
@@ -50,55 +57,70 @@ fun LandmarkContextScreen (photoPath: String?,
         return
     }
 
-    val viewModel = androidx.lifecycle.viewmodel.compose.viewModel<LandmarkViewModel>()
-    val scrollState = rememberScrollState()
+    val context = LocalContext.current
+    var permissionGranted by remember {mutableStateOf<Boolean?>(null)}
 
-    val bitmap = remember(photoPath) { loadRotatedBitmap(photoPath) }
-
-    LaunchedEffect(photoPath) {
-        viewModel.fetchLandmarkContext(photoPath, token)
+    LocationPermissionRequest {granted ->
+        permissionGranted = granted
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(scrollState),
-        horizontalAlignment  = Alignment.Start
-    ) {
-        Row() {
-            HeaderText("Camera")
-            Button(
-                onClick = { navController.navigate("camera") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
-                modifier= Modifier.padding(start=20.dp))
+    when (permissionGranted) {
+        null -> Text("Waiting for location permission.")
+        false -> Text("Location permission is required to identify landmarks.")
+        true -> {
+            val locationState = rememberCurrentLocation(context)
+            val location = locationState.value
 
+            val viewModel = androidx.lifecycle.viewmodel.compose.viewModel<LandmarkViewModel>()
+            val scrollState = rememberScrollState()
 
-            { Text("Take New Image")
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back"
-                )}
-        }
+            val bitmap = remember(photoPath) { loadRotatedBitmap(photoPath) }
 
+            LaunchedEffect(photoPath, location) {
+                if (photoPath != null && token != null && location != null) {
+                    viewModel.fetchLandmarkContext(photoPath, token, location.latitude, location.longitude)
+                }
+            }
 
-        bitmap?.let {
-            Image(
-                bitmap = it.asImageBitmap(),
-                contentDescription = "Captured photo",
+            Column(
                 modifier = Modifier
-                    .width(400.dp)
-                    .height(400.dp)
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        // Text("This is where the context of the landmark goes")
-        when {
-            viewModel.isLoading.value -> Text("Identifying landmark...")
-            viewModel.errorMessage.value != null -> Text("Error: ${viewModel.errorMessage.value}")
-            else -> Column(){
-                Text( text="Location:", fontWeight= FontWeight.Bold, fontSize=20.sp )
-                Text(viewModel.contextText.value ?: "No context available")
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(scrollState),
+                horizontalAlignment  = Alignment.Start
+            ) {
+                Row() {
+                    HeaderText("Camera")
+                    Button(
+                        onClick = { navController.navigate("camera") },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
+                        modifier= Modifier.padding(start=20.dp))
+
+
+                    { Text("Take New Image")
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )}
+                }
+
+
+                bitmap?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = "Captured photo",
+                        modifier = Modifier
+                            .width(400.dp)
+                            .height(400.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                // Text("This is where the context of the landmark goes")
+                when {
+                    viewModel.isLoading.value -> Text("Identifying landmark...")
+                    viewModel.errorMessage.value != null -> Text("Error: ${viewModel.errorMessage.value}")
+                    else -> Text(viewModel.contextText.value ?: "No context available")
+                }
             }
         }
     }

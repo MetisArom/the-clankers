@@ -3,7 +3,6 @@ package theclankers.tripview.data.api
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -456,7 +455,9 @@ object ApiClient {
 
     suspend fun getLandmarkContext(
         imagePath: String,
-        token: String
+        token: String,
+        latitude: Double,
+        longitude: Double
     ): String = withContext(Dispatchers.IO) {
         val url = "$BASE_URL/landmark_context"
 
@@ -473,6 +474,8 @@ object ApiClient {
         val multipartBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("image", file.name, fileRequestBody)
+            .addFormDataPart("latitude", latitude.toString())
+            .addFormDataPart("longitude", longitude.toString())
             .build()
 
         val request = Request.Builder()
