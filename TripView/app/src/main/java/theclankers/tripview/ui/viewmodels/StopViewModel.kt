@@ -24,6 +24,11 @@ class StopViewModel(private val token: String) : ViewModel() {
     val nameState: MutableState<String?> = mutableStateOf(null)
     val completedState: MutableState<Boolean?> = mutableStateOf(null)
     val orderState: MutableState<Int?> = mutableStateOf(null)
+    val addressState: MutableState<String?> = mutableStateOf(null)
+    val hoursState: MutableState<String?> = mutableStateOf(null)
+    val ratingState: MutableState<String?> = mutableStateOf(null)
+    val priceRangeState: MutableState<String?> = mutableStateOf(null)
+    val googleMapsUriState: MutableState<String?> = mutableStateOf(null)
 
     // UI state
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
@@ -44,6 +49,11 @@ class StopViewModel(private val token: String) : ViewModel() {
                 nameState.value = stop.name
                 completedState.value = stop.completed
                 orderState.value = stop.order
+                addressState.value = stop.address
+                hoursState.value = stop.hours
+                ratingState.value = stop.rating
+                priceRangeState.value = stop.priceRange
+                googleMapsUriState.value = stop.googleMapsUri
 
                 Log.d("StopViewModel", "✅ Stop loaded: ${stop.name}")
 
@@ -74,6 +84,11 @@ class StopViewModel(private val token: String) : ViewModel() {
                 nameState.value = stop.name
                 completedState.value = stop.completed
                 orderState.value = stop.order
+                addressState.value = stop.address
+                hoursState.value = stop.hours
+                ratingState.value = stop.rating
+                priceRangeState.value = stop.priceRange
+                googleMapsUriState.value = stop.googleMapsUri
 
                 Log.d("StopViewModel", "✅ Stop loaded: ${stop.name}")
 

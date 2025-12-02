@@ -9,6 +9,7 @@ import google.generativeai as genai
 import os
 import json
 from polyline import regenerate_driving_polyline
+from place import get_place_info
 from dotenv import load_dotenv
 import base64
 import traceback
@@ -19,11 +20,15 @@ import traceback
 # -------------------------
 load_dotenv()
 DB_PASSWORD = os.getenv("DB_PASSWORD")
+MAPS_API_KEY = os.getenv("MAPS_API_KEY")
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("models/gemini-2.5-flash")
 
 if not DB_PASSWORD:
     raise ValueError("❌ Missing DB_PASSWORD in environment variables")
+
+if not MAPS_API_KEY:
+    raise ValueError("❌ Missing MAPS_API_KEY in environment variables")
 
 app = Flask(__name__)
 CORS(app)  # allow mobile frontend access
@@ -190,7 +195,7 @@ def accept_friend_request(user_id):
 def decline_friend_request(user_id):
     current_user_id = int(get_jwt_identity())
     sender_id = user_id
-    sender_id = data.get('user_id')
+    #sender_id = data.get('user_id')
 
     if not sender_id:
         return jsonify({"error": "Missing sender user_id"}), 400
@@ -628,7 +633,12 @@ def get_stop(stop_id):
         "longitude": stop.longitude,
         "name": stop.name,
         "completed": stop.completed,
-        "order": stop.order
+        "order": stop.order,
+        "address": stop.address,
+        "hours": stop.hours,
+        "rating": stop.rating,
+        "priceRange": stop.priceRange,
+        "googleMapsUri": stop.googleMapsUri
     })
     
 @app.route('/trip/<int:trip_id>', methods=['GET'])
@@ -741,7 +751,12 @@ def display_itinerary(trip_id):
             "longitude": s.longitude,
             "name": s.name,
             "completed": s.completed,
-            "order": s.order
+            "order": s.order,
+            "address": s.address,
+            "hours": s.hours,
+            "rating": s.rating,
+            "priceRange": s.priceRange,
+            "googleMapsUri": s.googleMapsUri
         }
         for s in stops
     ])
@@ -756,6 +771,8 @@ def modify_itinerary(trip_id):
 
     # loop through new stop data sent by user
     # if there is a new stop created, initial stop_id should be null (sent by app)
+    # additionally, keep track of the new stop IDs so we can get place information for them
+    new_stop_ids = []
     for s in stops_data:
         stop_id = s.get('stop_id')
         stop_order = s.get('order')
@@ -777,13 +794,23 @@ def modify_itinerary(trip_id):
                 order=(len(existing_stops)+1)
             )
             db.session.add(new_stop)
+
+            db.session.flush()
+
+            new_stop_ids.append(new_stop.stop_id)
         
         elif stop_id not in existing_dict:
             return jsonify({"error": f"stop_id {stop_id} not found in this trip"}), 404
 
     db.session.commit()
 
-    regenerate_driving_polyline(trip_id, True)
+    #If stops provided, get place information:
+    # get all stop ids for trip
+    # call get_place_info for each
+    for id in new_stop_ids:
+        get_place_info(id, MAPS_API_KEY, debug=False)
+
+    regenerate_driving_polyline(trip_id, debug=True)
 
     return jsonify({"message": "Stops updated successfully"}), 200
 
@@ -831,8 +858,10 @@ def save_trip():
         print(f"Trip ID after flush: {new_trip.trip_id}")
 
         # Add stops if provided
+        # Additionally, keep track of stop IDs so we can get place information for them
         stops_data = data.get("stops", [])
         print(f"Stops data: {stops_data}")
+        new_stop_ids = []
         if stops_data:
             for i, stop_info in enumerate(stops_data):
                 print(f"Processing stop {i}: {stop_info}")
@@ -848,10 +877,20 @@ def save_trip():
                 print(f"Adding stop: {new_stop}")
                 db.session.add(new_stop)
 
+                db.session.flush()
+                
+                new_stop_ids.append(new_stop.stop_id)
+
         db.session.commit()
         print("Database commit successful!")
 
-        regenerate_driving_polyline(new_trip.trip_id, True)
+        #If stops provided, get place information:
+        # get all stop ids for trip
+        # call get_place_info for each
+        for id in new_stop_ids:
+            get_place_info(id, MAPS_API_KEY, debug=False)
+
+        regenerate_driving_polyline(new_trip.trip_id, debug=True)
         print("Driving polyline regenerated")
 
         return jsonify({
@@ -899,7 +938,11 @@ def archive_trip(trip_id):
 
 @app.route('/trips/<int:trip_id>/debug_polyline', methods=['GET'])
 def debug_regenerate_polyline(trip_id):
-    return regenerate_driving_polyline(trip_id, True)
+    return regenerate_driving_polyline(trip_id, debug=True)
+
+@app.route('/stops/<int:stop_id>/debug_place_id', methods=['GET'])
+def debug_place_id(stop_id):
+    return get_place_info(stop_id, MAPS_API_KEY, debug=True)
 
 
 # ===========================================================
