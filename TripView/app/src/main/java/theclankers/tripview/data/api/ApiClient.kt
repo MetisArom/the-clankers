@@ -545,6 +545,9 @@ object ApiClient {
                 drivingPolylineTimestamp = json.getString("driving_polyline_timestamp"),
                 stopIds = json.getJSONArray("stop_ids").let { stopIdsArray ->
                     List(stopIdsArray.length()) { index -> stopIdsArray.getInt(index) }
+                },
+                invitedFriends = json.getJSONArray("invited_friends").let { invitedFriendsArray ->
+                    List(invitedFriendsArray.length()) { index -> invitedFriendsArray.getInt(index) }
                 }
             )
         }
@@ -751,5 +754,28 @@ object ApiClient {
         val response = HttpHelper.post(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code} ${response.message}")
         return@withContext response.body?.string() ?: throw IOException("Empty response")
+    }
+
+    suspend fun inviteFriend(token: String, tripId: Int, userId: Int) {
+        // Implement this to call the @app.route('/invite_friend/<int:trip_id>/<int:user_id>', methods=['POST']) endpoint
+        val url = "$BASE_URL/invite_friend/$tripId/$userId"
+        val request = Request.Builder()
+            .url(url)
+            .post("".toRequestBody()) // Empty body
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+        val response = HttpHelper.post(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code} ${response.message}")
+    }
+    suspend fun uninviteFriend(token: String, tripId: Int, userId: Int) {
+        // Implement this to call the @app.route('/uninvite_friend/<int:trip_id>/<int:user_id>', methods=['DELETE']) endpoint
+        val url = "$BASE_URL/uninvite_friend/$tripId/$userId"
+        val request = Request.Builder()
+            .url(url)
+            .delete()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+        val response = HttpHelper.delete(request)
+        if (!response.isSuccessful) throw IOException("Request failed: ${response.code} ${response.message}")
     }
 }

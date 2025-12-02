@@ -119,6 +119,24 @@ fun TripViewNavGraph(navController: NavHostController) {
             if (tripId != 0) AddStopScreen(navController, tripId) else goBack(navController)
         }
 
+        // Invites screen for a specific trip
+        composable(
+            "invites/{tripId}",
+            arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getInt("tripId") ?: 0
+            if (tripId != 0) InvitesScreen(navController, tripId) else goBack(navController)
+        }
+
+        // Invite friend screen for a specific trip
+        composable(
+            "inviteFriend/{tripId}",
+            arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getInt("tripId") ?: 0
+            if (tripId != 0) InviteFriendScreen(navController, tripId) else goBack(navController)
+        }
+
         // Stop screen for a specific stop
         composable(
             "stop/{stopId}",

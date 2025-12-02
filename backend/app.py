@@ -11,6 +11,8 @@ import json
 from polyline import regenerate_driving_polyline
 from dotenv import load_dotenv
 import base64
+import traceback
+
 
 # -------------------------
 # Flask App Config
@@ -645,8 +647,66 @@ def get_trip(trip_id):
         "transportation_summary": trip.transportation_summary,
         "driving_polyline": str(trip.driving_polyline),
         "driving_polyline_timestamp": trip.driving_polyline_timestamp,
-        "stop_ids": [stop.stop_id for stop in sorted_stops]
+        "stop_ids": [stop.stop_id for stop in sorted_stops],
+        "invited_friends": [u.user_id for u in trip.participants if u.user_id != trip.owner_id]
     })
+    
+# Implement the inviteFriend endpoint to add a user as a participant to a trip
+@app.route('/invite_friend/<int:trip_id>/<int:user_id>', methods=['POST'])
+@jwt_required()
+def invite_friend(trip_id, user_id):
+    trip = Trip.query.get_or_404(trip_id)
+    user = User.query.get_or_404(user_id)
+
+    # Check if the user is already a participant
+    existing_participation = PartOf.query.filter_by(trip_id=trip_id, user_id=user_id).first()
+    if existing_participation:
+        return jsonify({"error": "User is already a participant in this trip"}), 409
+
+    new_participation = PartOf(trip_id=trip_id, user_id=user_id)
+    db.session.add(new_participation)
+    db.session.commit()
+
+    return jsonify({"message": f"User {user_id} invited to trip {trip_id} successfully!"}), 201
+
+# Now the uninvite endpoint to remove a user from a trip
+@app.route('/uninvite_friend/<int:trip_id>/<int:user_id>', methods=['DELETE'])
+@jwt_required()
+def uninvite_friend(trip_id, user_id):
+    try:
+        print(f"🔹 Received request to uninvite user {user_id} from trip {trip_id}")
+
+        trip = Trip.query.get(trip_id)
+        if not trip:
+            print(f"❌ Trip {trip_id} not found")
+            return jsonify({"error": "Trip not found"}), 404
+        print(f"✅ Found trip {trip.trip_id}: {trip.name}")
+
+        user = User.query.get(user_id)
+        if not user:
+            print(f"❌ User {user_id} not found")
+            return jsonify({"error": "User not found"}), 404
+        print(f"✅ Found user {user.user_id}: {user.username}")
+
+        participation = PartOf.query.filter_by(trip_id=trip_id, user_id=user_id).first()
+        if not participation:
+            print(f"❌ User {user_id} is not a participant in trip {trip_id}")
+            return jsonify({"error": "User is not a participant in this trip"}), 404
+        print(f"✅ Found participation: {participation.trip_id}-{participation.user_id}")
+
+        print("🔹 Attempting to delete participation")
+        db.session.delete(participation)
+        db.session.commit()
+        print(f"✅ User {user_id} successfully uninvited from trip {trip_id}")
+
+        return jsonify({"message": f"User {user_id} uninvited from trip {trip_id} successfully!"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print("❌ Exception occurred while uninviting friend:")
+        print(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
     
 @app.route('/update_stop_completed/<int:stop_id>', methods=['PUT'])
 def update_stop_completed(stop_id):

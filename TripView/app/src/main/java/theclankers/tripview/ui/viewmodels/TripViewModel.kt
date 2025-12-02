@@ -148,6 +148,9 @@ class TripViewModel(private val token: String) : ViewModel() {
     val nameState: MutableState<String?> = mutableStateOf(null)
     val descriptionState: MutableState<String?> = mutableStateOf(null)
     val stopIdsState: MutableState<List<Int>?> = mutableStateOf(null)
+    // 🟣 List of invited friends for this trip
+    val invitedFriendsState: MutableState<List<Int>> = mutableStateOf(emptyList())
+
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
     val errorMessage: MutableState<String?> = mutableStateOf(null)
     val stops: MutableState<List<Stop>> = mutableStateOf(emptyList())
@@ -171,6 +174,7 @@ class TripViewModel(private val token: String) : ViewModel() {
                 nameState.value = trip.name
                 descriptionState.value = trip.description
                 stopIdsState.value = trip.stopIds
+                invitedFriendsState.value = trip.invitedFriends
 
                 val stopResponse = withContext(Dispatchers.IO) {
                     ApiClient.getTripStops(token, tripId)
@@ -278,6 +282,46 @@ class TripViewModel(private val token: String) : ViewModel() {
             }
         }
     }
+
+    fun inviteFriend(tripId: Int, friendId: Int, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    ApiClient.inviteFriend(token, tripId, friendId)
+                }
+
+                // Update UI list
+                val updated = invitedFriendsState.value.toMutableList()
+                if (!updated.contains(friendId)) updated.add(friendId)
+                invitedFriendsState.value = updated
+
+            } catch (e: Exception) {
+                Log.e("TripViewModel", "❌ Failed to invite friend $friendId", e)
+            } finally {
+                onComplete()
+            }
+        }
+    }
+
+    fun uninviteFriend(tripId: Int, friendId: Int, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    ApiClient.uninviteFriend(token, tripId, friendId)
+                }
+
+                // Update UI list
+                invitedFriendsState.value =
+                    invitedFriendsState.value.filter { it != friendId }
+
+            } catch (e: Exception) {
+                Log.e("TripViewModel", "❌ Failed to uninvite friend $friendId", e)
+            } finally {
+                onComplete()
+            }
+        }
+    }
+
 }
 
 

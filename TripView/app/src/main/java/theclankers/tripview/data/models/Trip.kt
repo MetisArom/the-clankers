@@ -16,7 +16,8 @@ data class Trip(
     val drivingPolylineTimestamp: String,
     val name: String,
     val description: String,
-    val stopIds: List<Int>
+    val stopIds: List<Int>,
+    val invitedFriends: List<Int>
 )
 
 @Serializable
