@@ -1,6 +1,7 @@
 package theclankers.tripview.ui.screens
 
 import android.R.attr.bitmap
+import android.R.id.bold
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import theclankers.tripview.ui.components.HeaderText
@@ -93,7 +96,10 @@ fun LandmarkContextScreen (photoPath: String?,
         when {
             viewModel.isLoading.value -> Text("Identifying landmark...")
             viewModel.errorMessage.value != null -> Text("Error: ${viewModel.errorMessage.value}")
-            else -> Text(viewModel.contextText.value ?: "No context available")
+            else -> Column(){
+                Text( text="Location:", fontWeight= FontWeight.Bold, fontSize=20.sp )
+                Text(viewModel.contextText.value ?: "No context available")
+            }
         }
     }
 }
