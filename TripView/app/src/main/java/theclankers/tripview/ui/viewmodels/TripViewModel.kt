@@ -30,6 +30,8 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.api.ApiClient
+import theclankers.tripview.data.models.SuggestedStop
+import theclankers.tripview.data.models.TripSuggestion
 import kotlin.collections.filter
 
 /**
@@ -151,6 +153,7 @@ class TripViewModel(private val token: String) : ViewModel() {
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
     val errorMessage: MutableState<String?> = mutableStateOf(null)
     val stops: MutableState<List<Stop>> = mutableStateOf(emptyList())
+
 
 
     fun loadTrip(tripId: Int) {
@@ -291,4 +294,76 @@ fun useTrip(token: String, tripId: Int): TripViewModel {
 
     return viewModel
 }
+
+fun TripSuggestion.toTrip(ownerId: Int = -1): Trip {
+    return Trip(
+        tripId = -1, // LLM suggestions don't have real IDs yet
+        ownerId = ownerId,
+        status = "suggested",
+        drivingPolyline = "",
+        drivingPolylineTimestamp = "",
+        name = this.name,
+        description = this.description,
+        stopIds = this.stops.map { it.order } // temporary
+    )
+}
+
+
+fun SuggestedStop.toStop(tempTripId: Int = -1): Stop {
+    return Stop(
+        stopId = -1, // not real yet
+        latitude = this.latitude,
+        longitude = this.longitude,
+        order = this.order,
+        completed = false,
+        stopType = this.stopType,
+        name = this.name,
+        tripId = tempTripId
+    )
+}
+
+fun parseTripSuggestions(json: JSONArray): List<TripSuggestion> {
+    val list = mutableListOf<TripSuggestion>()
+
+
+    for (i in 0 until json.length()) {
+        val obj = json.getJSONObject(i)
+        val stopsJSONArray = obj.getJSONArray("stops") //this might cause problems tbh
+        val stopsJson = obj.getJSONArray("stops")
+        val stops = mutableListOf<SuggestedStop>()
+
+        for (j in 0 until stopsJson.length()) {
+            val stopObj = stopsJson.getJSONObject(j)
+            stops.add(
+                SuggestedStop(
+                    name = stopObj.getString("name"),
+                    description = stopObj.getString("description"),
+                    latitude = stopObj.getDouble("latitude"),
+                    longitude = stopObj.getDouble("longitude"),
+                    order = stopObj.getInt("order"),
+                    stopType = stopObj.getString("stop_type")
+                )
+            )
+        }
+
+        list.add(
+            TripSuggestion(
+                name = obj.getString("name"),
+                description = obj.getString("description"),
+                totalCostEstimate = obj.getInt("total_cost_estimate"),
+                costBreakdown = obj.getString("cost_breakdown"),
+                transportationSummary = obj.getString("transportation_summary"),
+                transportationBreakdown = obj.getString("transportation_breakdown"),
+                stops = stops,
+                version = obj.getInt("version") ,
+                stopsJSONArray = stopsJSONArray // <-- pass it here
+            )
+        )
+    }
+
+    return list
+}
+
+val tripSuggestions: MutableState<List<Trip>> = mutableStateOf(emptyList())
+
 
