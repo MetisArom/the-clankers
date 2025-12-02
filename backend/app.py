@@ -910,6 +910,10 @@ def debug_regenerate_polyline(trip_id):
 @app.route('/landmark_context', methods=['POST'])
 @jwt_required()
 def landmark_context():
+    current_user_id = int(get_jwt_identity())
+    user = db.session.get(User, current_user_id)
+    print(f"User found: {user}")
+
     if "image" not in request.files:
         return jsonify({"error": "Missing image multipart form data"}), 400
 
@@ -930,13 +934,29 @@ def landmark_context():
 
     mime_type = image.mimetype or "image/jpeg"
 
-    prompt_text = f"A user took this photo of a landmark. " \
-        "Identify the landmark and provide short contextual information: " \
-        "- name of landmark\n" \
-        "- city/country\n" \
-        "- brief historical or contextual description\n" \
-        "- confidence level or 'unknown' if uncertain.\n" \
+    lat = request.form.get('latitude')
+    lng = request.form.get('longitude')
+    latitude = float(lat) if lat is not None else None
+    longitude = float(lng) if lng is not None else None
+
+    prompt_text = f"A user took this photo of a landmark. "
+    if latitude is not None and longitude is not None:
+        prompt_text += f" The photo was taken at coordinates ({latitude}, {longitude}). "
+    prompt_text += (
+        "Identify the landmark and provide short contextual information: "
+        "- name of landmark\n"
+        "- city/country/location\n"
+        "- brief historical or contextual description\n"
+        "- brief overview of nearby attractions\n"
+        "- confidence level or 'unknown' if uncertain.\n"
         "Return the result as a plain text paragraph in the tone of a tour guide."
+        " Try to focus on the image, but if you can't get much from the image you can fall back on location."
+    )
+    if latitude is not None and longitude is not None:
+        prompt_text += " Additionally include the location latitude and longitude newlined from the rest of the paragraph."
+    if user:
+        f" Consider the user likes: {user.likes}, and dislikes: {user.dislikes}, in your response."
+
     prompt_image = { "mime_type": mime_type, "data": image_bytes}
 
     inputs = [prompt_text, prompt_image]
