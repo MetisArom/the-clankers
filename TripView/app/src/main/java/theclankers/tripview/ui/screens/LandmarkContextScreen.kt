@@ -114,12 +114,18 @@ fun LandmarkContextScreen (photoPath: String?,
                             .height(400.dp)
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                // Text("This is where the context of the landmark goes")
+                //Spacer(modifier = Modifier.height(8.dp))
                 when {
+
                     viewModel.isLoading.value -> Text("Identifying landmark...")
                     viewModel.errorMessage.value != null -> Text("Error: ${viewModel.errorMessage.value}")
-                    else -> Text(viewModel.contextText.value ?: "No context available")
+                    else ->
+                        Column(){
+                            Text("Lattitude: "+ location?.latitude, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                            Text("Longitude: "+ location?.longitude, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                            Text(viewModel.contextText.value ?: "No context available")
+                        }
+
                 }
             }
         }
