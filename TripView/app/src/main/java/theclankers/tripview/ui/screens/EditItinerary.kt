@@ -34,6 +34,7 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import theclankers.tripview.data.models.Stop
 import theclankers.tripview.data.api.ApiClient
+import theclankers.tripview.ui.components.EditableStopItem
 import theclankers.tripview.ui.components.StopItem
 import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.TripViewModel
@@ -114,30 +115,22 @@ fun EditItinerary(navController: NavHostController, tripId: Int) { // , tripId: 
             ) {
 
                 items(stops.value, key = { it.stopId }) { stop ->
-                    ReorderableItem(reorderableLazyListState, key = stop.stopId) { isDragging ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            StopItem(
-                                navController = navController,
-                                stop = stop,
-                                trailingContent = {
-                                    Icon(
-                                        imageVector = Icons.Rounded.DragHandle,
-                                        contentDescription = "Reorder",
-                                        modifier = Modifier.longPressDraggableHandle()
+                    ReorderableItem(reorderableLazyListState, key = stop.stopId) { _ ->
 
-                                    )
-                                },
-                                onDeleteStop = { deleteId ->
-                                    viewModel.deleteStop(deleteId)
-
-                                },
-                                editMode = true
-                            )
-                        }
+                        EditableStopItem(
+                            navController = navController,
+                            stop = stop,
+                            onDeleteStop = { deleteId ->
+                                viewModel.deleteStop(deleteId)
+                            },
+                            trailingContent = {
+                                Icon(
+                                    imageVector = Icons.Rounded.DragHandle,
+                                    contentDescription = "Reorder",
+                                    modifier = Modifier.longPressDraggableHandle()
+                                )
+                            }
+                        )
                     }
                 }
             }
