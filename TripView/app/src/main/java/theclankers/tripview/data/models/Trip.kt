@@ -20,9 +20,32 @@ data class Trip(
     val invitedFriends: List<Int>
 )
 
-@Serializable
+//@Serializable
+//data class TripSuggestion(
+//    val name: String,
+//    val description: String,
+//    @Contextual val stopsJSONArray: JSONArray
+//)
+
 data class TripSuggestion(
     val name: String,
     val description: String,
-    @Contextual val stopsJSONArray: JSONArray
+    val totalCostEstimate: Int,            // camelCase
+    val costBreakdown: String,
+    val transportationSummary: String,
+    val transportationBreakdown: String,
+    val version: Int,
+    val stops: List<SuggestedStop>,       // parsed list, not JSONArray
+    @Contextual val stopsJSONArray: JSONArray // optional if you still need raw JSON
 )
+
+// Each suggested stop from the LLM JSON
+data class SuggestedStop(
+    val name: String,
+    val description: String,
+    val latitude: Double,
+    val longitude: Double,
+    val order: Int,
+    val stopType: String
+)
+
