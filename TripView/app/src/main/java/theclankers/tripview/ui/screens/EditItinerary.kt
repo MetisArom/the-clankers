@@ -1,15 +1,21 @@
 package theclankers.tripview.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -21,12 +27,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import theclankers.tripview.data.api.ApiClient.deleteStop
 import theclankers.tripview.ui.components.EditableStopItem
 import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.useAppContext
@@ -61,76 +66,94 @@ fun EditItinerary(navController: NavHostController, tripId: Int) {
         topBar = {
             TopAppBar(
                 title = { Text(nameState ?: "Trip #$tripId") },
-                actions = {
-                    Button(onClick = {
-                        navigateToDetail(navController, "invites/$tripId")
-                    }) { Text("Invites") }
-
-                    Button(onClick = {
-                        navigateToDetail(navController, "addStop/$tripId")
-                    }) { Text("Add Stop") }
-
-                    // Revert Changes button
-                    Button(onClick = {
-                        stopIds?.let { originalStopIds ->
-                            appVM.setUiStopIds(tripId, originalStopIds)
-                        }
-                    }) {
-                        Text("Revert")
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         }
     ) { padding ->
-
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(16.dp),
-                state = lazyListState
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(uiStopIds, key = { it }) { stopId ->
-                    ReorderableItem(reorderState, key = stopId) { _ ->
+                Button(onClick = {
+                    navigateToDetail(navController, "invites/$tripId")
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))) {
+                    Text(
+                        "Invites"
+                    )
+                }
 
-                        EditableStopItem(
-                            navController = navController,
-                            stopId = stopId,
-                            onDeleteStop = { deleteId ->
-                                appVM.deleteStop(tripId, deleteId)   // <-- new function
-                            },
-                            trailingContent = {
-                                Icon(
-                                    imageVector = Icons.Rounded.DragHandle,
-                                    contentDescription = "Reorder",
-                                    modifier = Modifier.longPressDraggableHandle()
-                                )
-                            }
-                        )
+                Button(onClick = {
+                    navigateToDetail(navController, "addStop/$tripId")
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))) {
+                    Text(
+                        "Add Stop"
+                    )
+                }
+
+                // Revert Changes button
+                Button(onClick = {
+                    stopIds?.let { originalStopIds ->
+                        appVM.setUiStopIds(tripId, originalStopIds)
                     }
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))) {
+                    Text("Revert")
                 }
             }
 
-            Button(
-                onClick = {
-                    tripVM.updateTrip(tripId, uiStopIds)
-                    navController.navigate("ItineraryScreen/$tripId") {
-                        popUpTo("ItineraryScreen/$tripId") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp)
-                    .width(150.dp)
+            Spacer(Modifier.height(1.dp))
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .padding(horizontal = 16.dp)
             ) {
-                Text("Confirm changes")
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    state = lazyListState
+                ) {
+                    items(uiStopIds, key = { it }) { stopId ->
+                        ReorderableItem(reorderState, key = stopId) { _ ->
+
+                            EditableStopItem(
+                                navController = navController,
+                                stopId = stopId,
+                                onDeleteStop = { deleteId ->
+                                    appVM.deleteStop(tripId, deleteId)   // <-- new function
+                                },
+                                trailingContent = {
+                                    Icon(
+                                        imageVector = Icons.Rounded.DragHandle,
+                                        contentDescription = "Reorder",
+                                        modifier = Modifier.longPressDraggableHandle()
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        tripVM.updateTrip(tripId, uiStopIds)
+                        navController.navigate("ItineraryScreen/$tripId") {
+                            popUpTo("ItineraryScreen/$tripId") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 24.dp)
+                ) {
+                    Text("Confirm changes")
+                }
             }
         }
     }
