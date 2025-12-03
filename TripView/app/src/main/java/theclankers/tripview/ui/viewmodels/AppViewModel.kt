@@ -29,7 +29,9 @@ class AppViewModel : ViewModel() {
     val accessTokenState = mutableStateOf<String?>(null)
     val isAuthedState = mutableStateOf(false)
     val authErrorMessageState = mutableStateOf<String?>(null)
-    val showNavbarState = mutableStateOf(true)
+    val showNavbarState = mutableStateOf(false)
+    val isAuthingState = mutableStateOf(false)
+    val demoFlowState = mutableStateOf(false)
 
     val tripSuggestionsState = mutableStateOf<List<TripSuggestion>>(emptyList())
     val destination = mutableStateOf("")
@@ -102,6 +104,8 @@ class AppViewModel : ViewModel() {
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
+            demoFlowState.value = false
+            isAuthingState.value = true
             authErrorMessageState.value = null
             try {
                 val loginResult: LoginResult = ApiClient.login(username, password)
@@ -110,12 +114,16 @@ class AppViewModel : ViewModel() {
                 accessTokenState.value = loginResult.accessToken
                 isAuthedState.value = true
 
+                showNavbarState.value = true
+
                 Log.d("AppViewModel", "✅ Login success, user_id=$loginResult.userId")
 
             } catch (e: Exception) {
                 authErrorMessageState.value = e.message
                 isAuthedState.value = false
                 Log.e("AppViewModel", "❌ Login failed: ${e.message}")
+            } finally {
+                isAuthingState.value = false
             }
         }
     }
@@ -124,6 +132,7 @@ class AppViewModel : ViewModel() {
         userIdState.value = null
         accessTokenState.value = null
         isAuthedState.value = false
+        showNavbarState.value = false
         Log.d("AppViewModel", "🔒 Logged out")
     }
 

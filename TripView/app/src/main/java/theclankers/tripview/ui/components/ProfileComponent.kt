@@ -49,6 +49,12 @@ fun ProfileComponent(navController: NavController, userId: Int){
                 ) {
                     Text("Edit Profile")
                 }
+                Button(
+                    onClick = { appVM.logout() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))
+                ) {
+                    Text("Log Out")
+                }
             }
         }
     }

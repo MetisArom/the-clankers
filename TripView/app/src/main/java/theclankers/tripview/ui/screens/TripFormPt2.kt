@@ -1,32 +1,33 @@
 package theclankers.tripview.ui.screens
 
+import android.R.attr.text
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import theclankers.tripview.ui.components.HelperText2
-import theclankers.tripview.ui.theme.Purple4
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import theclankers.tripview.data.models.Trip
+import theclankers.tripview.data.models.TripSuggestion
 import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.components.HelperText
+import theclankers.tripview.ui.theme.Purple4
 import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.utils.toast
-
+//import androidx
 
 @Composable
 fun TripFormPt2(navController: NavHostController) {
@@ -51,9 +52,7 @@ fun TripFormPt2(navController: NavHostController) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
+        ) { CircularProgressIndicator() }
         return
     }
 
@@ -61,9 +60,7 @@ fun TripFormPt2(navController: NavHostController) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
-        ) {
-            Text("Error: ${appVM.errorMessageState.value}")
-        }
+        ) { Text("Error: ${appVM.errorMessageState.value}") }
         return
     }
 
@@ -74,7 +71,7 @@ fun TripFormPt2(navController: NavHostController) {
     ) {
         item {
             Spacer(Modifier.height(16.dp))
-            HeaderText(text = "Pick Your Paris Adventure")
+            HeaderText(text = "Pick Your Adventure")
             HelperText(text = "Select one of the curated itineraries below. Tap to see more details!")
             Spacer(Modifier.height(16.dp))
         }
@@ -115,6 +112,34 @@ fun TripFormPt2(navController: NavHostController) {
                         style = MaterialTheme.typography.bodyMedium
                     )
 
+                    Spacer(Modifier.height(12.dp))
+
+                    // New fields
+                    Text(
+                        text = "Total Cost Estimate: $${trip.totalCostEstimate}",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Spacer(Modifier.height(6.dp))
+
+                    Text(
+                        text = "Transportation Summary:",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = trip.transportationSummary,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(Modifier.height(6.dp))
+
+                    Text(
+                        text = "Transportation Breakdown:",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = trip.transportationBreakdown,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+
                     AnimatedVisibility(
                         visible = expanded,
                         enter = expandVertically(),
@@ -140,12 +165,6 @@ fun TripFormPt2(navController: NavHostController) {
                                             color = Purple4
                                         )
                                         Spacer(Modifier.height(4.dp))
-                                        stop.description?.let {
-                                            Text(
-                                                text = it,
-                                                style = MaterialTheme.typography.bodySmall
-                                            )
-                                        }
                                     }
                                 }
                             }

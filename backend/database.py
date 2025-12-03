@@ -55,6 +55,11 @@ class Stop(db.Model):
     name = db.Column(db.Text)
     completed = db.Column(db.Boolean, default=False)
     order = db.Column(db.Integer)
+    address = db.Column(db.Text, default="")
+    hours = db.Column(db.Text, default="")
+    rating = db.Column(db.Text, default="")
+    priceRange = db.Column(db.Text, default="")
+    googleMapsUri = db.Column(db.Text, default="")
 
 
 class Chat(db.Model):
@@ -64,6 +69,7 @@ class Chat(db.Model):
     text = db.Column(db.Text, nullable=False)
     sender = db.Column(db.Integer, db.ForeignKey('users.user_id', ondelete="CASCADE"), nullable=False)
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    role = db.Column(db.String(20), default="user") # user/assistant
 
 
 class PartOf(db.Model):

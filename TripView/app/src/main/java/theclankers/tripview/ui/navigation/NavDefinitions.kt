@@ -1,5 +1,7 @@
 package theclankers.tripview.ui.navigation
 
+import ChatViewModel
+import ChatViewModelFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -13,6 +15,7 @@ import theclankers.tripview.ui.screens.*
 import theclankers.tripview.ui.screens.auth.LoginScreen
 import theclankers.tripview.ui.screens.auth.SignupScreen
 import theclankers.tripview.ui.viewmodels.TripViewModel
+import theclankers.tripview.ui.viewmodels.useAppContext
 
 /**
  * Main Navigation Graph for the TripView app
@@ -39,7 +42,25 @@ fun TripViewNavGraph(navController: NavHostController) {
         // Edit profile screen
         composable("editProfile") { EditProfileScreen(navController) }
 
-        composable("chat") { ChatScreen() }
+        composable(
+            route = "chat/{tripId}",
+            arguments = listOf(navArgument("tripId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getInt("tripId")
+            val appVM = useAppContext()
+            val token = appVM.accessTokenState.value
+
+            if (tripId == null || token == null) {
+                LaunchedEffect(Unit) { goBack(navController) }
+                return@composable
+            }
+
+            val vm: ChatViewModel = viewModel(
+                factory = ChatViewModelFactory(tripId, token)
+            )
+
+            ChatScreen(vm, navController)
+        }
 
         // BELOW HERE WAS NOT IN MAIN
         
@@ -231,6 +252,27 @@ fun AuthNavGraph(navController: NavHostController) {
         }
         composable("signup") {
             SignupScreen(navController)
+        }
+
+        // Main camera screen
+        composable("camera") { CameraScreen(navController)}
+
+        // Camera confirmation screem
+        composable(
+            "cameraConfirmScreen/{photoPath}",
+            arguments = listOf(navArgument("photoPath") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val photoPath = backStackEntry.arguments?.getString("photoPath")
+            CameraConfirmScreen(photoPath,navController)
+        }
+
+        // Landmark Context Screen
+        composable(
+            "landmarkContext/{photoPath}",
+            arguments = listOf(navArgument("photoPath") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val photoPath = backStackEntry.arguments?.getString("photoPath")
+            LandmarkContextScreen(photoPath,navController)
         }
     }
 }

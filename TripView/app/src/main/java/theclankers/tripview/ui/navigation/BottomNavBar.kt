@@ -1,5 +1,6 @@
 package theclankers.tripview.ui.navigation
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CameraAlt
@@ -27,6 +28,7 @@ sealed class BottomNavItem(val route: String, val label: String, val icon: Image
     object Friends : BottomNavItem("friends", "Friends", Icons.Default.Search)
     object Profile : BottomNavItem("profile", "Profile", Icons.Default.Person)
     //object Debug : BottomNavItem("debug", "Debug", Icons.Default.Build)
+    object Login : BottomNavItem("login", "Login", Icons.Default.Person)
 }
 
 @Composable
@@ -47,6 +49,31 @@ fun TripViewNavigationBar(navController: NavHostController) {
                 label = { Text(item.label) },
                 selected = currentRoute == item.route,
                 onClick = {
+                    if (currentRoute != item.route) {
+                        navigateToRoot(navController, item.route)
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun TripViewDemoNavigationBar(navController: NavHostController) {
+    val items = listOf(
+        BottomNavItem.Login,
+        BottomNavItem.Camera
+    )
+    NavigationBar {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+        items.forEach { item ->
+            NavigationBarItem(
+                icon = { Icon(imageVector = item.icon, contentDescription = null, modifier = Modifier, tint = Color.Black) },
+                label = { Text(item.label) },
+                selected = currentRoute == item.route,
+                onClick = {
+                    Log.d(null,item.route)
                     if (currentRoute != item.route) {
                         navigateToRoot(navController, item.route)
                     }

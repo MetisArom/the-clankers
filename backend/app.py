@@ -1,14 +1,15 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Blueprint, Response
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
-from database import db, User, Trip, Stop, IsFriends, PartOf
+from database import db, User, Trip, Stop, IsFriends, Chat, PartOf
 from datetime import timedelta
 import google.generativeai as genai
 import os
 import json
 from polyline import regenerate_driving_polyline
+from place import get_place_info
 from dotenv import load_dotenv
 import base64
 import traceback
@@ -19,11 +20,15 @@ import traceback
 # -------------------------
 load_dotenv()
 DB_PASSWORD = os.getenv("DB_PASSWORD")
+MAPS_API_KEY = os.getenv("MAPS_API_KEY")
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("models/gemini-2.5-flash")
 
 if not DB_PASSWORD:
     raise ValueError("❌ Missing DB_PASSWORD in environment variables")
+
+if not MAPS_API_KEY:
+    raise ValueError("❌ Missing MAPS_API_KEY in environment variables")
 
 app = Flask(__name__)
 CORS(app)  # allow mobile frontend access
@@ -190,7 +195,7 @@ def accept_friend_request(user_id):
 def decline_friend_request(user_id):
     current_user_id = int(get_jwt_identity())
     sender_id = user_id
-    sender_id = data.get('user_id')
+    #sender_id = data.get('user_id')
 
     if not sender_id:
         return jsonify({"error": "Missing sender user_id"}), 400
@@ -628,7 +633,12 @@ def get_stop(stop_id):
         "longitude": stop.longitude,
         "name": stop.name,
         "completed": stop.completed,
-        "order": stop.order
+        "order": stop.order,
+        "address": stop.address,
+        "hours": stop.hours,
+        "rating": stop.rating,
+        "priceRange": stop.priceRange,
+        "googleMapsUri": stop.googleMapsUri
     })
     
 @app.route('/trip/<int:trip_id>', methods=['GET'])
@@ -741,7 +751,12 @@ def display_itinerary(trip_id):
             "longitude": s.longitude,
             "name": s.name,
             "completed": s.completed,
-            "order": s.order
+            "order": s.order,
+            "address": s.address,
+            "hours": s.hours,
+            "rating": s.rating,
+            "priceRange": s.priceRange,
+            "googleMapsUri": s.googleMapsUri
         }
         for s in stops
     ])
@@ -802,6 +817,15 @@ def modify_itinerary(trip_id):
     db.session.commit()
     return jsonify({"stopIds": stop_ids})
 
+    #If stops provided, get place information:
+    # get all stop ids for trip
+    # call get_place_info for each
+    for id in new_stop_ids:
+        get_place_info(id, MAPS_API_KEY, debug=False)
+
+    regenerate_driving_polyline(trip_id, debug=True)
+
+    return jsonify({"message": "Stops updated successfully"}), 200
 
 @app.route('/choose_trip', methods=['POST'])
 @jwt_required()
@@ -847,8 +871,10 @@ def save_trip():
         print(f"Trip ID after flush: {new_trip.trip_id}")
 
         # Add stops if provided
+        # Additionally, keep track of stop IDs so we can get place information for them
         stops_data = data.get("stops", [])
         print(f"Stops data: {stops_data}")
+        new_stop_ids = []
         if stops_data:
             for i, stop_info in enumerate(stops_data):
                 print(f"Processing stop {i}: {stop_info}")
@@ -864,10 +890,20 @@ def save_trip():
                 print(f"Adding stop: {new_stop}")
                 db.session.add(new_stop)
 
+                db.session.flush()
+                
+                new_stop_ids.append(new_stop.stop_id)
+
         db.session.commit()
         print("Database commit successful!")
 
-        regenerate_driving_polyline(new_trip.trip_id, True)
+        #If stops provided, get place information:
+        # get all stop ids for trip
+        # call get_place_info for each
+        for id in new_stop_ids:
+            get_place_info(id, MAPS_API_KEY, debug=False)
+
+        regenerate_driving_polyline(new_trip.trip_id, debug=True)
         print("Driving polyline regenerated")
 
         return jsonify({
@@ -915,7 +951,87 @@ def archive_trip(trip_id):
 
 @app.route('/trips/<int:trip_id>/debug_polyline', methods=['GET'])
 def debug_regenerate_polyline(trip_id):
-    return regenerate_driving_polyline(trip_id, True)
+    return regenerate_driving_polyline(trip_id, debug=True)
+
+@app.route('/stops/<int:stop_id>/debug_place_id', methods=['GET'])
+def debug_place_id(stop_id):
+    return get_place_info(stop_id, MAPS_API_KEY, debug=True)
+
+def sse_format(data, event=None):
+    """Utility for formatting SSE lines"""
+    out = ""
+    if event:
+        out += f"event: {event}\n"
+    out += f"data: {data}\n\n"
+    return out
+
+@app.route('/trips/<int:trip_id>/chat_sse', methods=['POST'])
+@jwt_required()
+def chat_sse(trip_id):
+    user_id = get_jwt_identity()
+    req = request.get_json()
+    user_message = req.get("message")
+    # model_name = req.get("model", "models/gemini-2.5-flash")  # choose a default
+
+    # Save user message to DB
+    chat_entry = Chat(trip_id=trip_id, sender=user_id, text=user_message, role="user")
+    db.session.add(chat_entry)
+    db.session.commit()
+
+    trip = db.session.get(Trip, trip_id)
+
+    prompt = f"The following is the contextual information about the trip the user is currently on. Use this as context to guide your responses.\n"
+    prompt += f"Trip name: {trip.name}\n"
+    prompt += f"Description: {trip.description}\n"
+    prompt += f"Total Cost Estimate: {trip.total_cost_estimate}\n"
+    prompt += f"Cost Breakdown: {trip.cost_breakdown}\n"
+    prompt += f"Transportation Summary: {trip.transportation_summary}\n"
+    prompt += f"Transportation Breakdown: {trip.transportation_breakdown}"
+
+    sorted_stops = db.session.query(Stop).filter_by(trip_id=trip_id).order_by(Stop.order.asc()).all()
+    for stop in sorted_stops:
+        stop_prompt = (
+            f"Stop {stop.order}: {stop.name} is located at latitude {stop.latitude}, longitude {stop.longitude}\n"
+            f"Address: {stop.address}, Hours: {stop.hours}, Rating: {stop.rating}, Price Range: {stop.priceRange}"
+        )
+        prompt += "\n" + stop_prompt
+
+    gemini_messages = [
+        {"role": "user", "parts": [prompt]}
+    ]
+
+    # Fetch chat history (for user or for everyone in trip history; customize as needed)
+    history = Chat.query.filter_by(trip_id=trip_id).order_by(Chat.timestamp).all()
+    # Format messages for Gemini API
+    gemini_messages += [
+        {"role": "user" if h.role == "user" else "model", "parts": [h.text]}
+        for h in history
+    ]
+    gemini_messages.append({"role": "user", "parts": [user_message]})
+
+    # Gemini API setup (already imported/configured)
+    # model = genai.GenerativeModel(model_name)
+
+    def generate():  # SSE generator
+        try:
+            with app.app_context():
+                response_stream = model.generate_content(gemini_messages, stream=True)
+                response_text = ""
+                for chunk in response_stream:
+                    token = getattr(chunk, "text", "")
+                    if token:
+                        response_text += token
+                        # Stream each chunk to the frontend
+                        yield sse_format(json.dumps({"role": "model", "content": token}))
+                # Once done, store the full assistant reply in DB
+                assistant_msg = Chat(trip_id=trip_id, sender=user_id, text=response_text, role="model")
+                db.session.add(assistant_msg)
+                db.session.commit()
+        except Exception as e:
+            # Send error via SSE event
+            yield sse_format(json.dumps({"error": str(e)}), event="error")
+
+    return Response(generate(), mimetype="text/event-stream")
 
 
 # ===========================================================
@@ -924,8 +1040,14 @@ def debug_regenerate_polyline(trip_id):
 
 # Send a photo to landmark context generator.
 @app.route('/landmark_context', methods=['POST'])
-@jwt_required()
+@jwt_required(optional=True)
 def landmark_context():
+    user = None
+    if get_jwt_identity() is not None:
+        current_user_id = int(get_jwt_identity())
+        user = db.session.get(User, current_user_id)
+        print(f"User found: {user}")
+
     if "image" not in request.files:
         return jsonify({"error": "Missing image multipart form data"}), 400
 
@@ -946,13 +1068,29 @@ def landmark_context():
 
     mime_type = image.mimetype or "image/jpeg"
 
-    prompt_text = f"A user took this photo of a landmark. " \
-        "Identify the landmark and provide short contextual information: " \
-        "- name of landmark\n" \
-        "- city/country\n" \
-        "- brief historical or contextual description\n" \
-        "- confidence level or 'unknown' if uncertain.\n" \
+    lat = request.form.get('latitude')
+    lng = request.form.get('longitude')
+    latitude = float(lat) if lat is not None else None
+    longitude = float(lng) if lng is not None else None
+
+    prompt_text = f"A user took this photo of a landmark. "
+    if latitude is not None and longitude is not None:
+        prompt_text += f" The photo was taken at coordinates ({latitude}, {longitude}). "
+    prompt_text += (
+        "Identify the landmark and provide short contextual information: "
+        "- name of landmark\n"
+        "- city/country/location\n"
+        "- brief historical or contextual description\n"
+        "- brief overview of nearby attractions\n"
+        "- confidence level or 'unknown' if uncertain.\n"
         "Return the result as a plain text paragraph in the tone of a tour guide."
+        " Try to focus on the image, but if you can't get much from the image you can fall back on location."
+    )
+    if latitude is not None and longitude is not None:
+        prompt_text += " Additionally include the location latitude and longitude newlined from the rest of the paragraph."
+    if user is not None:
+        f" Consider the user likes: {user.likes}, and dislikes: {user.dislikes}, in your response."
+
     prompt_image = { "mime_type": mime_type, "data": image_bytes}
 
     inputs = [prompt_text, prompt_image]
