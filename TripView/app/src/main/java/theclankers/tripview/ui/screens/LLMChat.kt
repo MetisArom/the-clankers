@@ -125,7 +125,7 @@ fun ChatScreen(vm: ChatViewModel, navController: NavController) {
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.chatter),
+                        text = "Landmark Context",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.fillMaxWidth(),
