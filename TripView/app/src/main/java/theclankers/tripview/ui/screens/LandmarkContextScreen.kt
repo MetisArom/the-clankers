@@ -52,10 +52,10 @@ fun LandmarkContextScreen (photoPath: String?,
     val appVM = useAppContext()
     val token = appVM.accessTokenState.value
 
-    if (token == null) {
-        Text("Not logged in!")
-        return
-    }
+    //if (token == null) {
+    //    Text("Not logged in!")
+    //    return
+    //}
 
     val context = LocalContext.current
     var permissionGranted by remember {mutableStateOf<Boolean?>(null)}
@@ -77,7 +77,7 @@ fun LandmarkContextScreen (photoPath: String?,
             val bitmap = remember(photoPath) { loadRotatedBitmap(photoPath) }
 
             LaunchedEffect(photoPath, location) {
-                if (photoPath != null && token != null && location != null) {
+                if (photoPath != null && location != null) {
                     viewModel.fetchLandmarkContext(photoPath, token, location.latitude, location.longitude)
                 }
             }

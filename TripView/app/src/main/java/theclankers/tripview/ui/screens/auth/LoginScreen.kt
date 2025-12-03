@@ -32,16 +32,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import theclankers.tripview.core.Constants.PASSWORD
 import theclankers.tripview.core.Constants.USERNAME
 import theclankers.tripview.ui.components.FormInput
 import theclankers.tripview.ui.navigation.navigateToDetail
+import theclankers.tripview.ui.navigation.navigateToRoot
 import theclankers.tripview.ui.viewmodels.AppViewModel
 import theclankers.tripview.ui.viewmodels.useAppContext
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavHostController) {
     // TODO: Implement LoginScreen
     // appVM & LaunchedEffect, hide the navbar
     // username/email and password state (the username field should also accept email address)
@@ -102,6 +104,20 @@ fun LoginScreen(navController: NavController) {
             ) {
                 Button(
                     onClick = {
+                        //redirect to demo camera page
+                        navigateToRoot(navController, "camera")
+                        appVM.demoFlowState.value = true
+                    },
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                    enabled = !appVM.isAuthingState.value
+                ) {
+                    Text("Continue as Demo")
+                }
+
+                Button(
+                    onClick = {
                         //log in
                         appVM.login(username.value, password.value)
                     },
@@ -124,19 +140,6 @@ fun LoginScreen(navController: NavController) {
                             color = Color.White
                         )
                     }
-                }
-
-                Button(
-                    onClick = {
-                        //redirect to demo camera page
-                        navigateToDetail(navController, "camera")
-                    },
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
-                    enabled = !appVM.isAuthingState.value
-                ) {
-                    Text("Continue as Demo")
                 }
             }
         }

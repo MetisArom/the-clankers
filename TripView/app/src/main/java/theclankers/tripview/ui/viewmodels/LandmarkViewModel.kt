@@ -16,7 +16,7 @@ class LandmarkViewModel : ViewModel() {
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
     val errorMessage: MutableState<String?> = mutableStateOf(null)
 
-    fun fetchLandmarkContext(imagePath: String, token: String, latitude: Double, longitude: Double, ) {
+    fun fetchLandmarkContext(imagePath: String, token: String?, latitude: Double, longitude: Double, ) {
         val file = File(imagePath)
         if (!file.exists() || !file.isFile) {
             errorMessage.value = "Image file not found: $imagePath"

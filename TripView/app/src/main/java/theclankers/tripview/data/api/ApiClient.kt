@@ -493,7 +493,7 @@ object ApiClient {
 
     suspend fun getLandmarkContext(
         imagePath: String,
-        token: String,
+        token: String?,
         latitude: Double,
         longitude: Double
     ): String = withContext(Dispatchers.IO) {
@@ -519,10 +519,13 @@ object ApiClient {
         val request = Request.Builder()
             .url(url)
             .post(multipartBody)
-            .addHeader("Authorization", "Bearer $token")
-            .build()
 
-        val response = HttpHelper.post(request)
+
+        if (token != null) {
+            request.addHeader("Authorization", "Bearer $token")
+        }
+
+        val response = HttpHelper.post(request.build())
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
         return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
