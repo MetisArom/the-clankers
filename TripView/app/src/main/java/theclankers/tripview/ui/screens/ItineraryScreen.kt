@@ -1,34 +1,34 @@
 package theclankers.tripview.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import theclankers.tripview.data.models.Stop
 import theclankers.tripview.ui.components.StopItem
-import kotlin.collections.map
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
-import theclankers.tripview.data.api.ApiClient
+import theclankers.tripview.ui.components.TitleText
 import theclankers.tripview.ui.navigation.navigateToDetail
-import theclankers.tripview.ui.viewmodels.TripViewModel
 import theclankers.tripview.ui.viewmodels.useTrip
 
 @Composable
@@ -44,58 +44,68 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(nameState ?: "") },
-                actions = {
-                    Button(onClick = {
-                        navigateToDetail(navController, "navigation/$tripId" )
-                    }) { Text("Navigation") }
-                    Button(onClick = {
-                        navigateToDetail(navController, "chat" )
-                    }) { Text("Chat") }
-                    Button(onClick = { navController.navigate("EditItinerary/$tripId") }) { Text("Edit") }
-                },
+                title = { TitleText(nameState ?: "") },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         }
     ) { padding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-
-            LazyColumn(
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(stops ?: emptyList(), key = { it.stopId }) { stop ->
-                    StopItem(navController = navController, stop)
+                Button(onClick = { navigateToDetail(navController, "navigation/$tripId") },
+                    colors= ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))) {
+                    Text("Navigation")
+                }
+                Button(onClick = { navigateToDetail(navController, "chat") },
+                    colors= ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))) {
+                    Text("Chat")
+                }
+                Button(onClick = { navController.navigate("EditItinerary/$tripId") },
+                    colors= ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))) {
+                    Text("Edit")
                 }
             }
 
-            Button(
-                onClick = {
-                    // call archive logic to api here
-                    // navigate to trips screen after
-                    // also add confirmation toast?
-                    viewModel.archiveTrip(tripId)
-                    println("Trip archived")
-                    navController.navigate("trips") {
-                        popUpTo("trips") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp)
-                    .width(150.dp),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text("Archive Trip")
-            }
+            Spacer(Modifier.height(1.dp))
+            Box(modifier = Modifier.fillMaxSize()
+                .padding(horizontal = 16.dp)) {
 
+                LazyColumn(Modifier.fillMaxSize()
+                    //.padding(padding)
+                ) {
+                    items(stops ?: emptyList(), key = { it.stopId }) { stop ->
+                        StopItem(navController = navController, stop)
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.archiveTrip(tripId)
+                        navController.navigate("trips") {
+                            popUpTo("trips") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 24.dp)
+                        .width(150.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors= ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))
+                ) {
+                    Text("Archive Trip")
+                }
+            }
         }
     }
 }
