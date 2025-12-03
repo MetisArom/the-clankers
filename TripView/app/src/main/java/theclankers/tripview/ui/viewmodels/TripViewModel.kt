@@ -348,7 +348,8 @@ fun TripSuggestion.toTrip(ownerId: Int = -1): Trip {
         drivingPolylineTimestamp = "",
         name = this.name,
         description = this.description,
-        stopIds = this.stops.map { it.order } // temporary
+        stopIds = this.stops.map { it.order }, // temporary
+        invitedFriends = emptyList()
     )
 }
 
