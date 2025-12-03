@@ -432,6 +432,7 @@ object ApiClient {
         }
 
         val responseBody = response.body?.string() ?: throw IOException("Empty response")
+        Log.d("ResponseBody", responseBody)
 
         val tripSuggestions = mutableListOf<TripSuggestion>()
 
@@ -441,34 +442,36 @@ object ApiClient {
 
             for (i in 0 until tripsJSON.length()) {
                 val tripObj = tripsJSON.getJSONObject(i)
-                val stopsJSONArray = tripObj.getJSONArray("stops")
-                val stops = mutableListOf<Stop>()
+                val stopsArray = tripObj.getJSONArray("stops")
+                val parsedStops = mutableListOf<Stop>()
 
-                for (j in 0 until stopsJSONArray.length()) {
-                    val stopObj = stopsJSONArray.getJSONObject(j)
-                    val stop = Stop(
-                        stopId = -1,  // No stopId assigned yet
-                        tripId = -1,  // No tripId assigned yet
-                        completed = false,
-                        name = stopObj.getString("name"),
-                        latitude = stopObj.getDouble("latitude"),
-                        longitude = stopObj.getDouble("longitude"),
-                        stopType = stopObj.getString("stop_type"),
-                        order = stopObj.getInt("order"),
+                for (j in 0 until stopsArray.length()) {
+                    val stopObj = stopsArray.getJSONObject(j)
+
+                    parsedStops.add(
+                        Stop(
+                            stopId = -1,
+                            tripId = -1,
+                            completed = false,
+                            name = stopObj.getString("name"),
+                            latitude = stopObj.getDouble("latitude"),
+                            longitude = stopObj.getDouble("longitude"),
+                            stopType = stopObj.getString("stop_type"),
+                            order = stopObj.getInt("order"),
+                        )
                     )
-                    stops.add(stop)
                 }
 
                 tripSuggestions.add(
                     TripSuggestion(
                         name = tripObj.getString("name"),
                         description = tripObj.getString("description"),
-                        stopsJSONArray = tripObj.getJSONArray("stops"),
+                        stopsJSONArray = stopsArray,
                         totalCostEstimate = tripObj.getInt("total_cost_estimate"),
                         costBreakdown = tripObj.getString("cost_breakdown"),
                         transportationSummary = tripObj.getString("transportation_summary"),
                         transportationBreakdown = tripObj.getString("transportation_breakdown"),
-                        stops = stops,
+                        stops = parsedStops,
                         version = tripObj.getInt("version"),
                     )
                 )
@@ -478,6 +481,8 @@ object ApiClient {
             Log.e("ApiClient", "Error parsing trip JSON: ${e.message}")
             throw e
         }
+
+        Log.d("ApiClient", "Fetched trip suggestions: $tripSuggestions")
 
         return@withContext tripSuggestions
     }

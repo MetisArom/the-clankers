@@ -1,6 +1,6 @@
 package theclankers.tripview.ui.screens
 
-import android.R.attr.text
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -13,21 +13,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.models.TripSuggestion
 import theclankers.tripview.ui.components.HeaderText
 import theclankers.tripview.ui.components.HelperText
+import theclankers.tripview.ui.theme.Black
 import theclankers.tripview.ui.theme.Purple4
 import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.utils.toast
-//import androidx
 
 @Composable
 fun TripFormPt2(navController: NavHostController) {
@@ -35,9 +33,11 @@ fun TripFormPt2(navController: NavHostController) {
     val token = appVM.accessTokenState.value
     val tripSuggestions = appVM.tripSuggestionsState.value
 
+    Log.d("TripFormPt2", "Trip suggestions: $tripSuggestions")
+
     val context = LocalContext.current
 
-    // Observe the toast message
+    // Toast observer
     val toastMsg by remember { derivedStateOf { appVM.toastMessage.value } }
     LaunchedEffect(toastMsg) {
         toastMsg?.let { msg ->
@@ -82,17 +82,19 @@ fun TripFormPt2(navController: NavHostController) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .clickable { expanded = !expanded },
+                    .padding(vertical = 8.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = Purple4.copy(alpha = 0.1f))
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    // Header row with trip name and toggle icon
+
+                    // HEADER ROW — ONLY THIS IS CLICKABLE NOW
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { expanded = !expanded }
                     ) {
                         Text(
                             text = trip.name,
@@ -114,31 +116,18 @@ fun TripFormPt2(navController: NavHostController) {
 
                     Spacer(Modifier.height(12.dp))
 
-                    // New fields
                     Text(
                         text = "Total Cost Estimate: $${trip.totalCostEstimate}",
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(Modifier.height(6.dp))
 
-                    Text(
-                        text = "Transportation Summary:",
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Text(
-                        text = trip.transportationSummary,
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                    Text("Transportation Summary:", style = MaterialTheme.typography.titleSmall)
+                    Text(trip.transportationSummary, style = MaterialTheme.typography.bodySmall)
                     Spacer(Modifier.height(6.dp))
 
-                    Text(
-                        text = "Transportation Breakdown:",
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Text(
-                        text = trip.transportationBreakdown,
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                    Text("Transportation Breakdown:", style = MaterialTheme.typography.titleSmall)
+                    Text(trip.transportationBreakdown, style = MaterialTheme.typography.bodySmall)
 
                     AnimatedVisibility(
                         visible = expanded,
@@ -151,6 +140,7 @@ fun TripFormPt2(navController: NavHostController) {
                                 .padding(top = 12.dp)
                         ) {
                             trip.stops.forEach { stop ->
+                                Log.d("TripFormPt2", "Rendering stop: $stop")
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -160,9 +150,9 @@ fun TripFormPt2(navController: NavHostController) {
                                 ) {
                                     Column(modifier = Modifier.padding(12.dp)) {
                                         Text(
-                                            text = "${stop.order}. ${stop.name} (${stop.stopType})",
+                                            text = "${stop.order}. ${stop.stopType} - ${stop.name}",
                                             style = MaterialTheme.typography.bodyMedium,
-                                            color = Purple4
+                                            color = Black
                                         )
                                         Spacer(Modifier.height(4.dp))
                                     }
@@ -183,8 +173,6 @@ fun TripFormPt2(navController: NavHostController) {
             }
         }
 
-        item {
-            Spacer(Modifier.height(32.dp))
-        }
+        item { Spacer(Modifier.height(32.dp)) }
     }
 }

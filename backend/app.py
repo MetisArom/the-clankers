@@ -416,9 +416,8 @@ def generate_ai_trip():
 
     For EACH trip in "trips[]", ADD these exact fields:
 
-    1. "total_cost_estimate": number
+    1. "total_cost_estimate": int
        - full trip cost in USD
-       - include typical range (low-end vs realistic-high)
 
     2. "cost_breakdown": string
     - A SHORT but useful summary including:

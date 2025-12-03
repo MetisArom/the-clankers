@@ -18,5 +18,5 @@ data class Stop(
     val hours: String = "",
     val rating: String = "",
     val priceRange: String = "",
-    val googleMapsUri: String = ""
+    val googleMapsUri: String = "",
 )
