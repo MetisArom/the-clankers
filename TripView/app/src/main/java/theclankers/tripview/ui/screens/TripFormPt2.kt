@@ -40,10 +40,7 @@ fun TripFormPt2(navController: NavHostController) {
     val toastMsg by remember { derivedStateOf { appVM.toastMessage.value } }
     LaunchedEffect(toastMsg) {
         toastMsg?.let { msg ->
-            // call your existing extension:
             context.toast(msg, short = true)
-
-            // Clear the message to avoid repeated toasts
             appVM.clearToastMessage()
         }
     }
@@ -76,46 +73,99 @@ fun TripFormPt2(navController: NavHostController) {
             .padding(horizontal = 16.dp)
     ) {
         item {
-            Spacer(Modifier.height(8.dp))
-            HeaderText(text = "Pick Itinerary")
-            HelperText(text = "Please select one of the following itineraries:")
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(16.dp))
+            HeaderText(text = "Pick Your Paris Adventure")
+            HelperText(text = "Select one of the curated itineraries below. Tap to see more details!")
+            Spacer(Modifier.height(16.dp))
         }
 
         items(tripSuggestions) { trip ->
-            // This needs to be a box around the variables:
-            // trip.name, trip.description
-            // There needs to be a function called appVM.chooseTrip(trip, navController) {}
+            var expanded by remember { mutableStateOf(false) }
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
-                    .clickable {
-                        appVM.chooseTrip(trip, navController)
-                    },
-                shape = RoundedCornerShape(8.dp),
+                    .clickable { expanded = !expanded },
+                shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = Purple4.copy(alpha = 0.1f))
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = trip.name,
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                Column(modifier = Modifier.padding(16.dp)) {
+                    // Header row with trip name and toggle icon
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = trip.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(
+                            imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                            contentDescription = if (expanded) "Collapse" else "Expand"
+                        )
+                    }
+
                     Spacer(Modifier.height(8.dp))
+
                     Text(
                         text = trip.description,
                         style = MaterialTheme.typography.bodyMedium
                     )
+
+                    AnimatedVisibility(
+                        visible = expanded,
+                        enter = expandVertically(),
+                        exit = shrinkVertically()
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 12.dp)
+                        ) {
+                            trip.stops.forEach { stop ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = CardDefaults.cardColors(containerColor = Purple4.copy(alpha = 0.05f))
+                                ) {
+                                    Column(modifier = Modifier.padding(12.dp)) {
+                                        Text(
+                                            text = "${stop.order}. ${stop.name} (${stop.stopType})",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Purple4
+                                        )
+                                        Spacer(Modifier.height(4.dp))
+                                        stop.description?.let {
+                                            Text(
+                                                text = it,
+                                                style = MaterialTheme.typography.bodySmall
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(Modifier.height(8.dp))
+
+                            Button(
+                                onClick = { appVM.chooseTrip(trip, navController) },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Select This Trip")
+                            }
+                        }
+                    }
                 }
             }
         }
 
         item {
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(32.dp))
         }
     }
 }

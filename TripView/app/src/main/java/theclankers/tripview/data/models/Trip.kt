@@ -24,5 +24,5 @@ data class Trip(
 data class TripSuggestion(
     val name: String,
     val description: String,
-    @Contextual val stopsJSONArray: JSONArray
+    val stops: List<Stop>
 )

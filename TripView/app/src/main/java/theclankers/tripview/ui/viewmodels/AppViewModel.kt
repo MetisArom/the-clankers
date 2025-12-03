@@ -83,7 +83,7 @@ class AppViewModel : ViewModel() {
                 val tripJson = JSONObject().apply {
                     put("name", trip.name)
                     put("description", trip.description)
-                    put("stops", trip.stopsJSONArray)
+                    put("stops", trip.stops)
                 }
 
                 ApiClient.chooseTrip(accessTokenState.value!!, tripJson)

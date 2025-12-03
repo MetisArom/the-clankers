@@ -14,4 +14,5 @@ data class Stop(
     val name: String,
     val completed: Boolean,
     val order: Int,
+    val description: String?
 )

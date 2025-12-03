@@ -30,16 +30,16 @@ fun SampleTrip(navController: NavHostController) {
     var stops by remember {
         mutableStateOf(
             listOf(
-                Stop(1, 1, "pickup", 37.8199, -122.4783, "Morning walk across the bridge", true, 0),
-                Stop(2, 1, "dropoff", 37.8080, -122.4177, "Seafood lunch by the bay", false, 1),
-                Stop(3,1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 2),
-                Stop(4, 1, "dropoff", 37.7544, -122.4477, "Sunset view over San Francisco", false, 3),
-                Stop(5, 1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 4),
-                Stop(6, 1, "dropoff", 37.8267, -122.4230, "Afternoon tour of the historic prison", false, 5),
-                Stop(7, 1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 6),
-                Stop(8, 1, "dropoff", 37.8267, -122.4230,  "Afternoon tour of the historic prison", false, 7),
-                Stop(9, 1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 8),
-                Stop(10, 1, "dropoff", 37.8267, -122.4230, "Afternoon tour of the historic prison", false, 9)
+                Stop(1, 1, "pickup", 37.8199, -122.4783, "Morning walk across the bridge", true, 0, description = ""),
+                Stop(2, 1, "dropoff", 37.8080, -122.4177, "Seafood lunch by the bay", false, 1, description = ""),
+                Stop(3,1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 2, description = ""),
+                Stop(4, 1, "dropoff", 37.7544, -122.4477, "Sunset view over San Francisco", false, 3, description = ""),
+                Stop(5, 1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 4, description = ""),
+                Stop(6, 1, "dropoff", 37.8267, -122.4230, "Afternoon tour of the historic prison", false, 5, description = ""),
+                Stop(7, 1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 6, description = ""),
+                Stop(8, 1, "dropoff", 37.8267, -122.4230,  "Afternoon tour of the historic prison", false, 7, description = ""),
+                Stop(9, 1, "pickup", 37.8267, -122.4230, "Afternoon tour of the historic prison", true, 8, description = ""),
+                Stop(10, 1, "dropoff", 37.8267, -122.4230, "Afternoon tour of the historic prison", false, 9, description = "")
             )
         )
     }

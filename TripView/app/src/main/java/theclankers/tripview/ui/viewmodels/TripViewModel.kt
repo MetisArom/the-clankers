@@ -192,7 +192,8 @@ class TripViewModel(private val token: String) : ViewModel() {
                             completed = stopObject.getBoolean("completed"),
                             stopType = stopObject.getString("stop_type"),
                             name = stopObject.getString("name"),
-                            tripId = tripId
+                            tripId = tripId,
+                            description = ""
                         )
                     )
                 }

@@ -432,20 +432,42 @@ object ApiClient {
         try {
             val json = JSONObject(responseBody)
             val tripsJSON = json.getJSONArray("trips")
+
             for (i in 0 until tripsJSON.length()) {
-                val jsonObject = tripsJSON.getJSONObject(i)
+                val tripObj = tripsJSON.getJSONObject(i)
+                val stopsJSON = tripObj.getJSONArray("stops")
+                val stopsList = mutableListOf<Stop>()
+
+                for (j in 0 until stopsJSON.length()) {
+                    val stopObj = stopsJSON.getJSONObject(j)
+                    val stop = Stop(
+                        stopId = -1,  // No stopId assigned yet
+                        tripId = -1,  // No tripId assigned yet
+                        completed = false,
+                        name = stopObj.getString("name"),
+                        latitude = stopObj.getDouble("latitude"),
+                        longitude = stopObj.getDouble("longitude"),
+                        stopType = stopObj.getString("stop_type"),
+                        order = stopObj.getInt("order"),
+                        description = stopObj.getString("description")
+                    )
+                    stopsList.add(stop)
+                }
+
                 tripSuggestions.add(
                     TripSuggestion(
-                        name = jsonObject.getString("name"),
-                        description = jsonObject.getString("description"),
-                        stopsJSONArray = jsonObject.getJSONArray("stops")
+                        name = tripObj.getString("name"),
+                        description = tripObj.getString("description"),
+                        stops = stopsList
                     )
                 )
             }
+
         } catch (e: Exception) {
             Log.e("ApiClient", "Error parsing trip JSON: ${e.message}")
             throw e
         }
+
         return@withContext tripSuggestions
     }
 
@@ -598,7 +620,8 @@ object ApiClient {
                 longitude = json.getDouble("longitude"),
                 name = json.getString("name"),
                 completed = json.getBoolean("completed"),
-                order = json.getInt("order")
+                order = json.getInt("order"),
+                description = ""
             )
         } catch (e: Exception) {
             Log.e("ApiClient", "Error parsing stop JSON: ${e.message}")
