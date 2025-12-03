@@ -3,6 +3,7 @@ package theclankers.tripview.data.api
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.jsonObject
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -448,6 +449,63 @@ object ApiClient {
         }
         return@withContext tripSuggestions
     }
+
+    suspend fun llmChatSse(
+        tripId: Int,
+        message: String,
+        model: String,
+        token: String,
+        onEvent: (role: String, chunk: String) -> Unit,
+        onError: (String) -> Unit
+    ) = withContext(Dispatchers.IO) {
+        val url = "$BASE_URL/trips/$tripId/chat_sse"
+        val bodyJson = """{"message":${jsonString(message)},"model":${jsonString(model)}}"""
+        val requestBody = bodyJson.toRequestBody("application/json".toMediaType())
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("Authorization", "Bearer $token")
+            .addHeader("Accept", "text/event-stream")
+            .post(requestBody)
+            .build()
+
+        try {
+            val response = HttpHelper.post(request)
+            if (!response.isSuccessful) {
+                onError("Error: ${response.code}")
+                return@withContext
+            }
+
+            val source = response.body?.source() ?: run {
+                onError("No response body from server")
+                return@withContext
+            }
+
+            while (!source.exhausted()) {
+                val line = source.readUtf8Line() ?: continue
+                if (line.startsWith("data:")) {
+                    val data = line.removePrefix("data:").trim()
+                    try {
+                        val jsonObj = kotlinx.serialization.json.Json.parseToJsonElement(data).jsonObject
+                        if (jsonObj.containsKey("error")) {
+                            onError(jsonObj["error"]?.toString() ?: "Unknown error")
+                        } else {
+                            val role = jsonObj["role"]?.toString()?.trim('"') ?: "model"
+                            val content = jsonObj["content"]?.toString()?.trim('"') ?: ""
+                            onEvent(role, content)
+                            Log.d("SSEChunk", "role=$role, content='$content'")
+                        }
+                    } catch (e: Exception) {
+                        onError("Failed to parse SSE chunk: $data")
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            onError("Exception during SSE: ${e.localizedMessage ?: "unknown"}")
+        }
+    }
+
+    // Helper to quote JSON strings safely!
+    fun jsonString(str: String) = "\"" + str.replace("\"", "\\\"") + "\""
 
     // -------------------------------
     // CAMERA ENDPOINTS

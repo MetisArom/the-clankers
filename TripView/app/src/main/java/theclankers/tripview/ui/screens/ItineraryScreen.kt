@@ -50,7 +50,7 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
                         navigateToDetail(navController, "navigation/$tripId" )
                     }) { Text("Navigation") }
                     Button(onClick = {
-                        navigateToDetail(navController, "chat" )
+                        navigateToDetail(navController, "chat/$tripId" )
                     }) { Text("Chat") }
                     Button(onClick = { navController.navigate("EditItinerary/$tripId") }) { Text("Edit") }
                 },

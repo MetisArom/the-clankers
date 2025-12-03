@@ -4,4 +4,10 @@ import androidx.compose.runtime.MutableState
 import java.util.UUID
 import java.util.UUID.randomUUID
 
-class Chatt(var username: String? = null, var message: MutableState<String>? = null, var id: UUID? = randomUUID(), var timestamp: String? = null)
+data class Chatt(
+    var username: String,
+    var message: MutableState<String>? = null,
+    var id: UUID = UUID.randomUUID(),
+    var timestamp: String,
+    var role: String // "user" or "model"
+)

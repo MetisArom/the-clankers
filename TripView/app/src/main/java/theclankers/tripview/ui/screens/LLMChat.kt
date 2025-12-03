@@ -1,5 +1,6 @@
 package theclankers.tripview.ui.screens
 
+import ChatViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -24,13 +25,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import theclankers.tripview.ChattViewModel
 import theclankers.tripview.data.models.Chatt
-import theclankers.tripview.data.models.ChattStore.chatts
 import theclankers.tripview.ui.theme.PurpleGrey40
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
@@ -51,9 +51,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import theclankers.tripview.R
 import theclankers.tripview.ui.components.SubmitButton
-
 
 //look at Figma, code same functionality
 
@@ -99,24 +99,20 @@ fun ChattView(chatt: Chatt, isSender: Boolean) {
 }
 
 @Composable
-fun ChattScrollView(modifier: Modifier, listScroll: LazyListState) {
-    val vm: ChattViewModel = viewModel()
-
+fun ChattScrollView(vm: ChatViewModel, modifier: Modifier, listScroll: LazyListState) {
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp),
         state = listScroll,
     ) {
-        items(items = chatts, key = { it.id as Any }) {
+        items(items = vm.chatts, key = { it.id as Any }) {
             ChattView(it, it.username == vm.username)
         }
     }
 }
 
 @Composable
-fun ChatScreen() {
-    val vm: ChattViewModel = viewModel()
-
+fun ChatScreen(vm: ChatViewModel, navController: NavController) {
     val layoutDirection = LocalLayoutDirection.current
     val listScroll = rememberLazyListState()
     val focus = LocalFocusManager.current
@@ -157,7 +153,7 @@ fun ChatScreen() {
                     )
                     .background(color = Color.White),
             ) {
-                ChattScrollView(modifier = Modifier.weight(1f), listScroll)
+                ChattScrollView(vm, modifier = Modifier.weight(1f), listScroll)
 
                 // prompt input and submit
                 Row(
@@ -183,7 +179,7 @@ fun ChatScreen() {
                         ),
                         lineLimits = TextFieldLineLimits.MultiLine(1, 6),
                     )
-                    SubmitButton(listScroll)
+                    SubmitButton(vm, listScroll)
                 }
 
                 // show error
