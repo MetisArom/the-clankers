@@ -45,6 +45,15 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
         topBar = {
             TopAppBar(
                 title = { TitleText(nameState ?: "") },
+                actions = {
+                    Button(onClick = {
+                        navigateToDetail(navController, "navigation/$tripId" )
+                    }) { Text("Navigation") }
+                    Button(onClick = {
+                        navigateToDetail(navController, "chat/$tripId" )
+                    }) { Text("Chat") }
+                    Button(onClick = { navController.navigate("EditItinerary/$tripId") }) { Text("Edit") }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )

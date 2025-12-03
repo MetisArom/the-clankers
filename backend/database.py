@@ -69,6 +69,7 @@ class Chat(db.Model):
     text = db.Column(db.Text, nullable=False)
     sender = db.Column(db.Integer, db.ForeignKey('users.user_id', ondelete="CASCADE"), nullable=False)
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    role = db.Column(db.String(20), default="user") # user/assistant
 
 
 class PartOf(db.Model):

@@ -1,9 +1,9 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Blueprint, Response
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError
-from database import db, User, Trip, Stop, IsFriends, PartOf
+from database import db, User, Trip, Stop, IsFriends, Chat, PartOf
 from datetime import timedelta
 import google.generativeai as genai
 import os
@@ -943,6 +943,82 @@ def debug_regenerate_polyline(trip_id):
 @app.route('/stops/<int:stop_id>/debug_place_id', methods=['GET'])
 def debug_place_id(stop_id):
     return get_place_info(stop_id, MAPS_API_KEY, debug=True)
+
+def sse_format(data, event=None):
+    """Utility for formatting SSE lines"""
+    out = ""
+    if event:
+        out += f"event: {event}\n"
+    out += f"data: {data}\n\n"
+    return out
+
+@app.route('/trips/<int:trip_id>/chat_sse', methods=['POST'])
+@jwt_required()
+def chat_sse(trip_id):
+    user_id = get_jwt_identity()
+    req = request.get_json()
+    user_message = req.get("message")
+    # model_name = req.get("model", "models/gemini-2.5-flash")  # choose a default
+
+    # Save user message to DB
+    chat_entry = Chat(trip_id=trip_id, sender=user_id, text=user_message, role="user")
+    db.session.add(chat_entry)
+    db.session.commit()
+
+    trip = db.session.get(Trip, trip_id)
+
+    prompt = f"The following is the contextual information about the trip the user is currently on. Use this as context to guide your responses.\n"
+    prompt += f"Trip name: {trip.name}\n"
+    prompt += f"Description: {trip.description}\n"
+    prompt += f"Total Cost Estimate: {trip.total_cost_estimate}\n"
+    prompt += f"Cost Breakdown: {trip.cost_breakdown}\n"
+    prompt += f"Transportation Summary: {trip.transportation_summary}\n"
+    prompt += f"Transportation Breakdown: {trip.transportation_breakdown}"
+
+    sorted_stops = db.session.query(Stop).filter_by(trip_id=trip_id).order_by(Stop.order.asc()).all()
+    for stop in sorted_stops:
+        stop_prompt = (
+            f"Stop {stop.order}: {stop.name} is located at latitude {stop.latitude}, longitude {stop.longitude}\n"
+            f"Address: {stop.address}, Hours: {stop.hours}, Rating: {stop.rating}, Price Range: {stop.priceRange}"
+        )
+        prompt += "\n" + stop_prompt
+
+    gemini_messages = [
+        {"role": "user", "parts": [prompt]}
+    ]
+
+    # Fetch chat history (for user or for everyone in trip history; customize as needed)
+    history = Chat.query.filter_by(trip_id=trip_id).order_by(Chat.timestamp).all()
+    # Format messages for Gemini API
+    gemini_messages += [
+        {"role": "user" if h.role == "user" else "model", "parts": [h.text]}
+        for h in history
+    ]
+    gemini_messages.append({"role": "user", "parts": [user_message]})
+
+    # Gemini API setup (already imported/configured)
+    # model = genai.GenerativeModel(model_name)
+
+    def generate():  # SSE generator
+        try:
+            with app.app_context():
+                response_stream = model.generate_content(gemini_messages, stream=True)
+                response_text = ""
+                for chunk in response_stream:
+                    token = getattr(chunk, "text", "")
+                    if token:
+                        response_text += token
+                        # Stream each chunk to the frontend
+                        yield sse_format(json.dumps({"role": "model", "content": token}))
+                # Once done, store the full assistant reply in DB
+                assistant_msg = Chat(trip_id=trip_id, sender=user_id, text=response_text, role="model")
+                db.session.add(assistant_msg)
+                db.session.commit()
+        except Exception as e:
+            # Send error via SSE event
+            yield sse_format(json.dumps({"error": str(e)}), event="error")
+
+    return Response(generate(), mimetype="text/event-stream")
 
 
 # ===========================================================

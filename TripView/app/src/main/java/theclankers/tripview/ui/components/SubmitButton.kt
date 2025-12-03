@@ -1,5 +1,6 @@
 package theclankers.tripview.ui.components
 
+import ChatViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
@@ -20,39 +21,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AndroidUiDispatcher
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import theclankers.tripview.ChattViewModel
 import theclankers.tripview.R
 import theclankers.tripview.data.models.Chatt
-import theclankers.tripview.data.models.ChattStore.chatts
-import theclankers.tripview.data.models.ChattStore.llmPrompt
 import java.time.Instant
 
 @Composable
-fun SubmitButton(listScroll: LazyListState) {
-    val vm: ChattViewModel = viewModel()
-
+fun SubmitButton(vm: ChatViewModel, listScroll: LazyListState) {
     var isSending by rememberSaveable { mutableStateOf(false) }
 
     IconButton(
         onClick = {
             isSending = true
             vm.viewModelScope.launch(Dispatchers.Default) {
-                llmPrompt(
+                vm.llmChat(
                     Chatt(
                         username = vm.model,
                         message = mutableStateOf(vm.message.text.toString()),
-                        timestamp = Instant.now().toString()
+                        timestamp = Instant.now().toString(),
+                        role = "user"
                     ), vm.errMsg)
                 // completion code
                 vm.message.clearText()
                 isSending = false
                 withContext(AndroidUiDispatcher.Main) {
-                    listScroll.animateScrollToItem(chatts.size)
+                    listScroll.animateScrollToItem(vm.chatts.size)
                 }
             }
         },
