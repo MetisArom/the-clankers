@@ -12,4 +12,6 @@ object Constants {
 
     const val USERNAME = "alice"
     const val PASSWORD = "easy"
+
+    const val AUTOLOGIN = true
 }
