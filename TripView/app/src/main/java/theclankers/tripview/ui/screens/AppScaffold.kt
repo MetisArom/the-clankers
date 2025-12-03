@@ -16,6 +16,7 @@ import theclankers.tripview.ui.viewmodels.AppViewModel
 import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.core.Constants.USERNAME
 import theclankers.tripview.core.Constants.PASSWORD
+import theclankers.tripview.core.Constants.AUTOLOGIN
 import theclankers.tripview.ui.navigation.AuthNavGraph
 
 @Composable
@@ -25,7 +26,9 @@ fun AppScaffold() {
 
     // Auto-login once
     LaunchedEffect(Unit) {
-        appVM.login(USERNAME, PASSWORD)
+        if (AUTOLOGIN) {
+            appVM.login(USERNAME, PASSWORD)
+        }
     }
 
     val showNavbar = appVM.showNavbarState.value
