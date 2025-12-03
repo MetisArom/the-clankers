@@ -155,7 +155,6 @@ class TripViewModel(private val token: String) : ViewModel() {
     val errorMessage: MutableState<String?> = mutableStateOf(null)
     val stops: MutableState<List<Stop>> = mutableStateOf(emptyList())
 
-
     fun loadTrip(tripId: Int) {
         viewModelScope.launch {
             isLoading.value = true
@@ -211,7 +210,7 @@ class TripViewModel(private val token: String) : ViewModel() {
         }
     }
 
-    fun updateTrip(tripId: Int, stops: List<Stop>) {
+    fun updateTrip(tripId: Int, stops: List<Int>) {
         viewModelScope.launch {
             try {
                 // 🔹 Send the update to the backend
@@ -245,25 +244,6 @@ class TripViewModel(private val token: String) : ViewModel() {
         }
     }
 
-    fun deleteStop(stopId: Int) {
-
-        stops.value = stops.value.filter { it.stopId != stopId }
-        stopIdsState.value = stopIdsState.value?.filter { it != stopId }
-
-        viewModelScope.launch {
-            try {
-                // 🔹 Send the update to the backend
-                withContext(Dispatchers.IO) {
-                    ApiClient.deleteStop(token, stopId)
-                }
-
-                Log.d("TripViewModel", "✅ Stop deleted ")
-            } catch (e: Exception) {
-                Log.e("TripViewModel", "❌ Failed to delete stop", e)
-                e.printStackTrace()
-            }
-        }
-    }
     val isAddingStopState: MutableState<Boolean> = mutableStateOf(false)
     val addStopMessageState: MutableState<String?> = mutableStateOf(null)
 
@@ -271,7 +251,7 @@ class TripViewModel(private val token: String) : ViewModel() {
         viewModelScope.launch {
             isAddingStopState.value = true
             try {
-                ApiClient.addStop(token, tripId, name, latitude, longitude)
+                ApiClient.addStop(token, name, latitude, longitude)
                 addStopMessageState.value = "Successfully added stop"
             } catch (e: Exception) {
                 Log.e("TripViewModel", "❌ Failed to add stop", e)

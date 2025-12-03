@@ -3,7 +3,6 @@ package theclankers.tripview.data.api
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -630,29 +629,20 @@ object ApiClient {
         return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
 
-    suspend fun addStop(token: String, tripId: Int, name: String, latitude: String, longitude:String): String = withContext(Dispatchers.IO) {
-        val url = "$BASE_URL/trips/$tripId/stops"
-        val stopArray = JSONArray().apply {
-            put(
-                JSONObject().apply {
-                    put("name", name)
-                    put("latitude", latitude.toDouble())
-                    put("longitude", longitude.toDouble())
-                }
-            )
-        }
-
+    suspend fun addStop(token: String, name: String, latitude: String, longitude:String): String = withContext(Dispatchers.IO) {
+        val url = "$BASE_URL/add_stop"
         val bodyJson = JSONObject().apply {
-            put("stops", stopArray)
+            put("name", name)
+            put("latitude", latitude)
+            put("longitude", longitude)
         }.toString()
 
         val request = Request.Builder()
             .url(url)
-            .patch(bodyJson.toRequestBody(JSON))
+            .post(bodyJson.toRequestBody(JSON))
             .addHeader("Authorization", "Bearer $token")
             .build()
-
-        val response = HttpHelper.put(request)
+        val response = HttpHelper.post(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
         return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
@@ -710,24 +700,18 @@ object ApiClient {
 
 
     }
-    suspend fun updateStops(token: String, tripId: Int, stops: List<Stop>) = withContext(Dispatchers.IO){
+    suspend fun updateStops(token: String, tripId: Int, stopIds: List<Int>) = withContext(Dispatchers.IO){
         val url = "$BASE_URL/trips/$tripId/stops"
 
         // Build JSON payload
-        val stopsArray = JSONArray(stops.mapIndexed { index, stop ->
-            JSONObject().apply {
-                put("stop_id", stop.stopId)            // matches backend
-                put("order", index)               // matches backend
-                put("completed", stop.completed)       // boolean
-                put("description", stop.name)          // backend uses 'description'
-                put("stop_type", stop.stopType)        // optional if you need
-                put("latitude", stop.latitude)
-                put("longitude", stop.longitude)
+        val stopsArray = JSONArray().apply {
+            stopIds.forEach { stopId ->
+                put(stopId)
             }
-        })
+        }
 
         val bodyJson = JSONObject().apply {
-            put("stops", stopsArray)
+            put("stopIds", stopsArray)
         }.toString()
 
         println("PATCH payload: $bodyJson")

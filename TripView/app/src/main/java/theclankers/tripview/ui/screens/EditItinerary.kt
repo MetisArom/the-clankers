@@ -2,7 +2,6 @@ package theclankers.tripview.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,80 +19,64 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import theclankers.tripview.data.models.Stop
-import theclankers.tripview.data.api.ApiClient
+import theclankers.tripview.data.api.ApiClient.deleteStop
 import theclankers.tripview.ui.components.EditableStopItem
-import theclankers.tripview.ui.components.StopItem
 import theclankers.tripview.ui.navigation.navigateToDetail
-import theclankers.tripview.ui.viewmodels.TripViewModel
 import theclankers.tripview.ui.viewmodels.useAppContext
-import theclankers.tripview.ui.viewmodels.useStop
 import theclankers.tripview.ui.viewmodels.useTrip
 
 @Composable
-fun EditItinerary(navController: NavHostController, tripId: Int) { // , tripId: Int?, viewModel: TripViewModel
+fun EditItinerary(navController: NavHostController, tripId: Int) {
     val appVM = useAppContext()
     val token = appVM.accessTokenState.value
-
     if (token == null) return
 
-    val viewModel = useTrip(token, tripId)
-    val tripIdState by viewModel.tripIdState
-    val nameState by viewModel.nameState
-    val stopIds by viewModel.stopIdsState
-    val isLoading by viewModel.isLoading
-    val errorMessage by viewModel.errorMessage
+    val tripVM = useTrip(token, tripId)
+    val nameState by tripVM.nameState
+    val stopIds by tripVM.stopIdsState
 
-//    val stops = remember { mutableStateOf<List<Stop>>(viewModel.stops.value?: emptyList()) }
-    val stops = remember { mutableStateOf<List<Stop>>(emptyList()) }
-
+    // Get uiStopIds from global AppViewModel
+    val uiStopIds = appVM.getUiStopIds(tripId)
 
     LaunchedEffect(stopIds) {
-        val fetchedStops = stopIds?.map { stopId ->
-            withContext(Dispatchers.IO) { ApiClient.getStop(token, stopId) }
-        } ?: emptyList()
-        stops.value = fetchedStops.sortedBy { it.order }
+        tripVM.loadTrip(tripId)          // Load from backend
+        appVM.syncInitialUiStopIds(tripId, stopIds ?: emptyList())  // Sync UI state once
     }
+
     val lazyListState = rememberLazyListState()
-    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        stops.value = stops.value.toMutableList().apply {
-            add(to.index, removeAt(from.index))
-        }.mapIndexed { index, stop ->
-            stop.copy(order = index + 1)
-        }
-
-
+    val reorderState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        val list = uiStopIds.toMutableList()
+        list.add(to.index, list.removeAt(from.index))
+        appVM.setUiStopIds(tripId, list)
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                // should be based on whatever trip object is passed into this
-                title = { Text(viewModel.nameState.value?: "Trip #$tripId") },
+                title = { Text(nameState ?: "Trip #$tripId") },
                 actions = {
                     Button(onClick = {
                         navigateToDetail(navController, "invites/$tripId")
-                    }) {
-                        Text("Invites")
-                    }
+                    }) { Text("Invites") }
 
-                    // Existing Add Stop button
                     Button(onClick = {
                         navigateToDetail(navController, "addStop/$tripId")
+                    }) { Text("Add Stop") }
+
+                    // Revert Changes button
+                    Button(onClick = {
+                        stopIds?.let { originalStopIds ->
+                            appVM.setUiStopIds(tripId, originalStopIds)
+                        }
                     }) {
-                        Text("Add Stop")
+                        Text("Revert")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -102,26 +85,25 @@ fun EditItinerary(navController: NavHostController, tripId: Int) { // , tripId: 
             )
         }
     ) { padding ->
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                    state = lazyListState
-            ) {
 
-                items(stops.value, key = { it.stopId }) { stop ->
-                    ReorderableItem(reorderableLazyListState, key = stop.stopId) { _ ->
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                state = lazyListState
+            ) {
+                items(uiStopIds, key = { it }) { stopId ->
+                    ReorderableItem(reorderState, key = stopId) { _ ->
 
                         EditableStopItem(
                             navController = navController,
-                            stop = stop,
+                            stopId = stopId,
                             onDeleteStop = { deleteId ->
-                                viewModel.deleteStop(deleteId)
+                                appVM.deleteStop(tripId, deleteId)   // <-- new function
                             },
                             trailingContent = {
                                 Icon(
@@ -137,11 +119,7 @@ fun EditItinerary(navController: NavHostController, tripId: Int) { // , tripId: 
 
             Button(
                 onClick = {
-                    // call confirm changes to api here
-                    // navigate to trips screen after
-                    // also add confirmation toast?
-                    viewModel.updateTrip(tripId, stops.value)
-                    println("Confirmed changes")
+                    tripVM.updateTrip(tripId, uiStopIds)
                     navController.navigate("ItineraryScreen/$tripId") {
                         popUpTo("ItineraryScreen/$tripId") { inclusive = true }
                         launchSingleTop = true
@@ -150,8 +128,7 @@ fun EditItinerary(navController: NavHostController, tripId: Int) { // , tripId: 
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 24.dp)
-                    .width(150.dp),
-                shape = MaterialTheme.shapes.medium
+                    .width(150.dp)
             ) {
                 Text("Confirm changes")
             }
