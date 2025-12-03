@@ -29,7 +29,7 @@ class AppViewModel : ViewModel() {
     val accessTokenState = mutableStateOf<String?>(null)
     val isAuthedState = mutableStateOf(false)
     val authErrorMessageState = mutableStateOf<String?>(null)
-    val showNavbarState = mutableStateOf(true)
+    val showNavbarState = mutableStateOf(false)
     val isAuthingState = mutableStateOf(false)
 
     val tripSuggestionsState = mutableStateOf<List<TripSuggestion>>(emptyList())
@@ -111,6 +111,8 @@ class AppViewModel : ViewModel() {
                 userIdState.value = loginResult.userId
                 accessTokenState.value = loginResult.accessToken
                 isAuthedState.value = true
+
+                showNavbarState.value = true
 
                 Log.d("AppViewModel", "✅ Login success, user_id=$loginResult.userId")
 

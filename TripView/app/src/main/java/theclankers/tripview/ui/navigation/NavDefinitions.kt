@@ -232,6 +232,27 @@ fun AuthNavGraph(navController: NavHostController) {
         composable("signup") {
             SignupScreen(navController)
         }
+
+        // Main camera screen
+        composable("camera") { CameraScreen(navController)}
+
+        // Camera confirmation screem
+        composable(
+            "cameraConfirmScreen/{photoPath}",
+            arguments = listOf(navArgument("photoPath") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val photoPath = backStackEntry.arguments?.getString("photoPath")
+            CameraConfirmScreen(photoPath,navController)
+        }
+
+        // Landmark Context Screen
+        composable(
+            "landmarkContext/{photoPath}",
+            arguments = listOf(navArgument("photoPath") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val photoPath = backStackEntry.arguments?.getString("photoPath")
+            LandmarkContextScreen(photoPath,navController)
+        }
     }
 }
 

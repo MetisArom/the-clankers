@@ -33,7 +33,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import theclankers.tripview.core.Constants.PASSWORD
+import theclankers.tripview.core.Constants.USERNAME
 import theclankers.tripview.ui.components.FormInput
+import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.AppViewModel
 import theclankers.tripview.ui.viewmodels.useAppContext
 
@@ -126,6 +129,7 @@ fun LoginScreen(navController: NavController) {
                 Button(
                     onClick = {
                         //redirect to demo camera page
+                        navigateToDetail(navController, "camera")
                     },
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
