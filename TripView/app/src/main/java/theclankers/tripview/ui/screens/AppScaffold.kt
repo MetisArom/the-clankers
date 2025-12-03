@@ -16,7 +16,9 @@ import theclankers.tripview.ui.viewmodels.AppViewModel
 import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.core.Constants.USERNAME
 import theclankers.tripview.core.Constants.PASSWORD
+import theclankers.tripview.core.Constants.AUTOLOGIN
 import theclankers.tripview.ui.navigation.AuthNavGraph
+import theclankers.tripview.ui.navigation.TripViewDemoNavigationBar
 
 @Composable
 fun AppScaffold() {
@@ -25,14 +27,17 @@ fun AppScaffold() {
 
     // Auto-login once
     LaunchedEffect(Unit) {
-        appVM.login(USERNAME, PASSWORD)
+        if (AUTOLOGIN) {
+            appVM.login(USERNAME, PASSWORD)
+        }
     }
 
     val showNavbar = appVM.showNavbarState.value
+    val demoFlow = appVM.demoFlowState.value
 
     Scaffold(
         topBar = { Header(navController) },
-        bottomBar = { if (showNavbar) TripViewNavigationBar(navController) },
+        bottomBar = { if (showNavbar) TripViewNavigationBar(navController) else if (demoFlow) TripViewDemoNavigationBar(navController) },
     ) { innerPadding ->
         Box(modifier = Modifier
             .padding(innerPadding)

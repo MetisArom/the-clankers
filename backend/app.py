@@ -1027,11 +1027,13 @@ def chat_sse(trip_id):
 
 # Send a photo to landmark context generator.
 @app.route('/landmark_context', methods=['POST'])
-@jwt_required()
+@jwt_required(optional=True)
 def landmark_context():
-    current_user_id = int(get_jwt_identity())
-    user = db.session.get(User, current_user_id)
-    print(f"User found: {user}")
+    user = None
+    if get_jwt_identity() is not None:
+        current_user_id = int(get_jwt_identity())
+        user = db.session.get(User, current_user_id)
+        print(f"User found: {user}")
 
     if "image" not in request.files:
         return jsonify({"error": "Missing image multipart form data"}), 400
@@ -1073,7 +1075,7 @@ def landmark_context():
     )
     if latitude is not None and longitude is not None:
         prompt_text += " Additionally include the location latitude and longitude newlined from the rest of the paragraph."
-    if user:
+    if user is not None:
         f" Consider the user likes: {user.likes}, and dislikes: {user.dislikes}, in your response."
 
     prompt_image = { "mime_type": mime_type, "data": image_bytes}

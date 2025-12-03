@@ -1,5 +1,6 @@
 package theclankers.tripview.data.api
 
+import android.R.attr.version
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,6 +16,7 @@ import org.json.JSONObject
 import theclankers.tripview.core.Constants.BASE_URL
 import theclankers.tripview.data.models.LoginResult
 import theclankers.tripview.data.models.Stop
+import theclankers.tripview.data.models.SuggestedStop
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.models.TripSuggestion
 import theclankers.tripview.data.models.User
@@ -22,6 +24,10 @@ import theclankers.tripview.utils.HttpHelper
 import java.io.File
 import java.io.IOException
 import java.net.URLConnection
+import kotlin.Int
+import kotlin.String
+
+
 
 object ApiClient {
 
@@ -435,11 +441,43 @@ object ApiClient {
             val tripsJSON = json.getJSONArray("trips")
             for (i in 0 until tripsJSON.length()) {
                 val jsonObject = tripsJSON.getJSONObject(i)
+                val name = jsonObject.getString("name")
+                val description = jsonObject.getString("description")
+                val total_cost_estimate = jsonObject.getInt("total_cost_estimate")
+                val costBreakdown = jsonObject.getString("cost_breakdown")
+                val transportationSummary = jsonObject.getString("transportation_summary")
+                val transportationBreakdown = jsonObject.getString("transportation_breakdown")
+                val stopsJSONArray = jsonObject.getJSONArray("stops")
+                val version = jsonObject.getInt("version")
+
+                // Parse stops -- added by mz, could be wrong
+                val stops = mutableListOf<SuggestedStop>()
+                for (j in 0 until stopsJSONArray.length()) {
+                    val stopObj = stopsJSONArray.getJSONObject(j)
+                    stops.add(
+                        SuggestedStop(
+                            name = stopObj.getString("name"),
+                            description = stopObj.getString("description"),
+                            latitude = stopObj.getDouble("latitude"),
+                            longitude = stopObj.getDouble("longitude"),
+                            order = stopObj.getInt("order"),
+                            stopType = stopObj.getString("stop_type")
+                        )
+                    )
+                }
                 tripSuggestions.add(
                     TripSuggestion(
                         name = jsonObject.getString("name"),
                         description = jsonObject.getString("description"),
-                        stopsJSONArray = jsonObject.getJSONArray("stops")
+                        stopsJSONArray = jsonObject.getJSONArray("stops"),
+                        totalCostEstimate = total_cost_estimate,
+                        costBreakdown = costBreakdown,
+                        transportationSummary = transportationSummary,
+                        transportationBreakdown = transportationBreakdown,
+                        stops = stops,
+                        version = version,
+
+
                     )
                 )
             }
@@ -513,7 +551,7 @@ object ApiClient {
 
     suspend fun getLandmarkContext(
         imagePath: String,
-        token: String,
+        token: String?,
         latitude: Double,
         longitude: Double
     ): String = withContext(Dispatchers.IO) {
@@ -539,10 +577,13 @@ object ApiClient {
         val request = Request.Builder()
             .url(url)
             .post(multipartBody)
-            .addHeader("Authorization", "Bearer $token")
-            .build()
 
-        val response = HttpHelper.post(request)
+
+        if (token != null) {
+            request.addHeader("Authorization", "Bearer $token")
+        }
+
+        val response = HttpHelper.post(request.build())
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
         return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
