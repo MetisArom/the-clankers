@@ -148,6 +148,31 @@ class AppViewModel : ViewModel() {
     fun clearToastMessage() {
         toastMessage.value = null
     }
+
+    // Map from tripId → current UI stopIds (editable list)
+    val uiStopIdsPerTrip: MutableState<Map<Int, List<Int>>> = mutableStateOf(emptyMap())
+
+    // Helper functions to access / update UI stopIds
+    fun getUiStopIds(tripId: Int): List<Int> {
+        return uiStopIdsPerTrip.value[tripId] ?: emptyList()
+    }
+
+    fun setUiStopIds(tripId: Int, stopIds: List<Int>) {
+        uiStopIdsPerTrip.value = uiStopIdsPerTrip.value.toMutableMap().apply {
+            put(tripId, stopIds)
+        }
+    }
+
+    fun deleteStop(tripId: Int, stopId: Int) {
+        val current = getUiStopIds(tripId)
+        setUiStopIds(tripId, current.filter { it != stopId })
+    }
+
+    fun syncInitialUiStopIds(tripId: Int, stopIds: List<Int>) {
+        if (uiStopIdsPerTrip.value[tripId].isNullOrEmpty()) {
+            setUiStopIds(tripId, stopIds)
+        }
+    }
 }
 
 @Composable

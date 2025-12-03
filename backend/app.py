@@ -416,9 +416,8 @@ def generate_ai_trip():
 
     For EACH trip in "trips[]", ADD these exact fields:
 
-    1. "total_cost_estimate": number
+    1. "total_cost_estimate": int
        - full trip cost in USD
-       - include typical range (low-end vs realistic-high)
 
     2. "cost_breakdown": string
     - A SHORT but useful summary including:
@@ -726,15 +725,15 @@ def update_stop_completed(stop_id):
     db.session.commit()
     return jsonify({"message": f"Stop {stop_id} updated successfully!"})
 
-@app.route('/stops/<int:stop_id>', methods=['DELETE'], endpoint="delete_stop")
-# @jwt_required
-def delete_stop(stop_id):
-    stop = Stop.query.filter_by(stop_id=stop_id).first()
-    if not stop:
-        return jsonify({"ERROR": f" stop_id {stop_id} not found"})
-    db.session.delete(stop)
-    db.session.commit()
-    return jsonify({"message": f"Stop with stop_id {stop_id} successfully deleted"})
+# @app.route('/stops/<int:stop_id>', methods=['DELETE'], endpoint="delete_stop")
+# # @jwt_required
+# def delete_stop(stop_id):
+#     stop = Stop.query.filter_by(stop_id=stop_id).first()
+#     if not stop:
+#         return jsonify({"ERROR": f" stop_id {stop_id} not found"})
+#     db.session.delete(stop)
+#     db.session.commit()
+#     return jsonify({"message": f"Stop with stop_id {stop_id} successfully deleted"})
 
 # ============================================================
 # Ethan added these routes
@@ -760,49 +759,62 @@ def display_itinerary(trip_id):
         }
         for s in stops
     ])
+    
+# Create a new stop but don't add it to any particular trip, then return the stop_id
+@app.route('/add_stop', methods=['POST'])
+def add_stop():
+    data = request.get_json()
+    new_stop = Stop(
+        trip_id=69420,  # Placeholder trip_id
+        stop_type="attraction", # Default stop type
+        latitude=data['latitude'],
+        longitude=data['longitude'],
+        name=data.get('name', ''),
+        completed=False,
+        order=-1  # Placeholder order
+    )
+    db.session.add(new_stop)
+    db.session.commit()
+    return jsonify({"stop_id": new_stop.stop_id}), 201
 
 @app.route('/trips/<int:trip_id>/stops', methods=['PATCH'])
 def modify_itinerary(trip_id):
     data = request.get_json()
+    stop_ids = data.get('stopIds', [])
 
-    stops_data = data['stops']
+    # Get all existing stops for this trip
     existing_stops = Stop.query.filter_by(trip_id=trip_id).all()
     existing_dict = {stop.stop_id: stop for stop in existing_stops}
 
-    # loop through new stop data sent by user
-    # if there is a new stop created, initial stop_id should be null (sent by app)
-    # additionally, keep track of the new stop IDs so we can get place information for them
-    new_stop_ids = []
-    for s in stops_data:
-        stop_id = s.get('stop_id')
-        stop_order = s.get('order')
+    # Keep track of stops that should remain
+    keep_stop_ids = []
 
-        # checking if existing stop's order changed
-        if stop_id and stop_id in existing_dict:
+    for index, stop_id in enumerate(stop_ids, start=1):  # start orders at 1
+        # Case 1: existing stop to update order
+        if stop_id in existing_dict:
             stop = existing_dict[stop_id]
-            stop.order = stop_order
+            stop.order = index
+            keep_stop_ids.append(stop_id)
 
-        # adding newly added stop
-        elif not stop_id:
-            new_stop = Stop(
-                trip_id=trip_id,
-                stop_type=s.get('stop_type', ''),
-                latitude=s['latitude'],
-                longitude=s['longitude'],
-                name=s.get('name', ''),
-                completed=s.get('completed', False),
-                order=(len(existing_stops)+1)
-            )
+        # Case 2: new stop to create
+        elif stop_id is None:
+            new_stop = Stop(trip_id=trip_id, order=index)
             db.session.add(new_stop)
+            db.session.flush()  # assigns stop_id
+            stop_ids[index - 1] = new_stop.stop_id  # replace None with real ID
+            keep_stop_ids.append(new_stop.stop_id)
 
-            db.session.flush()
-
-            new_stop_ids.append(new_stop.stop_id)
-        
-        elif stop_id not in existing_dict:
+        # Case 3: invalid stop_id
+        else:
             return jsonify({"error": f"stop_id {stop_id} not found in this trip"}), 404
 
+    # Case 4: remove deleted stops
+    for stop in existing_stops:
+        if stop.stop_id not in keep_stop_ids:
+            db.session.delete(stop)
+
     db.session.commit()
+    return jsonify({"stopIds": stop_ids})
 
     #If stops provided, get place information:
     # get all stop ids for trip

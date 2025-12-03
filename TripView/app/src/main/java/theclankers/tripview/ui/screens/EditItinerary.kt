@@ -1,16 +1,21 @@
 package theclankers.tripview.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -20,147 +25,135 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import theclankers.tripview.data.models.Stop
-import theclankers.tripview.data.api.ApiClient
-import theclankers.tripview.ui.components.StopItem
+import theclankers.tripview.ui.components.EditableStopItem
 import theclankers.tripview.ui.navigation.navigateToDetail
-import theclankers.tripview.ui.viewmodels.TripViewModel
 import theclankers.tripview.ui.viewmodels.useAppContext
-import theclankers.tripview.ui.viewmodels.useStop
 import theclankers.tripview.ui.viewmodels.useTrip
 
 @Composable
-fun EditItinerary(navController: NavHostController, tripId: Int) { // , tripId: Int?, viewModel: TripViewModel
+fun EditItinerary(navController: NavHostController, tripId: Int) {
     val appVM = useAppContext()
     val token = appVM.accessTokenState.value
-
     if (token == null) return
 
-    val viewModel = useTrip(token, tripId)
-    val tripIdState by viewModel.tripIdState
-    val nameState by viewModel.nameState
-    val stopIds by viewModel.stopIdsState
-    val isLoading by viewModel.isLoading
-    val errorMessage by viewModel.errorMessage
+    val tripVM = useTrip(token, tripId)
+    val nameState by tripVM.nameState
+    val stopIds by tripVM.stopIdsState
 
-//    val stops = remember { mutableStateOf<List<Stop>>(viewModel.stops.value?: emptyList()) }
-    val stops = remember { mutableStateOf<List<Stop>>(emptyList()) }
-
+    // Get uiStopIds from global AppViewModel
+    val uiStopIds = appVM.getUiStopIds(tripId)
 
     LaunchedEffect(stopIds) {
-        val fetchedStops = stopIds?.map { stopId ->
-            withContext(Dispatchers.IO) { ApiClient.getStop(token, stopId) }
-        } ?: emptyList()
-        stops.value = fetchedStops.sortedBy { it.order }
+        tripVM.loadTrip(tripId)          // Load from backend
+        appVM.syncInitialUiStopIds(tripId, stopIds ?: emptyList())  // Sync UI state once
     }
+
     val lazyListState = rememberLazyListState()
-    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        stops.value = stops.value.toMutableList().apply {
-            add(to.index, removeAt(from.index))
-        }.mapIndexed { index, stop ->
-            stop.copy(order = index + 1)
-        }
-
-
+    val reorderState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        val list = uiStopIds.toMutableList()
+        list.add(to.index, list.removeAt(from.index))
+        appVM.setUiStopIds(tripId, list)
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                // should be based on whatever trip object is passed into this
-                title = { Text(viewModel.nameState.value?: "Trip #$tripId") },
-                actions = {
-                    Button(onClick = {
-                        navigateToDetail(navController, "invites/$tripId")
-                    }) {
-                        Text("Invites")
-                    }
-
-                    // Existing Add Stop button
-                    Button(onClick = {
-                        navigateToDetail(navController, "addStop/$tripId")
-                    }) {
-                        Text("Add Stop")
-                    }
-                },
+                title = { Text(nameState ?: "Trip #$tripId") },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         }
     ) { padding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            LazyColumn(
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                    state = lazyListState
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                Button(onClick = {
+                    navigateToDetail(navController, "invites/$tripId")
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))) {
+                    Text(
+                        "Invites"
+                    )
+                }
 
-                items(stops.value, key = { it.stopId }) { stop ->
-                    ReorderableItem(reorderableLazyListState, key = stop.stopId) { isDragging ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            StopItem(
+                Button(onClick = {
+                    navigateToDetail(navController, "addStop/$tripId")
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))) {
+                    Text(
+                        "Add Stop"
+                    )
+                }
+
+                // Revert Changes button
+                Button(onClick = {
+                    stopIds?.let { originalStopIds ->
+                        appVM.setUiStopIds(tripId, originalStopIds)
+                    }
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))) {
+                    Text("Revert")
+                }
+            }
+
+            Spacer(Modifier.height(1.dp))
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    state = lazyListState
+                ) {
+                    items(uiStopIds, key = { it }) { stopId ->
+                        ReorderableItem(reorderState, key = stopId) { _ ->
+
+                            EditableStopItem(
                                 navController = navController,
-                                stop = stop,
+                                stopId = stopId,
+                                onDeleteStop = { deleteId ->
+                                    appVM.deleteStop(tripId, deleteId)   // <-- new function
+                                },
                                 trailingContent = {
                                     Icon(
                                         imageVector = Icons.Rounded.DragHandle,
                                         contentDescription = "Reorder",
                                         modifier = Modifier.longPressDraggableHandle()
-
                                     )
-                                },
-                                onDeleteStop = { deleteId ->
-                                    viewModel.deleteStop(deleteId)
-
-                                },
-                                editMode = true
+                                }
                             )
                         }
                     }
                 }
-            }
 
-            Button(
-                onClick = {
-                    // call confirm changes to api here
-                    // navigate to trips screen after
-                    // also add confirmation toast?
-                    viewModel.updateTrip(tripId, stops.value)
-                    println("Confirmed changes")
-                    navController.navigate("ItineraryScreen/$tripId") {
-                        popUpTo("ItineraryScreen/$tripId") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp)
-                    .width(150.dp),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Text("Confirm changes")
+                Button(
+                    onClick = {
+                        tripVM.updateTrip(tripId, uiStopIds)
+                        navController.navigate("ItineraryScreen/$tripId") {
+                            popUpTo("ItineraryScreen/$tripId") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 24.dp)
+                ) {
+                    Text("Confirm changes")
+                }
             }
         }
     }

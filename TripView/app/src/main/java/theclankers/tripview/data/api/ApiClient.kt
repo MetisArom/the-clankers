@@ -16,7 +16,6 @@ import org.json.JSONObject
 import theclankers.tripview.core.Constants.BASE_URL
 import theclankers.tripview.data.models.LoginResult
 import theclankers.tripview.data.models.Stop
-import theclankers.tripview.data.models.SuggestedStop
 import theclankers.tripview.data.models.Trip
 import theclankers.tripview.data.models.TripSuggestion
 import theclankers.tripview.data.models.User
@@ -433,58 +432,58 @@ object ApiClient {
         }
 
         val responseBody = response.body?.string() ?: throw IOException("Empty response")
+        Log.d("ResponseBody", responseBody)
 
         val tripSuggestions = mutableListOf<TripSuggestion>()
 
         try {
             val json = JSONObject(responseBody)
             val tripsJSON = json.getJSONArray("trips")
-            for (i in 0 until tripsJSON.length()) {
-                val jsonObject = tripsJSON.getJSONObject(i)
-                val name = jsonObject.getString("name")
-                val description = jsonObject.getString("description")
-                val total_cost_estimate = jsonObject.getInt("total_cost_estimate")
-                val costBreakdown = jsonObject.getString("cost_breakdown")
-                val transportationSummary = jsonObject.getString("transportation_summary")
-                val transportationBreakdown = jsonObject.getString("transportation_breakdown")
-                val stopsJSONArray = jsonObject.getJSONArray("stops")
-                val version = jsonObject.getInt("version")
 
-                // Parse stops -- added by mz, could be wrong
-                val stops = mutableListOf<SuggestedStop>()
-                for (j in 0 until stopsJSONArray.length()) {
-                    val stopObj = stopsJSONArray.getJSONObject(j)
-                    stops.add(
-                        SuggestedStop(
+            for (i in 0 until tripsJSON.length()) {
+                val tripObj = tripsJSON.getJSONObject(i)
+                val stopsArray = tripObj.getJSONArray("stops")
+                val parsedStops = mutableListOf<Stop>()
+
+                for (j in 0 until stopsArray.length()) {
+                    val stopObj = stopsArray.getJSONObject(j)
+
+                    parsedStops.add(
+                        Stop(
+                            stopId = -1,
+                            tripId = -1,
+                            completed = false,
                             name = stopObj.getString("name"),
-                            description = stopObj.getString("description"),
                             latitude = stopObj.getDouble("latitude"),
                             longitude = stopObj.getDouble("longitude"),
+                            stopType = stopObj.getString("stop_type"),
                             order = stopObj.getInt("order"),
-                            stopType = stopObj.getString("stop_type")
                         )
                     )
                 }
+
                 tripSuggestions.add(
                     TripSuggestion(
-                        name = jsonObject.getString("name"),
-                        description = jsonObject.getString("description"),
-                        stopsJSONArray = jsonObject.getJSONArray("stops"),
-                        totalCostEstimate = total_cost_estimate,
-                        costBreakdown = costBreakdown,
-                        transportationSummary = transportationSummary,
-                        transportationBreakdown = transportationBreakdown,
-                        stops = stops,
-                        version = version,
-
-
+                        name = tripObj.getString("name"),
+                        description = tripObj.getString("description"),
+                        stopsJSONArray = stopsArray,
+                        totalCostEstimate = tripObj.getInt("total_cost_estimate"),
+                        costBreakdown = tripObj.getString("cost_breakdown"),
+                        transportationSummary = tripObj.getString("transportation_summary"),
+                        transportationBreakdown = tripObj.getString("transportation_breakdown"),
+                        stops = parsedStops,
+                        version = tripObj.getInt("version"),
                     )
                 )
             }
+
         } catch (e: Exception) {
             Log.e("ApiClient", "Error parsing trip JSON: ${e.message}")
             throw e
         }
+
+        Log.d("ApiClient", "Fetched trip suggestions: $tripSuggestions")
+
         return@withContext tripSuggestions
     }
 
@@ -737,29 +736,20 @@ object ApiClient {
         return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
 
-    suspend fun addStop(token: String, tripId: Int, name: String, latitude: String, longitude:String): String = withContext(Dispatchers.IO) {
-        val url = "$BASE_URL/trips/$tripId/stops"
-        val stopArray = JSONArray().apply {
-            put(
-                JSONObject().apply {
-                    put("name", name)
-                    put("latitude", latitude.toDouble())
-                    put("longitude", longitude.toDouble())
-                }
-            )
-        }
-
+    suspend fun addStop(token: String, name: String, latitude: String, longitude:String): String = withContext(Dispatchers.IO) {
+        val url = "$BASE_URL/add_stop"
         val bodyJson = JSONObject().apply {
-            put("stops", stopArray)
+            put("name", name)
+            put("latitude", latitude)
+            put("longitude", longitude)
         }.toString()
 
         val request = Request.Builder()
             .url(url)
-            .patch(bodyJson.toRequestBody(JSON))
+            .post(bodyJson.toRequestBody(JSON))
             .addHeader("Authorization", "Bearer $token")
             .build()
-
-        val response = HttpHelper.put(request)
+        val response = HttpHelper.post(request)
         if (!response.isSuccessful) throw IOException("Request failed: ${response.code}")
         return@withContext response.body?.string() ?: throw IOException("Empty response")
     }
@@ -817,24 +807,18 @@ object ApiClient {
 
 
     }
-    suspend fun updateStops(token: String, tripId: Int, stops: List<Stop>) = withContext(Dispatchers.IO){
+    suspend fun updateStops(token: String, tripId: Int, stopIds: List<Int>) = withContext(Dispatchers.IO){
         val url = "$BASE_URL/trips/$tripId/stops"
 
         // Build JSON payload
-        val stopsArray = JSONArray(stops.mapIndexed { index, stop ->
-            JSONObject().apply {
-                put("stop_id", stop.stopId)            // matches backend
-                put("order", index)               // matches backend
-                put("completed", stop.completed)       // boolean
-                put("description", stop.name)          // backend uses 'description'
-                put("stop_type", stop.stopType)        // optional if you need
-                put("latitude", stop.latitude)
-                put("longitude", stop.longitude)
+        val stopsArray = JSONArray().apply {
+            stopIds.forEach { stopId ->
+                put(stopId)
             }
-        })
+        }
 
         val bodyJson = JSONObject().apply {
-            put("stops", stopsArray)
+            put("stopIds", stopsArray)
         }.toString()
 
         println("PATCH payload: $bodyJson")

@@ -35,17 +35,6 @@ data class TripSuggestion(
     val transportationSummary: String,
     val transportationBreakdown: String,
     val version: Int,
-    val stops: List<SuggestedStop>,       // parsed list, not JSONArray
-    @Contextual val stopsJSONArray: JSONArray // optional if you still need raw JSON
+    val stops: List<Stop>,       // parsed list, not JSONArray
+    @Contextual val stopsJSONArray: JSONArray // TODO optional if you still need raw JSON
 )
-
-// Each suggested stop from the LLM JSON
-data class SuggestedStop(
-    val name: String,
-    val description: String,
-    val latitude: Double,
-    val longitude: Double,
-    val order: Int,
-    val stopType: String
-)
-
