@@ -124,7 +124,7 @@ fun TripViewNavGraph(navController: NavHostController) {
 //                goBack(navController)
 //            }
 //        }
-        composable("trips") { TripsScreen(navController) }
+        composable("trips/{refreshKey}") { TripsScreen(navController) }
         composable("tripcreationform") {
             TripCreationForm(navController = navController)
         }

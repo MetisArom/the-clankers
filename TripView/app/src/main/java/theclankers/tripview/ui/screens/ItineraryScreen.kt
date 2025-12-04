@@ -85,7 +85,7 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
                 Button(
                     onClick = {
                         viewModel.archiveTrip(tripId)
-                        navController.navigate("trips") {
+                        navController.navigate("trips/${System.currentTimeMillis()}") {
                             popUpTo("trips") { inclusive = true }
                             launchSingleTop = true
                         }
