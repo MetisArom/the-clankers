@@ -15,6 +15,7 @@ import theclankers.tripview.ui.components.UserItem
 import theclankers.tripview.ui.viewmodels.useAppContext
 import androidx.compose.material3.Button
 import theclankers.tripview.ui.components.UserInviteRow
+import theclankers.tripview.ui.viewmodels.useFriends
 import theclankers.tripview.ui.viewmodels.useSearch
 import theclankers.tripview.ui.viewmodels.useTrip
 import theclankers.tripview.ui.viewmodels.useUser
@@ -33,6 +34,9 @@ fun InviteFriendScreen(navController: NavController, tripId: Int) {
     val searchResults = searchVM.searchResultsState.value
     val invitedFriends by tripVM.invitedFriendsState
 
+    val friendsVM = useFriends(token, userId)
+    val friends = friendsVM.friendsState.value ?: return
+
     // 🔥 Per-row loading states
     val rowLoading = remember { mutableStateMapOf<Int, Boolean>() }
 
@@ -48,16 +52,16 @@ fun InviteFriendScreen(navController: NavController, tripId: Int) {
             modifier = Modifier.padding(start = 8.dp, bottom = 16.dp)
         )
 
-        SearchBar(
-            onQuery = { query -> searchVM.search(query) },
-            prefill = "",
-            modifier = Modifier.fillMaxWidth()
-        )
+        // SearchBar(
+        //     onQuery = { query -> searchVM.search(query) },
+        //     prefill = "",
+        //     modifier = Modifier.fillMaxWidth()
+        // )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // 🔍 Search results list
-        searchResults?.forEach { friendId ->
+        friends?.forEach { friendId ->
 
             val alreadyInvited = invitedFriends.contains(friendId)
             val isLoading = rowLoading[friendId] == true
