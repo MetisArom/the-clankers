@@ -52,6 +52,7 @@ fun StopScreen(navController: NavHostController, stopId: Int) {
 
     Column(
         modifier = Modifier.fillMaxSize()
+            .padding(horizontal = 16.dp),
     ) {
         HeaderText(
             text = "$name",
@@ -119,7 +120,7 @@ fun StopScreen(navController: NavHostController, stopId: Int) {
 
 
         Row(
-            modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(16.dp),
+            modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(bottom=16.dp),
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.End
         ) {

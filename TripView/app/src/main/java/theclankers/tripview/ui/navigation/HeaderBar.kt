@@ -26,10 +26,10 @@ fun Header(navController: NavController) {
     // Only show the arrow if you're NOT on a root route
     val canGoBack = navController.previousBackStackEntry != null && currentRoute !in rootRoutes
 
-    TopAppBar(
-        title = { /* */ },
-        navigationIcon = {
-            if (canGoBack) {
+    if (canGoBack) {
+        TopAppBar(
+            title = { /* */ },
+            navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
@@ -37,6 +37,6 @@ fun Header(navController: NavController) {
                     )
                 }
             }
-        }
-    )
+        )
+    }
 }

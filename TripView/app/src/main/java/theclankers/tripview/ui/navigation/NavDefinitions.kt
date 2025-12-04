@@ -37,7 +37,20 @@ fun TripViewNavGraph(navController: NavHostController) {
         composable("searchFriends") { SearchFriendsScreen(navController)}
 
         // Profile screen
-        composable("profile") { ProfileScreen(navController) }
+        composable("profile/{userId}", arguments = listOf(navArgument("userId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: -1
+            if (userId != -1) ProfileScreen(navController, userId) else goBack(navController)
+        }
+
+        // Your profile screen
+        composable("yourProfile"
+        ) {
+            val appVM = useAppContext()
+            if (appVM.userIdState.value !== null) ProfileScreen(navController,
+                appVM.userIdState.value!!
+            ) else goBack(navController)
+        }
 
         // Edit profile screen
         composable("editProfile") { EditProfileScreen(navController) }

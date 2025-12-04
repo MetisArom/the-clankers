@@ -78,14 +78,14 @@ fun FriendsScreen(navController: NavController) {
         TitleText("Your Friends")
 
         ListComponent(friends) { friendId ->
-            UserItem(friendId)
+            UserItem(friendId, navController)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
         Text("Invite Requests", style = MaterialTheme.typography.titleLarge)
 
         ListComponent(invites) { inviteId ->
-            UserItem(inviteId)
+            UserItem(inviteId, navController)
         }
     }
 }

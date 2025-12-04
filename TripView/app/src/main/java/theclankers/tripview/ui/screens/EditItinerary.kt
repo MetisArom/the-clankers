@@ -33,6 +33,8 @@ import androidx.navigation.NavHostController
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import theclankers.tripview.ui.components.EditableStopItem
+import theclankers.tripview.ui.components.HeaderText
+import theclankers.tripview.ui.components.TitleText
 import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.viewmodels.useAppContext
 import theclankers.tripview.ui.viewmodels.useTrip
@@ -62,21 +64,15 @@ fun EditItinerary(navController: NavHostController, tripId: Int) {
         appVM.setUiStopIds(tripId, list)
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(nameState ?: "Trip #$tripId") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            )
-        }
-    ) { padding ->
+    Scaffold{ padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
         ) {
+            TitleText(
+                text = nameState ?: "Trip #$tripId",
+                modifier = Modifier.padding(16.dp)
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

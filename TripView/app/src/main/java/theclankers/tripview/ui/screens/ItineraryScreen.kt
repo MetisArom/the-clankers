@@ -41,21 +41,15 @@ fun ItineraryScreen(navController: NavHostController, tripId: Int, token: String
     val errorMessage by viewModel.errorMessage
     val stops by viewModel.stops
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { TitleText(nameState ?: "") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            )
-        }
-    ) { padding ->
+    Scaffold{ padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
         ) {
+            TitleText(
+                text = nameState ?: "Trip #$tripId",
+                modifier = Modifier.padding(16.dp)
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

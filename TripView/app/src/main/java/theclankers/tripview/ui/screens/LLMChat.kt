@@ -125,7 +125,7 @@ fun ChatScreen(vm: ChatViewModel, navController: NavController) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Landmark Context",
+                        text = "Itinerary Context",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.fillMaxWidth(),

@@ -18,12 +18,9 @@ import theclankers.tripview.ui.viewmodels.useActiveTrips
 import theclankers.tripview.ui.viewmodels.useAppContext
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController, userId: Int) {
     val appVM = useAppContext()
-    val token = appVM.accessTokenState.value
-    val userId = appVM.userIdState.value
-
-    if (token == null || userId == null) return
+    val token = appVM.accessTokenState.value ?: return
 
     val activeTripsState = useActiveTrips(token, userId)
     val activeTrips: List<Int>? = activeTripsState.value

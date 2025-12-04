@@ -4,6 +4,7 @@ package theclankers.tripview.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import theclankers.tripview.ui.navigation.navigateToDetail
 import theclankers.tripview.ui.theme.Purple1
 import theclankers.tripview.ui.theme.Purple4
 import theclankers.tripview.ui.theme.Purple80
@@ -29,7 +32,7 @@ import theclankers.tripview.ui.viewmodels.useRelationship
 import theclankers.tripview.ui.viewmodels.useUser
 
 @Composable
-fun UserItem(otherUserId: Int) {
+fun UserItem(otherUserId: Int, navController: NavController) {
     val appVM: AppViewModel = useAppContext()
     val userId = appVM.userIdState.value
     val token = appVM.accessTokenState.value
@@ -79,6 +82,9 @@ fun UserItem(otherUserId: Int) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
+            .clickable {
+                navigateToDetail(navController, "profile/$otherUserId")
+            }
     ) {
         Row(
             modifier = Modifier

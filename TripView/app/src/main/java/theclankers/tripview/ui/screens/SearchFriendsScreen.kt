@@ -46,7 +46,7 @@ fun SearchFriendsScreen(navController: NavController) {
         // You can replace this with a LazyColumn when ready
         if (searchResults != null) {
             ListComponent(searchResults) { resultId ->
-                UserItem(resultId)
+                UserItem(resultId, navController)
             }
         }
     }
