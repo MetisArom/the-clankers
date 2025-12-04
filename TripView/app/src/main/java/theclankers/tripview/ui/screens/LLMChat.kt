@@ -52,8 +52,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.serialization.json.Json
 import theclankers.tripview.R
 import theclankers.tripview.ui.components.SubmitButton
+import theclankers.tripview.ui.components.TitleText
 
 //look at Figma, code same functionality
 
@@ -69,19 +71,19 @@ fun ChattView(chatt: Chatt, isSender: Boolean) {
         chatt.message?.let { msg ->
             if (msg.value.isNotEmpty()) {
                 Text(
-                    text = if (isSender) "" else chatt.username ?: "",
+                    text = if (isSender) "" else "TripView AI",
                     style = MaterialTheme.typography.labelLarge,
                     color = PurpleGrey40,
                     modifier = Modifier
-                        .padding(start = 4.dp)
+                        .padding(start = 4.dp, bottom = 2.dp)
                 )
 
                 Text(
-                    text = msg.value,
+                    text = Json.decodeFromString<String>("\"${msg.value}\""),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier
                         .shadow(2.dp, shape = RoundedCornerShape(20.dp))
-                        .background(if (isSender) Color.Magenta else Color.White)
+                        .background(if (isSender) Color.Cyan else Color.White)
                         .padding(12.dp)
                         .widthIn(min = 50.dp, max = 350.dp)
                 )
@@ -121,20 +123,6 @@ fun ChatScreen(vm: ChatViewModel, navController: NavController) {
     var isRefreshing by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Itinerary Context",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(Color.White),
-            )
-        },
         // tap background to dismiss keyboard
         modifier = Modifier
             .pointerInput(Unit) {
@@ -148,11 +136,13 @@ fun ChatScreen(vm: ChatViewModel, navController: NavController) {
                     .imePadding()
                     .padding(
                         it.calculateStartPadding(layoutDirection),
-                        it.calculateTopPadding(),
                         it.calculateEndPadding(layoutDirection),
                     )
-                    .background(color = Color.White),
             ) {
+                TitleText(
+                    text = "Itinerary Context",
+                    modifier = Modifier.padding(16.dp)
+                )
                 ChattScrollView(vm, modifier = Modifier.weight(1f), listScroll)
 
                 // prompt input and submit

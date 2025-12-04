@@ -38,24 +38,15 @@ fun TripCreationForm(navController: NavController) {
         return
     }
 
-    Scaffold(
-        containerColor = Color(0xFFF7F6F8)
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text(
-                    text = "Trip Creation Form",
-                    color = Color.Gray,
-                    fontSize = 14.sp,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Create New Trip",
                     fontSize = 24.sp,

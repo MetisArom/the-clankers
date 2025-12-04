@@ -1,5 +1,6 @@
 package theclankers.tripview.ui.screens.auth
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,7 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,17 +57,15 @@ fun LoginScreen(navController: NavHostController) {
 
     val appVM: AppViewModel = useAppContext()
 
-    val username = mutableStateOf("")
-    val password = mutableStateOf("")
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
-    Scaffold(
-        containerColor = Color(0xFFF7F6F8)
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .padding(horizontal=16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -76,8 +78,8 @@ fun LoginScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 FormInput(
-                    value = username.value,
-                    onValueChange = { username.value = it },
+                    value = username,
+                    onValueChange = { username = it },
                     label = "Username",
                     placeholder = "",
                     imeAction = ImeAction.Next,
@@ -85,8 +87,8 @@ fun LoginScreen(navController: NavHostController) {
                 )
 
                 FormInput(
-                    value = password.value,
-                    onValueChange = { password.value = it },
+                    value = password,
+                    onValueChange = { password = it },
                     label = "Password",
                     placeholder = "",
                     imeAction = ImeAction.Next,
@@ -119,7 +121,7 @@ fun LoginScreen(navController: NavHostController) {
                 Button(
                     onClick = {
                         //log in
-                        appVM.login(username.value, password.value)
+                        appVM.login(username, password)
                     },
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D)),
