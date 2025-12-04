@@ -79,12 +79,14 @@ fun EditItinerary(navController: NavHostController, tripId: Int) {
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Button(onClick = {
-                    navigateToDetail(navController, "invites/$tripId")
-                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))) {
-                    Text(
-                        "Invites"
-                    )
+                if (tripVM.ownerIdState.value == appVM.userIdState.value) {
+                    Button(onClick = {
+                        navigateToDetail(navController, "invites/$tripId")
+                    }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF56308D))) {
+                        Text(
+                            "Invites"
+                        )
+                    }
                 }
 
                 Button(onClick = {

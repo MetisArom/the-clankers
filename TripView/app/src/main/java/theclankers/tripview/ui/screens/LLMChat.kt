@@ -56,6 +56,8 @@ import kotlinx.serialization.json.Json
 import theclankers.tripview.R
 import theclankers.tripview.ui.components.SubmitButton
 import theclankers.tripview.ui.components.TitleText
+import org.apache.commons.text.StringEscapeUtils
+import org.apache.commons.text.StringEscapeUtils.unescapeJava
 
 //look at Figma, code same functionality
 
@@ -79,7 +81,7 @@ fun ChattView(chatt: Chatt, isSender: Boolean) {
                 )
 
                 Text(
-                    text = Json.decodeFromString<String>("\"${msg.value}\""),
+                    text = unescapeJava(msg.value),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier
                         .shadow(2.dp, shape = RoundedCornerShape(20.dp))
