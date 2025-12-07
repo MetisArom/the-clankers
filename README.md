@@ -6,7 +6,8 @@
 <!-- reusing the icons from eecs441 -->
 
 ![Elevator Pitch](https://raw.githubusercontent.com/MetisArom/the-clankers/refs/heads/main/.github/images/ElevatorPitchImage.png) <!-- MUST be placed in publicly accessible github -->
-![Team](/assets/team.png)
+
+![Team](https://raw.githubusercontent.com/MetisArom/the-clankers/refs/heads/main/.github/images/tripviewlogo.png)
 
 [video]: https://youtu.be/TO_EDIT
 [wiki]: https://github.com/MetisArom/the-clankers/wiki
