@@ -5,7 +5,7 @@
 |[<img src="https://eecs441.eecs.umich.edu/img/admin/video.png">][video]|[<img src="https://eecs441.eecs.umich.edu/img/admin/wiki.png">][wiki]|[<img src="https://eecs441.eecs.umich.edu/img/admin/trello.png">][agile]|
 <!-- reusing the icons from eecs441 -->
 
-![Elevator Pitch](https://raw.githubusercontent.com/TO_EDIT.png) <!-- MUST be placed in publicly accessible github -->
+![Elevator Pitch](https://raw.githubusercontent.com/MetisArom/the-clankers/refs/heads/main/.github/images/ElevatorPitchImage.png) <!-- MUST be placed in publicly accessible github -->
 ![Team](/assets/team.png)
 
 [video]: https://youtu.be/TO_EDIT
