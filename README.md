@@ -12,6 +12,6 @@
 <img src="https://raw.githubusercontent.com/MetisArom/the-clankers/refs/heads/main/.github/images/clankersteamroster.png" alt="Team Roster" width="700"/>
 
 
-[video]: https://youtu.be/TO_EDIT
+[video]: https://youtu.be/E6HyLLTkKGA
 [wiki]: https://github.com/MetisArom/the-clankers/wiki
 [agile]: https://trello.com/b/FM59aWtF/the-clankers
